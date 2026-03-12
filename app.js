@@ -159,7 +159,7 @@ function nextTab() {
 function saveAndCalculate() {
     saveData();
     showTab(3);
-    calculate();
+    setTimeout(() => calculate(), 100);
 }
 
 function showAdminTab(n) {
@@ -559,8 +559,6 @@ function calculate() {
     const totalExpensesEl = document.getElementById('total_expenses');
     if (totalExpensesEl) totalExpensesEl.textContent = Math.round(calcRetireAsset(rate));
 
-    document.getElementById('result_area').style.display = 'block';
-
     // 保存計算結果
     window.lastCalculation = {
         rate: ratePercent.toFixed(2),
@@ -569,6 +567,110 @@ function calculate() {
         neededAtRetire: Math.round(neededAtRetire),
         totalAsset: Math.round(calcRetireAsset(rate))
     };
+
+    // ========== 生成資產明細表 ==========
+    generateAssetTable(age, retire, life, assets, income, expense, replacement, retireReturn, rate, inflation, inflationMedical, totalEducationExpense, totalLoanPayment, totalLargeExpense, pension, totalPension);
+
+    // 更新按鈕文字為「重算」
+    const calcButton = document.getElementById('calcButton');
+    if (calcButton) calcButton.textContent = '🔄 重算';
+}
+
+// 生成資產明細表
+function generateAssetTable(age, retire, life, initialAssets, income, expense, replacement, retireReturn, workRate, inflation, inflationMedical, totalEducationExpense, totalLoanPayment, totalLargeExpense, pension, totalPension) {
+    const tableBody = document.getElementById('assetTableBody');
+    if (!tableBody) return;
+
+    tableBody.innerHTML = '';
+    const currentYear = new Date().getFullYear();
+    let asset = initialAssets;
+    const workYears = retire - age;
+    const retireYears = life - retire;
+
+    // 計算每年的支出分攤
+    const annualEducation = totalEducationExpense / workYears;
+    const annualLoan = totalLoanPayment / workYears;
+    const annualLarge = totalLargeExpense / workYears;
+
+    // 工作期
+    for (let i = 0; i < workYears; i++) {
+        const year = currentYear + i;
+        const currentAge = age + i;
+        const startAsset = asset;
+
+        // 當年支出
+        const yearExpense = expense + annualEducation + annualLoan + annualLarge;
+
+        // 投資收益
+        const investmentIncome = startAsset * workRate;
+
+        // 資產變化
+        const assetChange = investmentIncome + income - yearExpense;
+
+        // 年終資產
+        asset = startAsset + assetChange;
+
+        const row = document.createElement('tr');
+        row.style.background = i % 2 === 0 ? '#f8f9fa' : 'white';
+        row.innerHTML = `
+            <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${year}</td>
+            <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${currentAge}</td>
+            <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${Math.round(startAsset).toLocaleString()}</td>
+            <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${Math.round(yearExpense).toLocaleString()}</td>
+            <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${Math.round(income).toLocaleString()}</td>
+            <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${Math.round(investmentIncome).toLocaleString()}</td>
+            <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${(workRate * 100).toFixed(2)}%</td>
+            <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${Math.round(assetChange).toLocaleString()}</td>
+            <td style="padding: 8px; border: 1px solid #ddd; text-align: right; font-weight: bold;">${Math.round(asset).toLocaleString()}</td>
+        `;
+        tableBody.appendChild(row);
+    }
+
+    // 退休期
+    let retireExpenseBase = income * replacement;
+    for (let i = 0; i < retireYears; i++) {
+        const year = currentYear + workYears + i;
+        const currentAge = retire + i;
+        const startAsset = asset;
+
+        // 退休後支出（含通脹）
+        const yearExpense = retireExpenseBase * Math.pow(1 + inflation, i);
+
+        // 醫療支出
+        let medicalExpense = 0;
+        if (currentAge < 65) medicalExpense = 11;
+        else if (currentAge < 75) medicalExpense = 25;
+        else if (currentAge < 85) medicalExpense = 53;
+        else medicalExpense = 85;
+        medicalExpense *= Math.pow(1 + inflationMedical, i);
+
+        // 當年收入（退休金）
+        const yearIncome = pension;
+
+        // 投資收益
+        const investmentIncome = startAsset * retireReturn;
+
+        // 資產變化
+        const assetChange = investmentIncome + yearIncome - yearExpense - medicalExpense;
+
+        // 年終資產
+        asset = startAsset + assetChange;
+
+        const row = document.createElement('tr');
+        row.style.background = (workYears + i) % 2 === 0 ? '#f8f9fa' : 'white';
+        row.innerHTML = `
+            <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${year}</td>
+            <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${currentAge}</td>
+            <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${Math.round(startAsset).toLocaleString()}</td>
+            <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${Math.round(yearExpense + medicalExpense).toLocaleString()}</td>
+            <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${Math.round(yearIncome).toLocaleString()}</td>
+            <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${Math.round(investmentIncome).toLocaleString()}</td>
+            <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${(retireReturn * 100).toFixed(2)}%</td>
+            <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${Math.round(assetChange).toLocaleString()}</td>
+            <td style="padding: 8px; border: 1px solid #ddd; text-align: right; font-weight: bold;">${Math.round(asset).toLocaleString()}</td>
+        `;
+        tableBody.appendChild(row);
+    }
 }
 
 // ==================== PDF 報告生成 ====================

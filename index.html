@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DCF 財富規劃工具 v2.2.0 - 香港雲杉財富</title>
+    <title>DCF 財富規劃工具 v2.2.1 - 香港雲杉財富</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -363,7 +363,7 @@
     <div id="loginPage" class="container">
         <div class="header">
             <img src="香港雲杉財富.png" alt="香港雲杉財富" class="logo" onerror="this.style.display='none'">
-            <h1>💰 DCF 財富規劃工具 v2.2.0</h1>
+            <h1>💰 DCF 財富規劃工具 v2.2.1</h1>
             <p>香港雲杉財富管理有限公司</p>
         </div>
         
@@ -648,7 +648,7 @@
             <!-- Tab 4: 計算結果 -->
             <div class="tab-content" id="tab-3">
                 <div style="text-align: center; margin: 30px 0;">
-                    <button class="btn btn-primary" onclick="calculate()">🚀 開始計算</button>
+                    <button class="btn btn-primary" id="calcButton" onclick="calculate()">🚀 開始計算</button>
                     <button class="btn btn-success" onclick="generateReport()">📄 下載報告 (PDF)</button>
                 </div>
                 
@@ -683,6 +683,28 @@
                         • ≤ 8%：✅ 可行，方案可行，正常執行<br>
                         • 8% - 10%：⚠️ 可行但需提醒風險，提醒客戶注意市場風險<br>
                         • > 10%：❌ 不可行，建議調整參數（降低支出/延遲退休/降低傳承目標/增加儲蓄）
+                    </div>
+                    
+                    <!-- 資產明細表 -->
+                    <div class="part-title" style="margin-top: 30px;">資產明細表（從現在到90歲）</div>
+                    <div style="overflow-x: auto;">
+                        <table id="assetTable" style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                            <thead>
+                                <tr style="background: #0066CC; color: white;">
+                                    <th style="padding: 10px; border: 1px solid #ddd;">年份</th>
+                                    <th style="padding: 10px; border: 1px solid #ddd;">年齡</th>
+                                    <th style="padding: 10px; border: 1px solid #ddd;">年初資產（萬）</th>
+                                    <th style="padding: 10px; border: 1px solid #ddd;">當年支出（萬）</th>
+                                    <th style="padding: 10px; border: 1px solid #ddd;">當年收入（萬）</th>
+                                    <th style="padding: 10px; border: 1px solid #ddd;">投資收益（萬）</th>
+                                    <th style="padding: 10px; border: 1px solid #ddd;">回報率</th>
+                                    <th style="padding: 10px; border: 1px solid #ddd;">資產變化（萬）</th>
+                                    <th style="padding: 10px; border: 1px solid #ddd;">年終資產（萬）</th>
+                                </tr>
+                            </thead>
+                            <tbody id="assetTableBody">
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
