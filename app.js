@@ -129,8 +129,17 @@ function login() {
         document.getElementById('userTabs').classList.remove('hidden');
         document.getElementById('adminTabs').classList.add('hidden');
         loadUserHistory();
-        const latestReport = reports.filter(r => r.username === user.username).pop();
-        if (latestReport) loadReportData(latestReport);
+        
+        // 優先恢復進度保存，如果沒有則載入最新完整記錄
+        const progress = localStorage.getItem('dcf_current_progress');
+        if (progress) {
+            const data = JSON.parse(progress);
+            loadReportData(data);
+            console.log('已恢復上次填寫進度');
+        } else {
+            const latestReport = reports.filter(r => r.username === user.username && r.isComplete).pop();
+            if (latestReport) loadReportData(latestReport);
+        }
     }
 }
 
@@ -152,12 +161,47 @@ function nextTab() {
     const tabs = document.querySelectorAll('.tab-content');
     let currentIndex = Array.from(tabs).indexOf(currentTab);
     if (currentIndex < 3) {
+        // 自動保存當前進度
+        autoSaveProgress();
         showTab(currentIndex + 1);
     }
 }
 
+// 自動保存進度（非完整記錄，用於恢復）
+function autoSaveProgress() {
+    const data = collectFormData();
+    data.savedAt = new Date().toISOString();
+    data.isProgress = true; // 標記為進度保存，非完整記錄
+    localStorage.setItem('dcf_current_progress', JSON.stringify(data));
+}
+
+// 恢復進度
+function loadProgress() {
+    const progress = localStorage.getItem('dcf_current_progress');
+    if (progress) {
+        const data = JSON.parse(progress);
+        loadReportData(data);
+        console.log('已恢復上次填寫進度');
+    }
+}
+
 function saveAndCalculate() {
-    saveData();
+    // 保存為完整記錄
+    const data = collectFormData();
+    data.username = currentUser.username;
+    data.savedAt = new Date().toISOString();
+    data.reportId = Date.now().toString();
+    data.isComplete = true; // 標記為完整記錄
+    
+    reports.push(data);
+    localStorage.setItem('dcf_reports', JSON.stringify(reports));
+    
+    // 清除進度保存
+    localStorage.removeItem('dcf_current_progress');
+    
+    alert('保存成功！');
+    if (currentRole === 'user') loadUserHistory();
+    
     showTab(3);
     setTimeout(() => calculate(), 100);
 }
