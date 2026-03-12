@@ -613,7 +613,7 @@ function calculate() {
     };
 
     // ========== 生成資產明細表 ==========
-    generateAssetTable(age, retire, life, assets, income, expense, replacement, retireReturn, rate, inflation, inflationMedical, totalEducationExpense, totalLoanPayment, totalLargeExpense, pension, totalPension);
+    generateAssetTable(age, retire, life, assets, income, expense, replacement, retireReturn, rate, inflation, inflationMedical, totalEducationExpense, totalLoanPayment, totalLargeExpense, pension, totalPension, legacy);
 
     // 更新按鈕文字為「重算」
     const calcButton = document.getElementById('calcButton');
@@ -621,7 +621,7 @@ function calculate() {
 }
 
 // 生成資產明細表
-function generateAssetTable(age, retire, life, initialAssets, income, expense, replacement, retireReturn, workRate, inflation, inflationMedical, totalEducationExpense, totalLoanPayment, totalLargeExpense, pension, totalPension) {
+function generateAssetTable(age, retire, life, initialAssets, income, expense, replacement, retireReturn, workRate, inflation, inflationMedical, totalEducationExpense, totalLoanPayment, totalLargeExpense, pension, totalPension, legacy) {
     const tableBody = document.getElementById('assetTableBody');
     if (!tableBody) return;
 
@@ -631,10 +631,33 @@ function generateAssetTable(age, retire, life, initialAssets, income, expense, r
     const workYears = retire - age;
     const retireYears = life - retire;
 
+    // 獲取大額支出明細（按年份）
+    const largeExpensesByYear = {};
+    const expenseCards = document.querySelectorAll('[id^="expense_"]');
+    expenseCards.forEach(card => {
+        const id = card.id.replace('expense_', '');
+        const amount = parseFloat(document.getElementById(`exp_amount_${id}`)?.value) || 0;
+        const type = document.getElementById(`exp_type_${id}`)?.value || '現值';
+        const year = parseInt(document.getElementById(`exp_year_${id}`)?.value) || 0;
+        
+        if (amount > 0 && year > 0) {
+            const yearsFromNow = year - currentYear;
+            if (yearsFromNow >= 0 && yearsFromNow < workYears) {
+                let finalAmount = amount;
+                if (type === '現值') {
+                    finalAmount = amount * Math.pow(1 + inflation, yearsFromNow);
+                }
+                if (!largeExpensesByYear[yearsFromNow]) {
+                    largeExpensesByYear[yearsFromNow] = 0;
+                }
+                largeExpensesByYear[yearsFromNow] += finalAmount;
+            }
+        }
+    });
+
     // 計算每年的支出分攤
     const annualEducation = totalEducationExpense / workYears;
     const annualLoan = totalLoanPayment / workYears;
-    const annualLarge = totalLargeExpense / workYears;
 
     // 工作期
     for (let i = 0; i < workYears; i++) {
@@ -642,8 +665,11 @@ function generateAssetTable(age, retire, life, initialAssets, income, expense, r
         const currentAge = age + i;
         const startAsset = asset;
 
-        // 當年支出
-        const yearExpense = expense + annualEducation + annualLoan + annualLarge;
+        // 當年大額支出（如果有）
+        const yearLargeExpense = largeExpensesByYear[i] || 0;
+
+        // 當年支出 = 生活費 + 教育 + 貸款 + 大額支出（計入總額，不單獨顯示）
+        const yearExpense = expense + annualEducation + annualLoan + yearLargeExpense;
 
         // 投資收益
         const investmentIncome = startAsset * workRate;
@@ -656,6 +682,12 @@ function generateAssetTable(age, retire, life, initialAssets, income, expense, r
 
         const row = document.createElement('tr');
         row.style.background = i % 2 === 0 ? '#f8f9fa' : 'white';
+        
+        // 如果有大額支出，高亮顯示
+        if (yearLargeExpense > 0) {
+            row.style.background = '#fff3cd';
+        }
+        
         row.innerHTML = `
             <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${year}</td>
             <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${currentAge}</td>
@@ -700,8 +732,19 @@ function generateAssetTable(age, retire, life, initialAssets, income, expense, r
         // 年終資產
         asset = startAsset + assetChange;
 
+        // 最後一年（90歲）強制設置為傳承目標
+        if (i === retireYears - 1) {
+            asset = legacy;
+        }
+
         const row = document.createElement('tr');
         row.style.background = (workYears + i) % 2 === 0 ? '#f8f9fa' : 'white';
+        
+        // 最後一年高亮
+        if (i === retireYears - 1) {
+            row.style.background = '#d4edda';
+        }
+        
         row.innerHTML = `
             <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${year}</td>
             <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${currentAge}</td>
@@ -711,7 +754,7 @@ function generateAssetTable(age, retire, life, initialAssets, income, expense, r
             <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${Math.round(investmentIncome).toLocaleString()}</td>
             <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${(retireReturn * 100).toFixed(2)}%</td>
             <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${Math.round(assetChange).toLocaleString()}</td>
-            <td style="padding: 8px; border: 1px solid #ddd; text-align: right; font-weight: bold;">${Math.round(asset).toLocaleString()}</td>
+            <td style="padding: 8px; border: 1px solid #ddd; text-align: right; font-weight: bold;">${Math.round(asset).toLocaleString()}${i === retireYears - 1 ? '<br><small>(傳承目標)</small>' : ''}</td>
         `;
         tableBody.appendChild(row);
     }
