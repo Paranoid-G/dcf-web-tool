@@ -335,36 +335,59 @@ function saveData() {
 
 function collectFormData() {
     const data = {
-        client_name: document.getElementById('client_name').value,
-        birth_date: document.getElementById('birth_date').value,
-        current_age: document.getElementById('current_age').value,
-        marital: document.getElementById('marital').value,
-        assets: document.getElementById('assets').value,
-        income: document.getElementById('income').value,
-        expense: document.getElementById('expense').value,
-        child_count: document.getElementById('child_count').value,
-        loan_count: document.getElementById('loan_count').value,
-        retire_age: document.getElementById('retire_age').value,
-        replacement: document.getElementById('replacement').value,
-        retire_return: document.getElementById('retire_return').value,
-        legacy: document.getElementById('legacy').value,
-        mpf: document.getElementById('mpf').value,
-        company_pension: document.getElementById('company_pension').value,
-        pension: document.getElementById('pension').value,
-        annuity: document.getElementById('annuity').value,
-        other_pension: document.getElementById('other_pension').value,
-        other_pension_note: document.getElementById('other_pension_note').value,
-        life_expect: document.getElementById('life_expect').value,
-        inflation: document.getElementById('inflation').value,
-        edu_inflation: document.getElementById('edu_inflation').value
+        client_name: document.getElementById('client_name')?.value || '',
+        birth_date: document.getElementById('birth_date')?.value || '',
+        current_age: document.getElementById('current_age')?.value || '',
+        marital_status: document.getElementById('marital_status')?.value || '',
+        initial_assets: document.getElementById('initial_assets')?.value || '',
+        annual_income: document.getElementById('annual_income')?.value || '',
+        living_expense: document.getElementById('living_expense')?.value || '',
+        child_count: document.getElementById('child_count')?.value || '0',
+        loan_count: document.getElementById('loan_count')?.value || '0',
+        retirement_age: document.getElementById('retirement_age')?.value || '',
+        replacement_rate: document.getElementById('replacement_rate')?.value || '',
+        retirement_return: document.getElementById('retirement_return')?.value || '',
+        legacy_goal: document.getElementById('legacy_goal')?.value || '',
+        mpf: document.getElementById('mpf')?.value || '0',
+        company_pension: document.getElementById('company_pension')?.value || '0',
+        pension: document.getElementById('pension')?.value || '0',
+        annuity: document.getElementById('annuity')?.value || '0',
+        other_pension: document.getElementById('other_pension')?.value || '0',
+        other_pension_note: document.getElementById('other_pension_note')?.value || '',
+        life_expectancy: document.getElementById('life_expectancy')?.value || '',
+        inflation_general: document.getElementById('inflation_general')?.value || '',
+        inflation_edu: document.getElementById('inflation_edu')?.value || '',
+        inflation_medical: document.getElementById('inflation_medical')?.value || ''
     };
     return data;
 }
 
 function loadReportData(report) {
+    // ID 映射表（舊版本兼容）
+    const idMapping = {
+        'marital': 'marital_status',
+        'assets': 'initial_assets',
+        'income': 'annual_income',
+        'expense': 'living_expense',
+        'retire_age': 'retirement_age',
+        'replacement': 'replacement_rate',
+        'retire_return': 'retirement_return',
+        'legacy': 'legacy_goal',
+        'life_expect': 'life_expectancy',
+        'inflation': 'inflation_general',
+        'edu_inflation': 'inflation_edu'
+    };
+    
     Object.keys(report).forEach(key => {
-        const el = document.getElementById(key);
-        if (el) el.value = report[key];
+        // 嘗試直接匹配
+        let el = document.getElementById(key);
+        // 如果沒有，嘗試映射後的 ID
+        if (!el && idMapping[key]) {
+            el = document.getElementById(idMapping[key]);
+        }
+        if (el && report[key] !== undefined && report[key] !== null) {
+            el.value = report[key];
+        }
     });
     updateAge();
     updateChildren();
