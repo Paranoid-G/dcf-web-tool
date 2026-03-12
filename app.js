@@ -347,8 +347,9 @@ function loadUserHistory() {
     });
 }
 
-// ==================== DCF 計算 ====================
+// ==================== DCF 計算 v2.2.0 ====================
 function calculate() {
+    // 基本參數
     const age = parseInt(document.getElementById('current_age').value) || 45;
     const retire = parseInt(document.getElementById('retirement_age').value) || 55;
     const assets = parseFloat(document.getElementById('initial_assets').value) || 1000;
@@ -359,6 +360,8 @@ function calculate() {
     const legacy = parseFloat(document.getElementById('legacy_goal').value) || 1000;
     const life = parseInt(document.getElementById('life_expectancy').value) || 90;
     const inflation = parseFloat(document.getElementById('inflation_general').value) / 100 || 0.03;
+    const inflationEdu = parseFloat(document.getElementById('inflation_edu').value) / 100 || 0.05;
+    const inflationMedical = parseFloat(document.getElementById('inflation_medical').value) / 100 || 0.05;
 
     const workYears = retire - age;
     const retireYears = life - retire;
@@ -368,7 +371,84 @@ function calculate() {
         return;
     }
 
-    // 第二階段：計算退休時需要的資產
+    // ========== 計算子女教育支出 ==========
+    let totalEducationExpense = 0;
+    const childCount = parseInt(document.getElementById('child_count').value) || 0;
+    
+    for (let i = 0; i < childCount; i++) {
+        const birthDate = document.getElementById(`child_birth_${i}`)?.value;
+        if (!birthDate) continue;
+        
+        const birth = new Date(birthDate);
+        const today = new Date();
+        let childAge = today.getFullYear() - birth.getFullYear();
+        const m = today.getMonth() - birth.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) childAge--;
+        
+        // 計算每個學段的年數和費用
+        const eduStages = [
+            { ageStart: 6, ageEnd: 12, field: 'edu_primary', years: 6 },
+            { ageStart: 12, ageEnd: 15, field: 'edu_middle', years: 3 },
+            { ageStart: 15, ageEnd: 18, field: 'edu_high', years: 3 },
+            { ageStart: 18, ageEnd: 22, field: 'edu_college', years: 4 },
+            { ageStart: 22, ageEnd: 25, field: 'edu_master', years: 3 },
+            { ageStart: 25, ageEnd: 28, field: 'edu_phd', years: 3 }
+        ];
+        
+        for (const stage of eduStages) {
+            if (childAge < stage.ageEnd && childAge >= stage.ageStart - workYears) {
+                const fee = parseFloat(document.getElementById(stage.field)?.value) || 0;
+                if (fee > 0) {
+                    // 計算從當前到退休前，這個學段的剩餘年數
+                    const yearsInWork = Math.min(stage.ageEnd - Math.max(childAge, stage.ageStart), workYears);
+                    for (let y = 0; y < yearsInWork && (childAge + y) < retire; y++) {
+                        const yearExpense = fee * Math.pow(1 + inflationEdu, y);
+                        totalEducationExpense += yearExpense;
+                    }
+                }
+            }
+        }
+    }
+
+    // ========== 計算貸款還款 ==========
+    let totalLoanPayment = 0;
+    const loanCount = parseInt(document.getElementById('loan_count').value) || 0;
+    
+    for (let i = 0; i < loanCount; i++) {
+        const payment = parseFloat(document.getElementById(`loan_payment_${i}`)?.value) || 0;
+        const years = parseInt(document.getElementById(`loan_years_${i}`)?.value) || 0;
+        // 只計算退休前的還款
+        const yearsToPay = Math.min(years, workYears);
+        totalLoanPayment += payment * yearsToPay;
+    }
+
+    // ========== 計算大額支出 ==========
+    let totalLargeExpense = 0;
+    const expenseCards = document.querySelectorAll('[id^="expense_"]');
+    
+    expenseCards.forEach(card => {
+        const id = card.id.replace('expense_', '');
+        const amount = parseFloat(document.getElementById(`exp_amount_${id}`)?.value) || 0;
+        const type = document.getElementById(`exp_type_${id}`)?.value || '現值';
+        const year = parseInt(document.getElementById(`exp_year_${id}`)?.value) || 0;
+        
+        if (amount > 0 && year > 0) {
+            const currentYear = new Date().getFullYear();
+            const yearsFromNow = year - currentYear;
+            
+            if (yearsFromNow >= 0 && yearsFromNow < workYears) {
+                if (type === '現值') {
+                    // 現值：按通脹增長到支出年份
+                    totalLargeExpense += amount * Math.pow(1 + inflation, yearsFromNow);
+                } else {
+                    // 終值：直接使用
+                    totalLargeExpense += amount;
+                }
+            }
+        }
+    });
+
+    // ========== 第二階段：計算退休時需要的資產 ==========
     const retireExpenseYear1 = income * replacement * Math.pow(1 + inflation, workYears);
 
     // 減去退休金來源
@@ -381,23 +461,44 @@ function calculate() {
 
     const netRetireExpense = Math.max(0, retireExpenseYear1 - totalPension);
 
+    // 計算退休期醫療支出（使用醫療通脹）
+    let totalMedicalExpense = 0;
+    for (let i = 0; i < retireYears; i++) {
+        const ageAtYear = retire + i;
+        let baseMedical = 0;
+        if (ageAtYear < 65) baseMedical = 11;
+        else if (ageAtYear < 75) baseMedical = 25;
+        else if (ageAtYear < 85) baseMedical = 53;
+        else baseMedical = 85;
+        totalMedicalExpense += baseMedical * Math.pow(1 + inflationMedical, i);
+    }
+
     let neededAtRetire;
     if (retireReturn === 0) {
-        neededAtRetire = netRetireExpense * retireYears + legacy;
+        neededAtRetire = (netRetireExpense * retireYears) + totalMedicalExpense + legacy;
     } else {
         const annuityFactor = (1 - Math.pow(1 + retireReturn, -retireYears)) / retireReturn;
         const pvExpenses = netRetireExpense * annuityFactor;
+        const pvMedical = totalMedicalExpense / Math.pow(1 + retireReturn, retireYears / 2); // 簡化計算
         const pvLegacy = legacy / Math.pow(1 + retireReturn, retireYears);
-        neededAtRetire = pvExpenses + pvLegacy;
+        neededAtRetire = pvExpenses + pvMedical + pvLegacy;
     }
 
-    // 第一階段：計算工作期要求回報率
+    // ========== 第一階段：計算工作期要求回報率 ==========
     const annualSavings = income - expense;
 
     function calcRetireAsset(rate) {
         let asset = assets;
         for (let year = 1; year <= workYears; year++) {
-            asset = asset * (1 + rate) + annualSavings;
+            // 每年淨儲蓄 = 收入 - 支出 - 教育支出分攤 - 貸款還款分攤 - 大額支出分攤
+            let yearExpense = expense;
+            
+            // 簡化：將總教育支出、貸款、大額支出平均分攤到工作年限
+            yearExpense += totalEducationExpense / workYears;
+            yearExpense += totalLoanPayment / workYears;
+            yearExpense += totalLargeExpense / workYears;
+            
+            asset = asset * (1 + rate) + (income - yearExpense);
         }
         return asset;
     }
