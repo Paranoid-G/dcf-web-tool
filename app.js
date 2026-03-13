@@ -16,9 +16,14 @@ let currentReportId = null;
 document.addEventListener('DOMContentLoaded', async function() {
     // 更新標題和版本號
     document.title = `DCF 財富規劃工具 ${APP_VERSION} - 香港雲杉財富`;
-    const mainTitle = document.querySelector('h1');
+    console.log('正在更新版本號:', APP_VERSION);
+    
+    const mainTitle = document.querySelector('.header h1');
     if (mainTitle) {
         mainTitle.innerHTML = `💰 DCF 財富規劃工具 ${APP_VERSION}`;
+        console.log('已更新標題:', mainTitle.innerHTML);
+    } else {
+        console.log('沒有找到 h1 元素');
     }
     
     const fillDateEl = document.getElementById('fill_date');
