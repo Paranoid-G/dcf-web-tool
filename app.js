@@ -207,6 +207,8 @@ async function saveAndCalculate() {
     const token = localStorage.getItem('dcf_token');
     const data = collectFormData();
     
+    console.log('正在保存數據...', data);
+    
     try {
         const response = await fetch(`${API_BASE_URL}/reports`, {
             method: 'POST',
@@ -217,17 +219,21 @@ async function saveAndCalculate() {
             body: JSON.stringify({ data, isComplete: true })
         });
         
+        console.log('API 響應狀態:', response.status);
+        
         const result = await response.json();
+        console.log('API 返回結果:', result);
         
         if (result.success) {
             alert('保存成功！');
-            loadUserHistory();
+            await loadUserHistory();
             showTab(3);
             setTimeout(() => calculate(), 100);
         } else {
-            alert(result.error || '保存失敗');
+            alert('保存失敗：' + (result.error || '未知錯誤'));
         }
     } catch (error) {
+        console.error('保存失敗:', error);
         alert('保存失敗：' + error.message);
     }
 }
@@ -518,20 +524,32 @@ function loadReportData(report) {
 
 async function loadUserHistory() {
     const token = localStorage.getItem('dcf_token');
-    if (!token) return;
+    if (!token) {
+        console.log('沒有 token，無法載入歷史');
+        return;
+    }
+    
+    console.log('正在載入歷史記錄...');
     
     try {
         const response = await fetch(`${API_BASE_URL}/reports`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         
+        console.log('載入歷史響應狀態:', response.status);
+        
         const data = await response.json();
+        console.log('載入歷史返回數據:', data);
+        
         const list = document.getElementById('historyList');
         
-        list.innerHTML = data.reports.length === 0 
-            ? '<p style="text-align:center;color:#666;">暫無歷史記錄</p>' 
-            : '';
+        if (!data.reports || data.reports.length === 0) {
+            list.innerHTML = '<p style="text-align:center;color:#666;">暫無歷史記錄</p>';
+            console.log('沒有歷史記錄');
+            return;
+        }
         
+        list.innerHTML = '';
         data.reports.forEach((r, i) => {
             const item = document.createElement('div');
             item.className = 'history-item';
@@ -544,6 +562,8 @@ async function loadUserHistory() {
             };
             list.appendChild(item);
         });
+        
+        console.log('歷史記錄載入完成，共', data.reports.length, '條');
     } catch (error) {
         console.error('載入歷史記錄失敗：', error);
     }
