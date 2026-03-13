@@ -1,7 +1,4 @@
-// DCF 財富規劃工具 v2.3.1 - 主要腳本（雲端版）
-
-// ==================== API 配置 ====================
-const API_BASE_URL = 'https://api.sgwm.cloud/api';
+// DCF 財富規劃工具 v2.1.4 - 主要腳本
 
 // ==================== 全局變量 ====================
 let currentUser = null;
@@ -9,30 +6,28 @@ let currentRole = 'user';
 let expenseCount = 0;
 let currentReportId = null;
 
-// ==================== DOM 載入初始化 ====================
-document.addEventListener('DOMContentLoaded', async function() {
+// 數據存儲
+const users = JSON.parse(localStorage.getItem('dcf_users') || '[]');
+const reports = JSON.parse(localStorage.getItem('dcf_reports') || '[]');
+
+// 初始化管理員
+if (!users.find(u => u.username === 'admin')) {
+    users.push({
+        username: 'admin',
+        phone: '00000000000',
+        email: 'admin@yunsan.com',
+        password: 'admin123',
+        role: 'admin',
+        createdAt: new Date().toISOString()
+    });
+    localStorage.setItem('dcf_users', JSON.stringify(users));
+}
+
+// 設置填表日期為當天
+document.addEventListener('DOMContentLoaded', function() {
     const fillDateEl = document.getElementById('fill_date');
     if (fillDateEl) {
         fillDateEl.value = new Date().toLocaleDateString('zh-CN');
-    }
-    
-    // 檢查本地 token
-    const token = localStorage.getItem('dcf_token');
-    if (token) {
-        try {
-            const response = await fetch(`${API_BASE_URL}/me`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            const data = await response.json();
-            if (data.user) {
-                currentUser = data.user;
-                currentRole = data.user.role;
-                showMainApp();
-            }
-        } catch (error) {
-            console.error('自動登錄失敗：', error);
-            localStorage.removeItem('dcf_token');
-        }
     }
 });
 
@@ -62,7 +57,7 @@ function showLogin() {
     document.getElementById('loginTitle').textContent = '用戶登錄';
 }
 
-async function register() {
+function register() {
     const username = document.getElementById('regUsername').value;
     const phone = document.getElementById('regPhone').value;
     const email = document.getElementById('regEmail').value;
@@ -81,77 +76,52 @@ async function register() {
         alert('兩次密碼不一致');
         return;
     }
-
-    try {
-        const response = await fetch(`${API_BASE_URL}/register`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, email, phone, password })
-        });
-        
-        const data = await response.json();
-        
-        if (data.success) {
-            alert('註冊成功！請登錄');
-            showLogin();
-        } else {
-            alert(data.error || '註冊失敗');
-        }
-    } catch (error) {
-        alert('註冊失敗：' + error.message);
+    if (users.find(u => u.username === username)) {
+        alert('用戶名已存在');
+        return;
     }
-}
-
-async function login() {
-    const account = document.getElementById('loginAccount').value;
-    const password = document.getElementById('loginPassword').value;
-
-    if (!account || !password) {
-        alert('請填寫賬號和密碼');
+    if (users.find(u => u.phone === phone)) {
+        alert('手機號已被註冊');
+        return;
+    }
+    if (users.find(u => u.email === email)) {
+        alert('郵箱已被註冊');
         return;
     }
 
-    try {
-        const response = await fetch(`${API_BASE_URL}/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username: account, password })
-        });
-        
-        const data = await response.json();
-        
-        if (data.success) {
-            localStorage.setItem('dcf_token', data.token);
-            localStorage.setItem('dcf_user', JSON.stringify(data.user));
-            
-            currentUser = data.user;
-            currentRole = data.user.role;
-            showMainApp();
-        } else {
-            alert(data.error || '登錄失敗');
-        }
-    } catch (error) {
-        alert('登錄失敗：' + error.message);
+    users.push({
+        username, phone, email, password,
+        role: 'user',
+        createdAt: new Date().toISOString()
+    });
+    localStorage.setItem('dcf_users', JSON.stringify(users));
+    alert('註冊成功！請登錄');
+    showLogin();
+}
+
+function login() {
+    const account = document.getElementById('loginAccount').value;
+    const password = document.getElementById('loginPassword').value;
+
+    const user = users.find(u =>
+        (u.username === account || u.phone === account || u.email === account)
+        && u.password === password
+    );
+
+    if (!user) {
+        alert('賬號或密碼錯誤');
+        return;
     }
-}
 
-function logout() {
-    currentUser = null;
-    currentRole = 'user';
-    localStorage.removeItem('dcf_token');
-    localStorage.removeItem('dcf_user');
-    document.getElementById('mainApp').classList.add('hidden');
-    document.getElementById('loginPage').classList.remove('hidden');
-}
+    currentUser = user;
+    currentRole = user.role;
 
-function showMainApp() {
     document.getElementById('loginPage').classList.add('hidden');
     document.getElementById('mainApp').classList.remove('hidden');
-    
-    document.getElementById('currentUser').textContent = `歡迎，${currentUser.username}`;
-    document.getElementById('userRole').textContent = currentUser.role === 'admin' ? '管理員' : '普通用戶';
+    document.getElementById('currentUser').textContent = `歡迎，${user.username}`;
+    document.getElementById('userRole').textContent = user.role === 'admin' ? '管理員' : '普通用戶';
 
-    if (currentUser.role === 'admin') {
+    if (user.role === 'admin') {
         document.getElementById('userTabs').classList.add('hidden');
         document.getElementById('adminTabs').classList.remove('hidden');
         loadAdminData();
@@ -159,8 +129,25 @@ function showMainApp() {
         document.getElementById('userTabs').classList.remove('hidden');
         document.getElementById('adminTabs').classList.add('hidden');
         loadUserHistory();
-        loadProgress();
+        
+        // 優先恢復進度保存，如果沒有則載入最新完整記錄
+        const progress = localStorage.getItem('dcf_current_progress');
+        if (progress) {
+            const data = JSON.parse(progress);
+            loadReportData(data);
+            console.log('已恢復上次填寫進度');
+        } else {
+            const latestReport = reports.filter(r => r.username === user.username && r.isComplete).pop();
+            if (latestReport) loadReportData(latestReport);
+        }
     }
+}
+
+function logout() {
+    currentUser = null;
+    currentRole = 'user';
+    document.getElementById('mainApp').classList.add('hidden');
+    document.getElementById('loginPage').classList.remove('hidden');
 }
 
 // ==================== 標籤切換 ====================
@@ -198,38 +185,25 @@ function loadProgress() {
     }
 }
 
-async function saveAndCalculate() {
-    if (!currentUser) {
-        alert('請先登錄');
-        return;
-    }
-    
-    const token = localStorage.getItem('dcf_token');
+function saveAndCalculate() {
+    // 保存為完整記錄
     const data = collectFormData();
+    data.username = currentUser.username;
+    data.savedAt = new Date().toISOString();
+    data.reportId = Date.now().toString();
+    data.isComplete = true; // 標記為完整記錄
     
-    try {
-        const response = await fetch(`${API_BASE_URL}/reports`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({ data, isComplete: true })
-        });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-            alert('保存成功！');
-            loadUserHistory();
-            showTab(3);
-            setTimeout(() => calculate(), 100);
-        } else {
-            alert(result.error || '保存失敗');
-        }
-    } catch (error) {
-        alert('保存失敗：' + error.message);
-    }
+    reports.push(data);
+    localStorage.setItem('dcf_reports', JSON.stringify(reports));
+    
+    // 清除進度保存
+    localStorage.removeItem('dcf_current_progress');
+    
+    alert('保存成功！');
+    if (currentRole === 'user') loadUserHistory();
+    
+    showTab(3);
+    setTimeout(() => calculate(), 100);
 }
 
 function showAdminTab(n) {
@@ -516,37 +490,24 @@ function loadReportData(report) {
     updateAge();
 }
 
-async function loadUserHistory() {
-    const token = localStorage.getItem('dcf_token');
-    if (!token) return;
-    
-    try {
-        const response = await fetch(`${API_BASE_URL}/reports`, {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-        
-        const data = await response.json();
-        const list = document.getElementById('historyList');
-        
-        list.innerHTML = data.reports.length === 0 
-            ? '<p style="text-align:center;color:#666;">暫無歷史記錄</p>' 
-            : '';
-        
-        data.reports.forEach((r, i) => {
-            const item = document.createElement('div');
-            item.className = 'history-item';
-            item.innerHTML = `<strong>記錄 ${i+1}</strong><br><small>${new Date(r.created_at).toLocaleString()}</small>`;
-            item.onclick = () => {
-                document.querySelectorAll('.history-item').forEach(x => x.classList.remove('active'));
-                item.classList.add('active');
-                loadReportData(r.data);
-                showTab(0);
-            };
-            list.appendChild(item);
-        });
-    } catch (error) {
-        console.error('載入歷史記錄失敗：', error);
-    }
+function loadUserHistory() {
+    const list = document.getElementById('historyList');
+    const userReports = reports.filter(r => r.username === currentUser.username);
+
+    list.innerHTML = userReports.length === 0 ? '<p style="text-align:center;color:#666;">暫無歷史記錄</p>' : '';
+
+    userReports.forEach((r, i) => {
+        const item = document.createElement('div');
+        item.className = 'history-item';
+        item.innerHTML = `<strong>記錄 ${i+1}</strong><br><small>${new Date(r.savedAt).toLocaleString()}</small>`;
+        item.onclick = () => {
+            document.querySelectorAll('.history-item').forEach(x => x.classList.remove('active'));
+            item.classList.add('active');
+            loadReportData(r);
+            showTab(0);
+        };
+        list.appendChild(item);
+    });
 }
 
 // ==================== DCF 計算 v2.2.0 ====================
