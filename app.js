@@ -1,4 +1,7 @@
-// DCF 財富規劃工具 v2.3.1 - 主要腳本（雲端版）
+// DCF 財富規劃工具 - 主要腳本（雲端版）
+
+// ==================== 版本號 ====================
+const APP_VERSION = 'v2.3.2';
 
 // ==================== API 配置 ====================
 const API_BASE_URL = 'https://api.sgwm.cloud/api';
@@ -11,6 +14,13 @@ let currentReportId = null;
 
 // ==================== DOM 載入初始化 ====================
 document.addEventListener('DOMContentLoaded', async function() {
+    // 更新標題和版本號
+    document.title = `DCF 財富規劃工具 ${APP_VERSION} - 香港雲杉財富`;
+    const mainTitle = document.querySelector('h1');
+    if (mainTitle) {
+        mainTitle.innerHTML = `💰 DCF 財富規劃工具 ${APP_VERSION}`;
+    }
+    
     const fillDateEl = document.getElementById('fill_date');
     if (fillDateEl) {
         fillDateEl.value = new Date().toLocaleDateString('zh-CN');
