@@ -198,25 +198,38 @@ function loadProgress() {
     }
 }
 
-function saveAndCalculate() {
-    // 保存為完整記錄
+async function saveAndCalculate() {
+    if (!currentUser) {
+        alert('請先登錄');
+        return;
+    }
+    
+    const token = localStorage.getItem('dcf_token');
     const data = collectFormData();
-    data.username = currentUser.username;
-    data.savedAt = new Date().toISOString();
-    data.reportId = Date.now().toString();
-    data.isComplete = true; // 標記為完整記錄
     
-    reports.push(data);
-    localStorage.setItem('dcf_reports', JSON.stringify(reports));
-    
-    // 清除進度保存
-    localStorage.removeItem('dcf_current_progress');
-    
-    alert('保存成功！');
-    if (currentRole === 'user') loadUserHistory();
-    
-    showTab(3);
-    setTimeout(() => calculate(), 100);
+    try {
+        const response = await fetch(`${API_BASE_URL}/reports`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ data, isComplete: true })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            alert('保存成功！');
+            loadUserHistory();
+            showTab(3);
+            setTimeout(() => calculate(), 100);
+        } else {
+            alert(result.error || '保存失敗');
+        }
+    } catch (error) {
+        alert('保存失敗：' + error.message);
+    }
 }
 
 function showAdminTab(n) {
