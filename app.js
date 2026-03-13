@@ -1,7 +1,7 @@
 // DCF 財富規劃工具 v2.3.0 - 主要腳本（雲端版）
 
 // ==================== API 配置 ====================
-const API_BASE_URL = 'http://47.107.177.198:3000/api';
+const API_BASE_URL = 'https://api.sgwm.cloud/api';
 
 // ==================== 全局變量 ====================
 let currentUser = null;
