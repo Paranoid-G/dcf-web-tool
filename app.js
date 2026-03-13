@@ -224,6 +224,7 @@ async function saveAndCalculate() {
     
     const token = localStorage.getItem('dcf_token');
     const data = collectFormData();
+    data.username = currentUser.username; // 添加用戶名
     
     console.log('正在保存數據...', data);
     
