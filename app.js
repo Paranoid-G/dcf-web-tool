@@ -1,7 +1,7 @@
 // DCF 財富規劃工具 - 主要腳本（雲端版）
 
 // ==================== 版本號 ====================
-const APP_VERSION = 'v2.3.4';
+const APP_VERSION = 'v2.4.1';
 
 // ==================== API 配置 ====================
 const API_BASE_URL = 'https://api.sgwm.cloud/api';
@@ -247,7 +247,14 @@ async function saveAndCalculate() {
             alert('保存成功！');
             await loadUserHistory();
             showTab(3);
-            setTimeout(() => calculate(), 100);
+            // 延遲執行計算，確保 DOM 已更新
+            setTimeout(() => {
+                console.log('[DEBUG] setTimeout 觸發，準備調用 calculate()');
+                console.log('[DEBUG] result_container 元素:', document.getElementById('result_container'));
+                console.log('[DEBUG] required_return 元素:', document.getElementById('required_return'));
+                calculate();
+                console.log('[DEBUG] calculate() 已執行');
+            }, 500);
         } else {
             alert('保存失敗：' + (result.error || '未知錯誤'));
         }
@@ -287,15 +294,73 @@ function updateChildren() {
                     </div>
                     <div class="form-group">
                         <label>出生日期</label>
-                        <input type="date" id="child_birth_${i}" value="2010-01-01" onchange="calcChildAge(${i})">
+                        <input type="date" id="child_birth_${i}" value="2010-01-01" onchange="calcChildAge(${i}); calcSchoolStartDate(${i});">
                     </div>
                     <div class="form-group">
                         <label>當前年齡</label>
                         <input type="number" id="child_age_${i}" class="auto-calc" readonly placeholder="自動計算">
                     </div>
                 </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>入學日期</label>
+                        <input type="date" id="child_school_start_${i}" readonly placeholder="自動計算">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>小學年數</label>
+                        <input type="number" id="child_primary_years_${i}" value="6" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label>初中年數</label>
+                        <input type="number" id="child_middle_years_${i}" value="3" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label>高中年數</label>
+                        <input type="number" id="child_high_years_${i}" value="3" min="0">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>大學年數</label>
+                        <input type="number" id="child_college_years_${i}" value="4" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label>研究生年數</label>
+                        <input type="number" id="child_master_years_${i}" value="2" min="0">
+                    </div>
+                </div>
             </div>`;
     }
+}
+
+// 計算入學日期（9月1日前滿6周歲的當年）
+function calcSchoolStartDate(index) {
+    const birthDateInput = document.getElementById(`child_birth_${index}`);
+    const schoolStartInput = document.getElementById(`child_school_start_${index}`);
+    if (!birthDateInput || !schoolStartInput) return;
+    
+    const birthDate = new Date(birthDateInput.value);
+    if (isNaN(birthDate.getTime())) return;
+    
+    // 計算6歲生日
+    const sixYearBirthday = new Date(birthDate);
+    sixYearBirthday.setFullYear(birthDate.getFullYear() + 6);
+    
+    // 計算當年9月1日
+    const sept1 = new Date(sixYearBirthday.getFullYear(), 8, 1); // 月份從0開始，8=9月
+    
+    // 如果6歲生日在9月1日或之前，入學日期為當年9月1日
+    // 否則為明年9月1日
+    let schoolStart;
+    if (sixYearBirthday <= sept1) {
+        schoolStart = sept1;
+    } else {
+        schoolStart = new Date(sixYearBirthday.getFullYear() + 1, 8, 1);
+    }
+    
+    schoolStartInput.value = schoolStart.toISOString().split('T')[0];
 }
 
 // 計算子女年齡
@@ -441,11 +506,12 @@ function collectFormData() {
     data.expenses = [];
     expenseCards.forEach(card => {
         const id = card.id.replace('expense_', '');
+        const name = document.getElementById(`exp_name_${id}`)?.value || '';
         const amount = document.getElementById(`exp_amount_${id}`)?.value || '';
         const type = document.getElementById(`exp_type_${id}`)?.value || '';
         const year = document.getElementById(`exp_year_${id}`)?.value || '';
-        if (amount || type || year) {
-            data.expenses.push({ id, amount, type, year });
+        if (amount || type || year || name) {
+            data.expenses.push({ id, name, amount, type, year });
         }
     });
     
@@ -468,10 +534,12 @@ function loadReportData(report) {
         'edu_inflation': 'inflation_edu'
     };
     
-    // 先設置基本欄位（不包括子女、貸款相關的 count）
+    // 先設置基本欄位（不包括子女、貸款的動態欄位）
     Object.keys(report).forEach(key => {
-        // 跳過子女和貸款的動態欄位，後面單獨處理
-        if (key.startsWith('child_') || key.startsWith('loan_') || key === 'expenses') {
+        // 跳過子女和貸款的動態欄位（但要保留 count），後面單獨處理
+        if ((key.startsWith('child_') && key !== 'child_count') || 
+            (key.startsWith('loan_') && key !== 'loan_count') || 
+            key === 'expenses') {
             return;
         }
         
@@ -498,8 +566,26 @@ function loadReportData(report) {
         const ageEl = document.getElementById(`child_age_${i}`);
         
         if (genderEl && report[`child_gender_${i}`]) genderEl.value = report[`child_gender_${i}`];
-        if (birthEl && report[`child_birth_${i}`]) birthEl.value = report[`child_birth_${i}`];
+        if (birthEl && report[`child_birth_${i}`]) {
+            birthEl.value = report[`child_birth_${i}`];
+            // 重新計算年齡和入學日期
+            calcChildAge(i);
+            calcSchoolStartDate(i);
+        }
         if (ageEl && report[`child_age_${i}`]) ageEl.value = report[`child_age_${i}`];
+        
+        // 載入學制年數
+        const primaryYearsEl = document.getElementById(`child_primary_years_${i}`);
+        const middleYearsEl = document.getElementById(`child_middle_years_${i}`);
+        const highYearsEl = document.getElementById(`child_high_years_${i}`);
+        const collegeYearsEl = document.getElementById(`child_college_years_${i}`);
+        const masterYearsEl = document.getElementById(`child_master_years_${i}`);
+        
+        if (primaryYearsEl && report[`child_primary_years_${i}`]) primaryYearsEl.value = report[`child_primary_years_${i}`];
+        if (middleYearsEl && report[`child_middle_years_${i}`]) middleYearsEl.value = report[`child_middle_years_${i}`];
+        if (highYearsEl && report[`child_high_years_${i}`]) highYearsEl.value = report[`child_high_years_${i}`];
+        if (collegeYearsEl && report[`child_college_years_${i}`]) collegeYearsEl.value = report[`child_college_years_${i}`];
+        if (masterYearsEl && report[`child_master_years_${i}`]) masterYearsEl.value = report[`child_master_years_${i}`];
     }
     
     // 還原貸款資訊
@@ -528,10 +614,12 @@ function loadReportData(report) {
         report.expenses.forEach(exp => {
             addExpense();
             const id = expenseCount - 1;
+            const nameEl = document.getElementById(`exp_name_${id}`);
             const amountEl = document.getElementById(`exp_amount_${id}`);
             const typeEl = document.getElementById(`exp_type_${id}`);
             const yearEl = document.getElementById(`exp_year_${id}`);
             
+            if (nameEl) nameEl.value = exp.name || '';
             if (amountEl) amountEl.value = exp.amount || '';
             if (typeEl) typeEl.value = exp.type || '';
             if (yearEl) yearEl.value = exp.year || '';
@@ -549,6 +637,14 @@ async function loadUserHistory() {
     }
     
     console.log('正在載入歷史記錄...');
+    console.log('API_BASE_URL:', API_BASE_URL);
+    console.log('Token:', token.substring(0, 20) + '...');
+    
+    const list = document.getElementById('historyList');
+    if (!list) {
+        console.error('找不到 historyList 元素');
+        return;
+    }
     
     try {
         const response = await fetch(`${API_BASE_URL}/reports`, {
@@ -557,19 +653,39 @@ async function loadUserHistory() {
         
         console.log('載入歷史響應狀態:', response.status);
         
+        if (!response.ok) {
+            console.error('API 響應錯誤:', response.status, response.statusText);
+            list.innerHTML = `<p style="text-align:center;color:#666;">載入失敗 (${response.status})</p>`;
+            return;
+        }
+        
         const data = await response.json();
-        console.log('載入歷史返回數據:', data);
+        console.log('載入歷史返回數據:', JSON.stringify(data, null, 2));
+        console.log('data.reports:', data.reports);
+        console.log('data.reports 類型:', typeof data.reports);
+        console.log('data.reports 長度:', data.reports ? data.reports.length : 'N/A');
         
-        const list = document.getElementById('historyList');
+        if (!data.reports) {
+            list.innerHTML = '<p style="text-align:center;color:#666;">數據格式錯誤（缺少 reports）</p>';
+            console.log('data.reports 不存在');
+            return;
+        }
         
-        if (!data.reports || data.reports.length === 0) {
+        if (!Array.isArray(data.reports)) {
+            list.innerHTML = '<p style="text-align:center;color:#666;">數據格式錯誤（reports 不是數組）</p>';
+            console.log('data.reports 不是數組:', data.reports);
+            return;
+        }
+        
+        if (data.reports.length === 0) {
             list.innerHTML = '<p style="text-align:center;color:#666;">暫無歷史記錄</p>';
-            console.log('沒有歷史記錄');
+            console.log('reports 數組為空');
             return;
         }
         
         list.innerHTML = '';
         data.reports.forEach((r, i) => {
+            console.log(`處理記錄 ${i}:`, r.id, r.created_at);
             const item = document.createElement('div');
             item.className = 'history-item';
             item.innerHTML = `<strong>記錄 ${i+1}</strong><br><small>${new Date(r.created_at).toLocaleString()}</small>`;
@@ -585,11 +701,13 @@ async function loadUserHistory() {
         console.log('歷史記錄載入完成，共', data.reports.length, '條');
     } catch (error) {
         console.error('載入歷史記錄失敗：', error);
+        list.innerHTML = '<p style="text-align:center;color:#666;">載入失敗，請刷新重試</p>';
     }
 }
 
 // ==================== DCF 計算 v2.2.0 ====================
 function calculate() {
+    console.log('[DEBUG] calculate() 函數開始執行');
     // 基本參數
     const age = parseInt(document.getElementById('current_age').value) || 45;
     const retire = parseInt(document.getElementById('retirement_age').value) || 55;
@@ -725,19 +843,112 @@ function calculate() {
         neededAtRetire = pvExpenses + pvMedical + pvLegacy;
     }
 
+    // ========== 計算按年份的各項支出（供 calcRetireAsset 和 generateAssetTable 使用）==========
+    const educationByYear = {};
+    const loanByYear = {};
+    const largeExpensesByYear = {};
+    
+    // 計算子女教育支出（按年份）
+    for (let i = 0; i < childCount; i++) {
+        const birthDate = document.getElementById(`child_birth_${i}`)?.value;
+        const schoolStartDate = document.getElementById(`child_school_start_${i}`)?.value;
+        if (!birthDate || !schoolStartDate) continue;
+        
+        const primaryYears = parseInt(document.getElementById(`child_primary_years_${i}`)?.value) || 6;
+        const middleYears = parseInt(document.getElementById(`child_middle_years_${i}`)?.value) || 3;
+        const highYears = parseInt(document.getElementById(`child_high_years_${i}`)?.value) || 3;
+        const collegeYears = parseInt(document.getElementById(`child_college_years_${i}`)?.value) || 4;
+        const masterYears = parseInt(document.getElementById(`child_master_years_${i}`)?.value) || 2;
+        
+        const schoolStart = new Date(schoolStartDate);
+        const currentDate = new Date();
+        const startYearOffset = schoolStart.getFullYear() - currentDate.getFullYear();
+        
+        const eduStages = [
+            { field: 'edu_primary', years: primaryYears, startOffset: startYearOffset },
+            { field: 'edu_middle', years: middleYears, startOffset: startYearOffset + primaryYears },
+            { field: 'edu_high', years: highYears, startOffset: startYearOffset + primaryYears + middleYears },
+            { field: 'edu_college', years: collegeYears, startOffset: startYearOffset + primaryYears + middleYears + highYears },
+            { field: 'edu_master', years: masterYears, startOffset: startYearOffset + primaryYears + middleYears + highYears + collegeYears }
+        ];
+        
+        for (const stage of eduStages) {
+            const fee = parseFloat(document.getElementById(stage.field)?.value) || 0;
+            if (fee > 0 && stage.startOffset < workYears) {
+                const actualStart = Math.max(0, stage.startOffset);
+                const actualEnd = Math.min(stage.startOffset + stage.years, workYears);
+                
+                for (let y = actualStart; y < actualEnd; y++) {
+                    const yearExpense = fee * Math.pow(1 + inflationEdu, y);
+                    if (!educationByYear[y]) educationByYear[y] = 0;
+                    educationByYear[y] += yearExpense;
+                }
+            }
+        }
+    }
+    
+    // 計算貸款還款（按年份）- 使用已存在的 loanCount
+    for (let i = 0; i < loanCount; i++) {
+        const payment = parseFloat(document.getElementById(`loan_payment_${i}`)?.value) || 0;
+        const years = parseInt(document.getElementById(`loan_years_${i}`)?.value) || 0;
+        
+        if (payment > 0 && years > 0) {
+            for (let y = 0; y < years && y < workYears; y++) {
+                if (!loanByYear[y]) loanByYear[y] = 0;
+                loanByYear[y] += payment;
+            }
+        }
+    }
+    
+    // 計算大額支出（按年份）- 使用已存在的 expenseCards 或重新獲取
+    const largeExpenseCards = document.querySelectorAll('[id^="expense_"]');
+    largeExpenseCards.forEach(card => {
+        const id = card.id.replace('expense_', '');
+        const amount = parseFloat(document.getElementById(`exp_amount_${id}`)?.value) || 0;
+        const type = document.getElementById(`exp_type_${id}`)?.value || '現值';
+        const year = parseInt(document.getElementById(`exp_year_${id}`)?.value) || 0;
+        
+        if (amount > 0 && year > 0) {
+            const yearsFromNow = year - currentYear;
+            const totalYears = workYears + retireYears;
+            
+            if (yearsFromNow >= 0 && yearsFromNow < totalYears) {
+                let finalAmount = amount;
+                if (type === '現值') {
+                    finalAmount = amount * Math.pow(1 + inflation, yearsFromNow);
+                }
+                if (!largeExpensesByYear[yearsFromNow]) {
+                    largeExpensesByYear[yearsFromNow] = 0;
+                }
+                largeExpensesByYear[yearsFromNow] += finalAmount;
+            }
+        }
+    });
+
     // ========== 第一階段：計算工作期要求回報率 ==========
     const annualSavings = income - expense;
 
+    // 計算指定年份的各項支出（按實際年份，不做分攤）
+    function calcYearExpense(yearIndex) {
+        let yearExpense = expense * Math.pow(1 + inflation, yearIndex);
+        
+        // 加上當年教育支出
+        yearExpense += educationByYear[yearIndex] || 0;
+        
+        // 加上當年貸款還款
+        yearExpense += loanByYear[yearIndex] || 0;
+        
+        // 加上當年大額支出
+        yearExpense += largeExpensesByYear[yearIndex] || 0;
+        
+        return yearExpense;
+    }
+
     function calcRetireAsset(rate) {
         let asset = assets;
-        for (let year = 1; year <= workYears; year++) {
-            // 每年淨儲蓄 = 收入 - 支出 - 教育支出分攤 - 貸款還款分攤 - 大額支出分攤
-            let yearExpense = expense;
-            
-            // 簡化：將總教育支出、貸款、大額支出平均分攤到工作年限
-            yearExpense += totalEducationExpense / workYears;
-            yearExpense += totalLoanPayment / workYears;
-            yearExpense += totalLargeExpense / workYears;
+        for (let year = 0; year < workYears; year++) {
+            // 每年淨儲蓄 = 收入 - 當年實際支出
+            const yearExpense = calcYearExpense(year);
             
             asset = asset * (1 + rate) + (income - yearExpense);
         }
@@ -768,11 +979,22 @@ function calculate() {
     const ratePercent = rate * 100;
 
     // 顯示結果容器
+    console.log('[DEBUG] 準備顯示結果容器');
     const resultContainer = document.getElementById('result_container');
-    if (resultContainer) resultContainer.style.display = 'block';
+    console.log('[DEBUG] resultContainer 元素:', resultContainer);
+    if (resultContainer) {
+        resultContainer.style.display = 'block';
+        console.log('[DEBUG] resultContainer 已設為顯示');
+    } else {
+        console.error('[DEBUG] resultContainer 元素未找到！');
+    }
     
     const requiredReturnEl = document.getElementById('required_return');
-    if (requiredReturnEl) requiredReturnEl.textContent = ratePercent.toFixed(2) + '%';
+    console.log('[DEBUG] requiredReturnEl 元素:', requiredReturnEl);
+    if (requiredReturnEl) {
+        requiredReturnEl.textContent = ratePercent.toFixed(2) + '%';
+        console.log('[DEBUG] 已設置要求回報率:', ratePercent.toFixed(2) + '%');
+    }
     
     const statusEl = document.getElementById('feasibility');
     if (statusEl) {
@@ -809,8 +1031,10 @@ function calculate() {
         totalAsset: Math.round(calcRetireAsset(rate))
     };
 
+    console.log('[DEBUG] calculate() 函數執行完成');
+
     // ========== 生成資產明細表 ==========
-    generateAssetTable(age, retire, life, assets, income, expense, replacement, retireReturn, rate, inflation, inflationMedical, totalEducationExpense, totalLoanPayment, totalLargeExpense, pension, totalPension, legacy);
+    generateAssetTable(age, retire, life, assets, income, expense, replacement, retireReturn, rate, inflation, inflationEdu, inflationMedical, educationByYear, loanByYear, largeExpensesByYear, totalPension, legacy);
 
     // 更新按鈕文字為「重算」
     const calcButton = document.getElementById('calcButton');
@@ -818,7 +1042,8 @@ function calculate() {
 }
 
 // 生成資產明細表
-function generateAssetTable(age, retire, life, initialAssets, income, expense, replacement, retireReturn, workRate, inflation, inflationMedical, totalEducationExpense, totalLoanPayment, totalLargeExpense, pension, totalPension, legacy) {
+// 生成資產明細表（根據修改意見重新編寫）
+function generateAssetTable(age, retire, life, initialAssets, income, expense, replacement, retireReturn, workRate, inflation, inflationEdu, inflationMedical, educationByYear, loanByYear, largeExpensesByYear, totalPension, legacy) {
     const tableBody = document.getElementById('assetTableBody');
     if (!tableBody) return;
 
@@ -828,45 +1053,39 @@ function generateAssetTable(age, retire, life, initialAssets, income, expense, r
     const workYears = retire - age;
     const retireYears = life - retire;
 
-    // 獲取大額支出明細（按年份）
-    const largeExpensesByYear = {};
-    const expenseCards = document.querySelectorAll('[id^="expense_"]');
-    expenseCards.forEach(card => {
-        const id = card.id.replace('expense_', '');
-        const amount = parseFloat(document.getElementById(`exp_amount_${id}`)?.value) || 0;
-        const type = document.getElementById(`exp_type_${id}`)?.value || '現值';
-        const year = parseInt(document.getElementById(`exp_year_${id}`)?.value) || 0;
-        
-        if (amount > 0 && year > 0) {
-            const yearsFromNow = year - currentYear;
-            if (yearsFromNow >= 0 && yearsFromNow < workYears) {
-                let finalAmount = amount;
-                if (type === '現值') {
-                    finalAmount = amount * Math.pow(1 + inflation, yearsFromNow);
-                }
-                if (!largeExpensesByYear[yearsFromNow]) {
-                    largeExpensesByYear[yearsFromNow] = 0;
-                }
-                largeExpensesByYear[yearsFromNow] += finalAmount;
-            }
-        }
-    });
+    // 使用傳入的 educationByYear, loanByYear, largeExpensesByYear（已在 calculate 函數中計算）
+    console.log('教育支出按年份分布:', educationByYear);
+    console.log('貸款還款按年份分布:', loanByYear);
+    console.log('大額支出按年份分布:', largeExpensesByYear);
 
-    // 計算每年的支出分攤
-    const annualEducation = totalEducationExpense / workYears;
-    const annualLoan = totalLoanPayment / workYears;
-
-    // 工作期
+    // ========== 工作期 ==========
     for (let i = 0; i < workYears; i++) {
         const year = currentYear + i;
         const currentAge = age + i;
         const startAsset = asset;
 
-        // 當年大額支出（如果有）
+        // 當年各項支出
+        const yearEducation = educationByYear[i] || 0;
+        const yearLoan = loanByYear[i] || 0;
         const yearLargeExpense = largeExpensesByYear[i] || 0;
+        
+        // 生活支出（考慮通脹）- 修改意見 #3
+        const yearLivingExpense = expense * Math.pow(1 + inflation, i);
 
-        // 當年支出 = 生活費 + 教育 + 貸款 + 大額支出（計入總額，不單獨顯示）
-        const yearExpense = expense + annualEducation + annualLoan + yearLargeExpense;
+        // 當年總支出
+        const yearExpense = yearLivingExpense + yearEducation + yearLoan + yearLargeExpense;
+        
+        // 調試：顯示2048年的支出明細
+        if (year === 2048) {
+            console.log(`年份 ${year} 支出明細:`, {
+                yearLivingExpense,
+                yearEducation,
+                yearLoan,
+                yearLargeExpense,
+                yearExpense,
+                largeExpensesByYear_i: largeExpensesByYear[i]
+            });
+        }
 
         // 投資收益
         const investmentIncome = startAsset * workRate;
@@ -899,15 +1118,18 @@ function generateAssetTable(age, retire, life, initialAssets, income, expense, r
         tableBody.appendChild(row);
     }
 
-    // 退休期
-    let retireExpenseBase = income * replacement;
+    // ========== 退休期 ==========
+    // 計算退休前一年的日常支出（考慮通脹）- 修改意見 #7
+    const lastWorkYearLivingExpense = expense * Math.pow(1 + inflation, workYears - 1);
+    const retireExpenseBase = lastWorkYearLivingExpense * replacement;
+    
     for (let i = 0; i < retireYears; i++) {
         const year = currentYear + workYears + i;
         const currentAge = retire + i;
         const startAsset = asset;
 
-        // 退休後支出（含通脹）
-        const yearExpense = retireExpenseBase * Math.pow(1 + inflation, i);
+        // 退休後日常支出（含通脹）- 修改意見 #7
+        const yearLivingExpense = retireExpenseBase * Math.pow(1 + inflation, i);
 
         // 醫療支出
         let medicalExpense = 0;
@@ -917,27 +1139,32 @@ function generateAssetTable(age, retire, life, initialAssets, income, expense, r
         else medicalExpense = 85;
         medicalExpense *= Math.pow(1 + inflationMedical, i);
 
-        // 當年收入（退休金）
-        const yearIncome = pension;
+        // 退休期大額支出（修改意見 #4）- 擴展大額支出到退休期
+        const yearLargeExpense = largeExpensesByYear[workYears + i] || 0;
+
+        // 當年總支出
+        const yearExpense = yearLivingExpense + medicalExpense + yearLargeExpense;
+
+        // 當年收入（退休金來源）- 修改意見 #5
+        // 強積金、企業年金等作為一次性收入在退休第一年計入
+        let yearIncome = pension; // 每年退休金
+        if (i === 0) {
+            yearIncome += totalPension; // 退休第一年加上一次性退休金來源
+        }
 
         // 投資收益
         const investmentIncome = startAsset * retireReturn;
 
         // 資產變化
-        const assetChange = investmentIncome + yearIncome - yearExpense - medicalExpense;
+        const assetChange = investmentIncome + yearIncome - yearExpense;
 
-        // 年終資產
+        // 年終資產 - 修改意見 #6：不強制等於傳承目標
         asset = startAsset + assetChange;
-
-        // 最後一年（90歲）強制設置為傳承目標
-        if (i === retireYears - 1) {
-            asset = legacy;
-        }
 
         const row = document.createElement('tr');
         row.style.background = (workYears + i) % 2 === 0 ? '#f8f9fa' : 'white';
         
-        // 最後一年高亮
+        // 最後一年高亮（但不強制設置資產）
         if (i === retireYears - 1) {
             row.style.background = '#d4edda';
         }
@@ -946,18 +1173,16 @@ function generateAssetTable(age, retire, life, initialAssets, income, expense, r
             <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${year}</td>
             <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${currentAge}</td>
             <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${Math.round(startAsset).toLocaleString()}</td>
-            <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${Math.round(yearExpense + medicalExpense).toLocaleString()}</td>
+            <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${Math.round(yearExpense).toLocaleString()}</td>
             <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${Math.round(yearIncome).toLocaleString()}</td>
             <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${Math.round(investmentIncome).toLocaleString()}</td>
             <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${(retireReturn * 100).toFixed(2)}%</td>
             <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${Math.round(assetChange).toLocaleString()}</td>
-            <td style="padding: 8px; border: 1px solid #ddd; text-align: right; font-weight: bold;">${Math.round(asset).toLocaleString()}${i === retireYears - 1 ? '<br><small>(傳承目標)</small>' : ''}</td>
+            <td style="padding: 8px; border: 1px solid #ddd; text-align: right; font-weight: bold;">${Math.round(asset).toLocaleString()}${i === retireYears - 1 ? '<br><small>(最終資產)</small>' : ''}</td>
         `;
         tableBody.appendChild(row);
     }
 }
-
-// ==================== PDF 報告生成 ====================
 function generateReport() {
     const data = collectFormData();
     const calc = window.lastCalculation || {};
