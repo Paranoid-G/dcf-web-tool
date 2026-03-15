@@ -1199,10 +1199,9 @@ function calculate() {
             }
             yearIncome += otherPensionByYear[actualYear] || 0;
             
-            const netCashFlow = yearIncome - yearExpense;
-            // 年初需要的資產 = 年末資產 / (1 + 回報率) - 淨現金流
-            // 注意：現金流要提前預留，不能參與投資
-            requiredAsset = requiredAsset / (1 + retireReturn) - netCashFlow;
+            // 年初需要的資產 = (年末資產 - 當年收入) / (1 + 回報率) - 當年支出
+            // 注意：收入和支出都要提前預留，不能參與投資
+            requiredAsset = (requiredAsset - yearIncome) / (1 + retireReturn) - yearExpense;
         }
         neededAtRetire = requiredAsset;
     }
