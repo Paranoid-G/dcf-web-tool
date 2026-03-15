@@ -1,7 +1,7 @@
 // DCF 財富規劃工具 - 主要腳本（雲端版）
 
 // ==================== 版本號 ====================
-const APP_VERSION = 'v2.4.15';
+const APP_VERSION = 'v2.4.16';
 
 // ==================== API 配置 ====================
 const API_BASE_URL = 'https://api.sgwm.cloud/api';
@@ -1197,8 +1197,9 @@ function calculate() {
             yearIncome += otherPensionByYear[actualYear] || 0;
             
             const netCashFlow = yearIncome - yearExpense;
-            // 年初需要的資產 = (年末需要的資產 - 淨現金流) / (1 + 回報率)
-            requiredAsset = (requiredAsset - netCashFlow) / (1 + retireReturn);
+            // 年初需要的資產 = 年末資產 / (1 + 回報率) - 淨現金流
+            // 注意：現金流要提前預留，不能參與投資
+            requiredAsset = requiredAsset / (1 + retireReturn) - netCashFlow;
         }
         neededAtRetire = requiredAsset;
     }
