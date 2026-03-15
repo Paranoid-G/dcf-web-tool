@@ -1,7 +1,7 @@
 // DCF 財富規劃工具 - 主要腳本（雲端版）
 
 // ==================== 版本號 ====================
-const APP_VERSION = 'v2.4.3';
+const APP_VERSION = 'v2.4.4';
 
 // ==================== API 配置 ====================
 const API_BASE_URL = 'https://api.sgwm.cloud/api';
@@ -1035,7 +1035,7 @@ function calculate() {
     console.log('[DEBUG] calculate() 函數執行完成');
 
     // ========== 生成資產明細表 ==========
-    generateAssetTable(age, retire, life, assets, income, expense, replacement, retireReturn, rate, inflation, inflationEdu, inflationMedical, educationByYear, loanByYear, largeExpensesByYear, totalPension, legacy);
+    generateAssetTable(age, retire, life, assets, income, expense, replacement, retireReturn, rate, inflation, inflationEdu, inflationMedical, educationByYear, loanByYear, largeExpensesByYear, totalPension, legacy, pension, mpf, companyPension);
 
     // 更新按鈕文字為「重算」
     const calcButton = document.getElementById('calcButton');
@@ -1044,7 +1044,7 @@ function calculate() {
 
 // 生成資產明細表
 // 生成資產明細表（根據修改意見重新編寫）
-function generateAssetTable(age, retire, life, initialAssets, income, expense, replacement, retireReturn, workRate, inflation, inflationEdu, inflationMedical, educationByYear, loanByYear, largeExpensesByYear, totalPension, legacy) {
+function generateAssetTable(age, retire, life, initialAssets, income, expense, replacement, retireReturn, workRate, inflation, inflationEdu, inflationMedical, educationByYear, loanByYear, largeExpensesByYear, totalPension, legacy, pension, mpf, companyPension) {
     const tableBody = document.getElementById('assetTableBody');
     if (!tableBody) return;
 
@@ -1148,12 +1148,10 @@ function generateAssetTable(age, retire, life, initialAssets, income, expense, r
 
         // 當年收入（退休金來源）- 修改意見 #5
         // 強積金、企業年金等作為一次性收入在退休第一年計入
-        // 注意：totalPension 是強積金+企業年金+養老金+年金+其他，需要拆分
-        const annualPension = totalPension > 0 ? totalPension / retireYears : 0; // 簡化：平均分配到每年
-        let yearIncome = annualPension;
+        let yearIncome = pension || 0; // 每年養老金
         if (i === 0) {
             // 退休第一年加上一次性退休金（強積金+企業年金）
-            yearIncome += (totalPension - annualPension * retireYears);
+            yearIncome += (mpf || 0) + (companyPension || 0);
         }
 
         // 投資收益
