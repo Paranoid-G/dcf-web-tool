@@ -1,7 +1,7 @@
 // DCF 財富規劃工具 - 主要腳本（雲端版）
 
 // ==================== 版本號 ====================
-const APP_VERSION = 'v2.4.11';
+const APP_VERSION = 'v2.4.12';
 
 // ==================== API 配置 ====================
 const API_BASE_URL = 'https://api.sgwm.cloud/api';
@@ -1123,13 +1123,38 @@ function calculate() {
         totalMedicalExpense += baseMedical * Math.pow(1 + inflationMedical, i);
     }
 
+    // 計算退休時需要的資產（逐年計算醫療支出现值，不使用簡化）
     let neededAtRetire;
     if (retireReturn === 0) {
         neededAtRetire = (netRetireExpense * retireYears) + totalMedicalExpense + legacy;
     } else {
-        const annuityFactor = (1 - Math.pow(1 + retireReturn, -retireYears)) / retireReturn;
-        const pvExpenses = netRetireExpense * annuityFactor;
-        const pvMedical = totalMedicalExpense / Math.pow(1 + retireReturn, retireYears / 2); // 簡化計算
+        // 逐年計算各項支出的現值
+        let pvExpenses = 0;
+        let pvMedical = 0;
+        
+        for (let i = 0; i < retireYears; i++) {
+            // 退休後日常支出（含通脹）
+            const yearExpense = retireExpenseYear1 * Math.pow(1 + inflation, i);
+            // 減去年度養老金收入（從法定退休年份開始）
+            const actualYear = i;
+            let yearIncome = 0;
+            if (actualYear >= (legalRetirementYearOffset - workYears)) {
+                yearIncome = pension + annuity + otherPension;
+            }
+            const netExpense = Math.max(0, yearExpense - yearIncome);
+            pvExpenses += netExpense / Math.pow(1 + retireReturn, i + 1);
+            
+            // 醫療支出（逐年折現）
+            const ageAtYear = retire + i;
+            let baseMedical = 0;
+            if (ageAtYear < 65) baseMedical = 11;
+            else if (ageAtYear < 75) baseMedical = 25;
+            else if (ageAtYear < 85) baseMedical = 53;
+            else baseMedical = 85;
+            const yearMedical = baseMedical * Math.pow(1 + inflationMedical, i);
+            pvMedical += yearMedical / Math.pow(1 + retireReturn, i + 1);
+        }
+        
         const pvLegacy = legacy / Math.pow(1 + retireReturn, retireYears);
         neededAtRetire = pvExpenses + pvMedical + pvLegacy;
     }
