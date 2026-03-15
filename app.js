@@ -1,7 +1,7 @@
 // DCF 財富規劃工具 - 主要腳本（雲端版）
 
 // ==================== 版本號 ====================
-const APP_VERSION = 'v2.4.9';
+const APP_VERSION = 'v2.4.10';
 
 // ==================== API 配置 ====================
 const API_BASE_URL = 'https://api.sgwm.cloud/api';
@@ -1029,11 +1029,23 @@ function calculate() {
     const retireExpenseYear1 = income * replacement * Math.pow(1 + inflation, workYears);
 
     // 減去退休金來源
-    const mpf = parseFloat(document.getElementById('mpf').value) || 0;
-    const companyPension = parseFloat(document.getElementById('company_pension').value) || 0;
-    const pension = parseFloat(document.getElementById('pension').value) || 0;
-    const annuity = parseFloat(document.getElementById('annuity').value) || 0;
-    const otherPension = parseFloat(document.getElementById('other_pension').value) || 0;
+    const mpfEl = document.getElementById('mpf');
+    const companyPensionEl = document.getElementById('company_pension');
+    const pensionEl = document.getElementById('pension');
+    const annuityEl = document.getElementById('annuity');
+    const otherPensionEl = document.getElementById('other_pension');
+    
+    console.log('[DEBUG] mpf 元素:', mpfEl);
+    console.log('[DEBUG] company_pension 元素:', companyPensionEl);
+    console.log('[DEBUG] pension 元素:', pensionEl);
+    console.log('[DEBUG] annuity 元素:', annuityEl);
+    console.log('[DEBUG] other_pension 元素:', otherPensionEl);
+    
+    const mpf = parseFloat(mpfEl?.value) || 0;
+    const companyPension = parseFloat(companyPensionEl?.value) || 0;
+    const pension = parseFloat(pensionEl?.value) || 0;
+    const annuity = parseFloat(annuityEl?.value) || 0;
+    const otherPension = parseFloat(otherPensionEl?.value) || 0;
     const totalPension = mpf + companyPension + pension + annuity + otherPension;
     let annualPensionIncome = pension + annuity + otherPension; // 每年持續的養老金收入
     
