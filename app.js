@@ -1,7 +1,7 @@
 // DCF 財富規劃工具 - 主要腳本（雲端版）
 
 // ==================== 版本號 ====================
-const APP_VERSION = 'v2.4.8';
+const APP_VERSION = 'v2.4.9';
 
 // ==================== API 配置 ====================
 const API_BASE_URL = 'https://api.sgwm.cloud/api';
@@ -890,18 +890,54 @@ function calculate() {
     console.log('[DEBUG] calculate() 函數開始執行');
     try {
     // 基本參數
-    const age = parseInt(document.getElementById('current_age').value) || 45;
-    const retire = parseInt(document.getElementById('retirement_age').value) || 55;
-    const assets = parseFloat(document.getElementById('initial_assets').value) || 1000;
-    const income = parseFloat(document.getElementById('annual_income').value) || 150;
-    const expense = parseFloat(document.getElementById('living_expense').value) || 30;
-    const replacement = parseFloat(document.getElementById('replacement_rate').value) / 100;
-    const retireReturn = parseFloat(document.getElementById('retirement_return').value) / 100;
-    const legacy = parseFloat(document.getElementById('legacy_goal').value) || 1000;
-    const life = parseInt(document.getElementById('life_expectancy').value) || 90;
-    const inflation = parseFloat(document.getElementById('inflation_general').value) / 100 || 0.03;
-    const inflationEdu = parseFloat(document.getElementById('inflation_edu').value) / 100 || 0.05;
-    const inflationMedical = parseFloat(document.getElementById('inflation_medical').value) / 100 || 0.05;
+    console.log('[DEBUG] 開始獲取基本參數');
+    const currentAgeEl = document.getElementById('current_age');
+    console.log('[DEBUG] current_age 元素:', currentAgeEl);
+    const age = parseInt(currentAgeEl?.value) || 45;
+    console.log('[DEBUG] age:', age);
+    const retirementAgeEl = document.getElementById('retirement_age');
+    console.log('[DEBUG] retirement_age 元素:', retirementAgeEl);
+    const retire = parseInt(retirementAgeEl?.value) || 55;
+    
+    const initialAssetsEl = document.getElementById('initial_assets');
+    console.log('[DEBUG] initial_assets 元素:', initialAssetsEl);
+    const assets = parseFloat(initialAssetsEl?.value) || 1000;
+    
+    const annualIncomeEl = document.getElementById('annual_income');
+    console.log('[DEBUG] annual_income 元素:', annualIncomeEl);
+    const income = parseFloat(annualIncomeEl?.value) || 150;
+    
+    const livingExpenseEl = document.getElementById('living_expense');
+    console.log('[DEBUG] living_expense 元素:', livingExpenseEl);
+    const expense = parseFloat(livingExpenseEl?.value) || 30;
+    
+    const replacementRateEl = document.getElementById('replacement_rate');
+    console.log('[DEBUG] replacement_rate 元素:', replacementRateEl);
+    const replacement = parseFloat(replacementRateEl?.value) / 100 || 0.7;
+    
+    const retirementReturnEl = document.getElementById('retirement_return');
+    console.log('[DEBUG] retirement_return 元素:', retirementReturnEl);
+    const retireReturn = parseFloat(retirementReturnEl?.value) / 100 || 0.03;
+    
+    const legacyGoalEl = document.getElementById('legacy_goal');
+    console.log('[DEBUG] legacy_goal 元素:', legacyGoalEl);
+    const legacy = parseFloat(legacyGoalEl?.value) || 1000;
+    
+    const lifeExpectancyEl = document.getElementById('life_expectancy');
+    console.log('[DEBUG] life_expectancy 元素:', lifeExpectancyEl);
+    const life = parseInt(lifeExpectancyEl?.value) || 90;
+    
+    const inflationGeneralEl = document.getElementById('inflation_general');
+    console.log('[DEBUG] inflation_general 元素:', inflationGeneralEl);
+    const inflation = parseFloat(inflationGeneralEl?.value) / 100 || 0.03;
+    
+    const inflationEduEl = document.getElementById('inflation_edu');
+    console.log('[DEBUG] inflation_edu 元素:', inflationEduEl);
+    const inflationEdu = parseFloat(inflationEduEl?.value) / 100 || 0.05;
+    
+    const inflationMedicalEl = document.getElementById('inflation_medical');
+    console.log('[DEBUG] inflation_medical 元素:', inflationMedicalEl);
+    const inflationMedical = parseFloat(inflationMedicalEl?.value) / 100 || 0.05;
 
     const workYears = retire - age;
     const retireYears = life - retire;
