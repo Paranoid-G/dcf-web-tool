@@ -1,7 +1,7 @@
 // DCF 財富規劃工具 - 主要腳本（雲端版）
 
 // ==================== 版本號 ====================
-const APP_VERSION = 'v2.4.5';
+const APP_VERSION = 'v2.4.6';
 
 // ==================== API 配置 ====================
 const API_BASE_URL = 'https://api.sgwm.cloud/api';
@@ -269,6 +269,91 @@ function showAdminTab(n) {
     document.querySelectorAll('[id^="admin-tab-"]').forEach((c, i) => c.classList.toggle('active', i === n));
 }
 
+// ==================== 其他退休金來源管理 ====================
+let otherPensionCount = 0;
+
+function addOtherPension() {
+    const container = document.getElementById('other_pension_container');
+    const id = otherPensionCount++;
+    
+    const div = document.createElement('div');
+    div.className = 'item-card';
+    div.id = `other_pension_${id}`;
+    div.innerHTML = `
+        <div class="form-row">
+            <div class="form-group">
+                <label>項目名稱</label>
+                <input type="text" id="op_name_${id}" placeholder="如：商業保險">
+            </div>
+            <div class="form-group">
+                <label>提取方式</label>
+                <select id="op_method_${id}" onchange="togglePensionYears(${id})">
+                    <option value="annual">按年提取</option>
+                    <option value="lump">一次過</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>金額（萬）</label>
+                <input type="number" id="op_amount_${id}" placeholder="0">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>初次提取日期</label>
+                <input type="date" id="op_start_date_${id}">
+            </div>
+            <div class="form-group">
+                <label>提取年長</label>
+                <select id="op_duration_type_${id}" onchange="togglePensionDuration(${id})">
+                    <option value="limited">有限</option>
+                    <option value="unlimited">無限</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>年數</label>
+                <input type="number" id="op_years_${id}" value="1" min="1">
+            </div>
+            <div class="form-group" style="display: flex; align-items: flex-end;">
+                <button type="button" class="btn btn-danger" onclick="removeOtherPension(${id})" style="background: #dc3545;">🗑️ 刪除</button>
+            </div>
+        </div>
+    `;
+    container.appendChild(div);
+}
+
+function removeOtherPension(id) {
+    const div = document.getElementById(`other_pension_${id}`);
+    if (div) div.remove();
+}
+
+function togglePensionYears(id) {
+    const method = document.getElementById(`op_method_${id}`).value;
+    const yearsInput = document.getElementById(`op_years_${id}`);
+    const durationType = document.getElementById(`op_duration_type_${id}`);
+    
+    if (method === 'lump') {
+        yearsInput.value = 1;
+        yearsInput.disabled = true;
+        durationType.value = 'limited';
+        durationType.disabled = true;
+    } else {
+        yearsInput.disabled = false;
+        durationType.disabled = false;
+    }
+}
+
+function togglePensionDuration(id) {
+    const durationType = document.getElementById(`op_duration_type_${id}`).value;
+    const yearsInput = document.getElementById(`op_years_${id}`);
+    
+    if (durationType === 'unlimited') {
+        yearsInput.value = 999;
+        yearsInput.disabled = true;
+    } else {
+        yearsInput.disabled = false;
+    }
+}
+
 // ==================== 表單功能 ====================
 function updateAge() {
     const birth = new Date(document.getElementById('birth_date').value);
@@ -470,6 +555,7 @@ function collectFormData() {
         annuity: document.getElementById('annuity')?.value || '0',
         other_pension: document.getElementById('other_pension')?.value || '0',
         other_pension_note: document.getElementById('other_pension_note')?.value || '',
+        legal_retirement_date: document.getElementById('legal_retirement_date')?.value || '',
         life_expectancy: document.getElementById('life_expectancy')?.value || '',
         inflation_general: document.getElementById('inflation_general')?.value || '',
         inflation_edu: document.getElementById('inflation_edu')?.value || '',
@@ -512,6 +598,22 @@ function collectFormData() {
         const year = document.getElementById(`exp_year_${id}`)?.value || '';
         if (amount || type || year || name) {
             data.expenses.push({ id, name, amount, type, year });
+        }
+    });
+    
+    // 收集其他退休金來源
+    data.other_pensions = [];
+    const otherPensionCards = document.querySelectorAll('[id^="other_pension_"]');
+    otherPensionCards.forEach(card => {
+        const id = card.id.replace('other_pension_', '');
+        const name = document.getElementById(`op_name_${id}`)?.value || '';
+        const method = document.getElementById(`op_method_${id}`)?.value || 'annual';
+        const amount = document.getElementById(`op_amount_${id}`)?.value || '';
+        const startDate = document.getElementById(`op_start_date_${id}`)?.value || '';
+        const durationType = document.getElementById(`op_duration_type_${id}`)?.value || 'limited';
+        const years = document.getElementById(`op_years_${id}`)?.value || '1';
+        if (name || amount) {
+            data.other_pensions.push({ id, name, method, amount, startDate, durationType, years });
         }
     });
     
@@ -818,7 +920,47 @@ function calculate() {
     const annuity = parseFloat(document.getElementById('annuity').value) || 0;
     const otherPension = parseFloat(document.getElementById('other_pension').value) || 0;
     const totalPension = mpf + companyPension + pension + annuity + otherPension;
-    const annualPensionIncome = pension + annuity + otherPension; // 每年持續的養老金收入
+    let annualPensionIncome = pension + annuity + otherPension; // 每年持續的養老金收入
+    
+    // 處理動態添加的其他退休金來源
+    const otherPensionByYear = {}; // 按年份存儲其他退休金收入
+    const otherPensionCards = document.querySelectorAll('[id^="other_pension_"]');
+    otherPensionCards.forEach(card => {
+        const id = card.id.replace('other_pension_', '');
+        const amount = parseFloat(document.getElementById(`op_amount_${id}`)?.value) || 0;
+        const method = document.getElementById(`op_method_${id}`)?.value || 'annual';
+        const startDate = document.getElementById(`op_start_date_${id}`)?.value;
+        const durationType = document.getElementById(`op_duration_type_${id}`)?.value || 'limited';
+        const years = parseInt(document.getElementById(`op_years_${id}`)?.value) || 1;
+        
+        if (amount > 0 && startDate) {
+            const start = new Date(startDate);
+            const current = new Date();
+            const startYearOffset = start.getFullYear() - current.getFullYear();
+            
+            if (method === 'lump') {
+                // 一次過提取
+                if (startYearOffset >= 0 && startYearOffset < workYears + retireYears) {
+                    if (!otherPensionByYear[startYearOffset]) otherPensionByYear[startYearOffset] = 0;
+                    otherPensionByYear[startYearOffset] += amount;
+                }
+            } else {
+                // 按年提取
+                const duration = durationType === 'unlimited' ? (workYears + retireYears) : years;
+                for (let y = 0; y < duration; y++) {
+                    const yearOffset = startYearOffset + y;
+                    if (yearOffset >= 0 && yearOffset < workYears + retireYears) {
+                        if (!otherPensionByYear[yearOffset]) otherPensionByYear[yearOffset] = 0;
+                        otherPensionByYear[yearOffset] += amount;
+                        // 如果在退休期，加入年度養老金收入
+                        if (yearOffset >= workYears) {
+                            annualPensionIncome += amount;
+                        }
+                    }
+                }
+            }
+        }
+    });
 
     const netRetireExpense = Math.max(0, retireExpenseYear1 - annualPensionIncome);
 
@@ -1036,7 +1178,7 @@ function calculate() {
     console.log('[DEBUG] calculate() 函數執行完成');
 
     // ========== 生成資產明細表 ==========
-    generateAssetTable(age, retire, life, assets, income, expense, replacement, retireReturn, rate, inflation, inflationEdu, inflationMedical, educationByYear, loanByYear, largeExpensesByYear, totalPension, legacy, pension, mpf, companyPension);
+    generateAssetTable(age, retire, life, assets, income, expense, replacement, retireReturn, rate, inflation, inflationEdu, inflationMedical, educationByYear, loanByYear, largeExpensesByYear, totalPension, legacy, pension, mpf, companyPension, otherPensionByYear);
 
     // 更新按鈕文字為「重算」
     const calcButton = document.getElementById('calcButton');
@@ -1045,7 +1187,7 @@ function calculate() {
 
 // 生成資產明細表
 // 生成資產明細表（根據修改意見重新編寫）
-function generateAssetTable(age, retire, life, initialAssets, income, expense, replacement, retireReturn, workRate, inflation, inflationEdu, inflationMedical, educationByYear, loanByYear, largeExpensesByYear, totalPension, legacy, pension, mpf, companyPension) {
+function generateAssetTable(age, retire, life, initialAssets, income, expense, replacement, retireReturn, workRate, inflation, inflationEdu, inflationMedical, educationByYear, loanByYear, largeExpensesByYear, totalPension, legacy, pension, mpf, companyPension, otherPensionByYear) {
     const tableBody = document.getElementById('assetTableBody');
     if (!tableBody) return;
 
@@ -1089,11 +1231,15 @@ function generateAssetTable(age, retire, life, initialAssets, income, expense, r
             });
         }
 
+        // 其他退休金收入（如果在工作期間開始提取）
+        const yearOtherPension = otherPensionByYear[i] || 0;
+        const totalIncome = income + yearOtherPension;
+
         // 投資收益
         const investmentIncome = startAsset * workRate;
 
         // 資產變化
-        const assetChange = investmentIncome + income - yearExpense;
+        const assetChange = investmentIncome + totalIncome - yearExpense;
 
         // 年終資產
         asset = startAsset + assetChange;
@@ -1111,7 +1257,7 @@ function generateAssetTable(age, retire, life, initialAssets, income, expense, r
             <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${currentAge}</td>
             <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${Math.round(startAsset).toLocaleString()}</td>
             <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${Math.round(yearExpense).toLocaleString()}</td>
-            <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${Math.round(income).toLocaleString()}</td>
+            <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${Math.round(totalIncome).toLocaleString()}</td>
             <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${Math.round(investmentIncome).toLocaleString()}</td>
             <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${(workRate * 100).toFixed(2)}%</td>
             <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${Math.round(assetChange).toLocaleString()}</td>
@@ -1154,6 +1300,10 @@ function generateAssetTable(age, retire, life, initialAssets, income, expense, r
             // 退休第一年加上一次性退休金（強積金+企業年金）
             yearIncome += (mpf || 0) + (companyPension || 0);
         }
+        
+        // 加上其他退休金來源
+        const yearOtherPension = otherPensionByYear[workYears + i] || 0;
+        yearIncome += yearOtherPension;
 
         // 投資收益
         const investmentIncome = startAsset * retireReturn;

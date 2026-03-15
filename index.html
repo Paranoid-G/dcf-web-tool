@@ -583,6 +583,10 @@
                         <input type="number" id="retirement_age" value="55" placeholder="如：55">
                     </div>
                     <div class="form-group required">
+                        <label>法定退休日期</label>
+                        <input type="date" id="legal_retirement_date" placeholder="選擇法定退休日期">
+                    </div>
+                    <div class="form-group required">
                         <label>收入替代率（%）</label>
                         <input type="number" id="replacement_rate" value="70" placeholder="退休後收入占退休前比例">
                     </div>
@@ -616,15 +620,11 @@
                         <input type="number" id="annuity" value="0" placeholder="0">
                     </div>
                 </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>其他（萬/年）</label>
-                        <input type="number" id="other_pension" value="0" placeholder="0">
-                    </div>
-                    <div class="form-group">
-                        <label>其他備註</label>
-                        <input type="text" id="other_pension_note" placeholder="請說明其他退休金來源">
-                    </div>
+                <div class="part-title">四之二、其他退休金來源（動態添加）</div>
+                <div class="note">💡 點擊「添加項目」增加自定義退休金來源</div>
+                <div id="other_pension_container"></div>
+                <div style="text-align: center; margin: 15px 0;">
+                    <button type="button" class="btn btn-secondary" onclick="addOtherPension()">➕ 添加項目</button>
                 </div>
                 
                 <div class="part-title">五、經濟假設</div>
