@@ -1,7 +1,7 @@
 // DCF 財富規劃工具 - 主要腳本（雲端版）
 
 // ==================== 版本號 ====================
-const APP_VERSION = 'v2.4.16';
+const APP_VERSION = 'v2.4.17';
 
 // ==================== API 配置 ====================
 const API_BASE_URL = 'https://api.sgwm.cloud/api';
@@ -1035,7 +1035,10 @@ function calculate() {
     });
 
     // ========== 第二階段：計算退休時需要的資產 ==========
-    const retireExpenseYear1 = income * replacement * Math.pow(1 + inflation, workYears);
+    // 計算退休後第一年支出（與 generateAssetTable 一致）
+    // 退休前一年日常支出（考慮通脹）* 替代率
+    const lastWorkYearLivingExpense = expense * Math.pow(1 + inflation, workYears - 1);
+    const retireExpenseYear1 = lastWorkYearLivingExpense * replacement;
 
     // 減去退休金來源（基於法定退休日期）
     const mpfEl = document.getElementById('mpf');
