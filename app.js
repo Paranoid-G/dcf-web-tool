@@ -1,7 +1,7 @@
 // DCF 財富規劃工具 - 主要腳本（雲端版）
 
 // ==================== 版本號 ====================
-const APP_VERSION = 'v2.4.17';
+const APP_VERSION = 'v2.4.18';
 
 // ==================== API 配置 ====================
 const API_BASE_URL = 'https://api.sgwm.cloud/api';
@@ -1511,11 +1511,11 @@ function generateAssetTable(age, retire, life, initialAssets, income, expense, r
         const yearOtherPension = otherPensionByYear[actualYear] || 0;
         yearIncome += yearOtherPension;
 
-        // 投資收益
-        const investmentIncome = startAsset * retireReturn;
+        // 投資收益（退休期：支出提前發生，不能參與投資）
+        const investmentIncome = (startAsset - yearExpense) * retireReturn;
 
         // 資產變化
-        const assetChange = investmentIncome + yearIncome - yearExpense;
+        const assetChange = investmentIncome + yearIncome;
 
         // 年終資產 - 修改意見 #6：不強制等於傳承目標
         asset = startAsset + assetChange;
