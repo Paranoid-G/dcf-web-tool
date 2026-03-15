@@ -1,7 +1,7 @@
 // DCF 財富規劃工具 - 主要腳本（雲端版）
 
 // ==================== 版本號 ====================
-const APP_VERSION = 'v2.4.12';
+const APP_VERSION = 'v2.4.13';
 
 // ==================== API 配置 ====================
 const API_BASE_URL = 'https://api.sgwm.cloud/api';
@@ -1109,42 +1109,15 @@ function calculate() {
         }
     });
 
-    const netRetireExpense = Math.max(0, retireExpenseYear1 - annualPensionIncome);
 
-    // 計算退休期醫療支出（使用醫療通脹）
-    let totalMedicalExpense = 0;
-    for (let i = 0; i < retireYears; i++) {
-        const ageAtYear = retire + i;
-        let baseMedical = 0;
-        if (ageAtYear < 65) baseMedical = 11;
-        else if (ageAtYear < 75) baseMedical = 25;
-        else if (ageAtYear < 85) baseMedical = 53;
-        else baseMedical = 85;
-        totalMedicalExpense += baseMedical * Math.pow(1 + inflationMedical, i);
-    }
 
-    // 計算退休時需要的資產（逐年計算醫療支出现值，不使用簡化）
+    // 計算退休時需要的資產（與 generateAssetTable 使用完全相同的邏輯）
     let neededAtRetire;
     if (retireReturn === 0) {
-        neededAtRetire = (netRetireExpense * retireYears) + totalMedicalExpense + legacy;
-    } else {
-        // 逐年計算各項支出的現值
-        let pvExpenses = 0;
-        let pvMedical = 0;
-        
+        // 簡單相加（無投資收益）
+        let totalNeeded = legacy;
         for (let i = 0; i < retireYears; i++) {
-            // 退休後日常支出（含通脹）
-            const yearExpense = retireExpenseYear1 * Math.pow(1 + inflation, i);
-            // 減去年度養老金收入（從法定退休年份開始）
-            const actualYear = i;
-            let yearIncome = 0;
-            if (actualYear >= (legalRetirementYearOffset - workYears)) {
-                yearIncome = pension + annuity + otherPension;
-            }
-            const netExpense = Math.max(0, yearExpense - yearIncome);
-            pvExpenses += netExpense / Math.pow(1 + retireReturn, i + 1);
-            
-            // 醫療支出（逐年折現）
+            const yearLivingExpense = retireExpenseYear1 * Math.pow(1 + inflation, i);
             const ageAtYear = retire + i;
             let baseMedical = 0;
             if (ageAtYear < 65) baseMedical = 11;
@@ -1152,11 +1125,56 @@ function calculate() {
             else if (ageAtYear < 85) baseMedical = 53;
             else baseMedical = 85;
             const yearMedical = baseMedical * Math.pow(1 + inflationMedical, i);
-            pvMedical += yearMedical / Math.pow(1 + retireReturn, i + 1);
+            const yearLargeExpense = largeExpensesByYear[workYears + i] || 0;
+            const yearExpense = yearLivingExpense + yearMedical + yearLargeExpense;
+            
+            // 收入計算（與 generateAssetTable 一致）
+            const actualYear = workYears + i;
+            let yearIncome = 0;
+            if (actualYear >= legalRetirementYearOffset) {
+                yearIncome = pension;
+                if (actualYear === legalRetirementYearOffset) {
+                    yearIncome += mpf + companyPension;
+                }
+            }
+            yearIncome += otherPensionByYear[actualYear] || 0;
+            
+            totalNeeded += Math.max(0, yearExpense - yearIncome);
         }
+        neededAtRetire = totalNeeded;
+    } else {
+        // 使用折現計算（與 generateAssetTable 的資產累積邏輯一致）
+        // 從最後一年倒推，計算需要多少資產才能在退休期結束時剩餘 legacy
+        let requiredAsset = legacy;
         
-        const pvLegacy = legacy / Math.pow(1 + retireReturn, retireYears);
-        neededAtRetire = pvExpenses + pvMedical + pvLegacy;
+        for (let i = retireYears - 1; i >= 0; i--) {
+            const yearLivingExpense = retireExpenseYear1 * Math.pow(1 + inflation, i);
+            const ageAtYear = retire + i;
+            let baseMedical = 0;
+            if (ageAtYear < 65) baseMedical = 11;
+            else if (ageAtYear < 75) baseMedical = 25;
+            else if (ageAtYear < 85) baseMedical = 53;
+            else baseMedical = 85;
+            const yearMedical = baseMedical * Math.pow(1 + inflationMedical, i);
+            const yearLargeExpense = largeExpensesByYear[workYears + i] || 0;
+            const yearExpense = yearLivingExpense + yearMedical + yearLargeExpense;
+            
+            // 收入計算（與 generateAssetTable 一致）
+            const actualYear = workYears + i;
+            let yearIncome = 0;
+            if (actualYear >= legalRetirementYearOffset) {
+                yearIncome = pension;
+                if (actualYear === legalRetirementYearOffset) {
+                    yearIncome += mpf + companyPension;
+                }
+            }
+            yearIncome += otherPensionByYear[actualYear] || 0;
+            
+            const netCashFlow = yearIncome - yearExpense;
+            // 年初需要的資產 = (年末需要的資產 - 淨現金流) / (1 + 回報率)
+            requiredAsset = (requiredAsset - netCashFlow) / (1 + retireReturn);
+        }
+        neededAtRetire = requiredAsset;
     }
 
     // ========== 計算按年份的各項支出（供 calcRetireAsset 和 generateAssetTable 使用）==========
