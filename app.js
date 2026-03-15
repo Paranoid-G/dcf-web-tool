@@ -1,7 +1,7 @@
 // DCF 財富規劃工具 - 主要腳本（雲端版）
 
 // ==================== 版本號 ====================
-const APP_VERSION = 'v2.4.10';
+const APP_VERSION = 'v2.4.11';
 
 // ==================== API 配置 ====================
 const API_BASE_URL = 'https://api.sgwm.cloud/api';
@@ -942,6 +942,15 @@ function calculate() {
     const workYears = retire - age;
     const retireYears = life - retire;
     const currentYear = new Date().getFullYear();
+    
+    // 獲取法定退休日期並計算法定退休年份偏移
+    const legalRetirementDateEl = document.getElementById('legal_retirement_date');
+    let legalRetirementYearOffset = workYears; // 默認使用計劃退休年齡
+    if (legalRetirementDateEl && legalRetirementDateEl.value) {
+        const legalRetirementDate = new Date(legalRetirementDateEl.value);
+        legalRetirementYearOffset = legalRetirementDate.getFullYear() - currentYear;
+        console.log('[DEBUG] 法定退休日期:', legalRetirementDateEl.value, '偏移:', legalRetirementYearOffset);
+    }
 
     if (workYears <= 0) {
         alert('退休年齡必須大於當前年齡');
@@ -1028,7 +1037,7 @@ function calculate() {
     // ========== 第二階段：計算退休時需要的資產 ==========
     const retireExpenseYear1 = income * replacement * Math.pow(1 + inflation, workYears);
 
-    // 減去退休金來源
+    // 減去退休金來源（基於法定退休日期）
     const mpfEl = document.getElementById('mpf');
     const companyPensionEl = document.getElementById('company_pension');
     const pensionEl = document.getElementById('pension');
@@ -1047,7 +1056,15 @@ function calculate() {
     const annuity = parseFloat(annuityEl?.value) || 0;
     const otherPension = parseFloat(otherPensionEl?.value) || 0;
     const totalPension = mpf + companyPension + pension + annuity + otherPension;
-    let annualPensionIncome = pension + annuity + otherPension; // 每年持續的養老金收入
+    
+    // 計算在退休期內的年度養老金收入（從法定退休日期開始）
+    const pensionStartYear = Math.max(0, legalRetirementYearOffset);
+    const pensionEndYear = workYears + retireYears;
+    let annualPensionIncome = 0;
+    if (pensionStartYear < pensionEndYear) {
+        const pensionYears = pensionEndYear - pensionStartYear;
+        annualPensionIncome = (pension + annuity + otherPension) * pensionYears / retireYears;
+    }
     
     // 處理動態添加的其他退休金來源
     const otherPensionByYear = {}; // 按年份存儲其他退休金收入
@@ -1308,7 +1325,7 @@ function calculate() {
     console.log('[DEBUG] calculate() 函數執行完成');
 
     // ========== 生成資產明細表 ==========
-    generateAssetTable(age, retire, life, assets, income, expense, replacement, retireReturn, rate, inflation, inflationEdu, inflationMedical, educationByYear, loanByYear, largeExpensesByYear, totalPension, legacy, pension, mpf, companyPension, otherPensionByYear);
+    generateAssetTable(age, retire, life, assets, income, expense, replacement, retireReturn, rate, inflation, inflationEdu, inflationMedical, educationByYear, loanByYear, largeExpensesByYear, totalPension, legacy, pension, mpf, companyPension, otherPensionByYear, legalRetirementYearOffset);
 
     // 更新按鈕文字為「重算」
     const calcButton = document.getElementById('calcButton');
@@ -1321,7 +1338,7 @@ function calculate() {
 
 // 生成資產明細表
 // 生成資產明細表（根據修改意見重新編寫）
-function generateAssetTable(age, retire, life, initialAssets, income, expense, replacement, retireReturn, workRate, inflation, inflationEdu, inflationMedical, educationByYear, loanByYear, largeExpensesByYear, totalPension, legacy, pension, mpf, companyPension, otherPensionByYear) {
+function generateAssetTable(age, retire, life, initialAssets, income, expense, replacement, retireReturn, workRate, inflation, inflationEdu, inflationMedical, educationByYear, loanByYear, largeExpensesByYear, totalPension, legacy, pension, mpf, companyPension, otherPensionByYear, legalRetirementYearOffset) {
     const tableBody = document.getElementById('assetTableBody');
     if (!tableBody) return;
 
@@ -1428,15 +1445,23 @@ function generateAssetTable(age, retire, life, initialAssets, income, expense, r
         const yearExpense = yearLivingExpense + medicalExpense + yearLargeExpense;
 
         // 當年收入（退休金來源）- 修改意見 #5
-        // 強積金、企業年金等作為一次性收入在退休第一年計入
-        let yearIncome = pension || 0; // 每年養老金
-        if (i === 0) {
-            // 退休第一年加上一次性退休金（強積金+企業年金）
-            yearIncome += (mpf || 0) + (companyPension || 0);
+        // 強積金、企業年金等作為一次性收入在法定退休年份計入
+        const actualYear = workYears + i;
+        let yearIncome = 0;
+        
+        // 檢查是否已經達到法定退休年份
+        if (actualYear >= legalRetirementYearOffset) {
+            // 每年養老金
+            yearIncome = pension || 0;
+            
+            // 法定退休年份加上一次性退休金（強積金+企業年金）
+            if (actualYear === legalRetirementYearOffset) {
+                yearIncome += (mpf || 0) + (companyPension || 0);
+            }
         }
         
         // 加上其他退休金來源
-        const yearOtherPension = otherPensionByYear[workYears + i] || 0;
+        const yearOtherPension = otherPensionByYear[actualYear] || 0;
         yearIncome += yearOtherPension;
 
         // 投資收益
