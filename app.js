@@ -1017,12 +1017,8 @@ function calculate() {
             const startYearOffset = start.getFullYear() - current.getFullYear();
             
             // 檢查日期是否有效
-            if (isNaN(startYearOffset)) {
-                console.warn('無效的開始日期:', startDate);
-                continue;
-            }
-            
-            if (method === 'lump') {
+            if (!isNaN(startYearOffset)) {
+                if (method === 'lump') {
                 // 一次過提取
                 if (startYearOffset >= 0 && startYearOffset < workYears + retireYears) {
                     if (!otherPensionByYear[startYearOffset]) otherPensionByYear[startYearOffset] = 0;
@@ -1040,6 +1036,7 @@ function calculate() {
                         if (yearOffset >= workYears) {
                             annualPensionIncome += amount;
                         }
+                    }
                     }
                 }
             }
