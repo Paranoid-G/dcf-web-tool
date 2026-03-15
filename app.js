@@ -938,6 +938,12 @@ function calculate() {
             const current = new Date();
             const startYearOffset = start.getFullYear() - current.getFullYear();
             
+            // 檢查日期是否有效
+            if (isNaN(startYearOffset)) {
+                console.warn('無效的開始日期:', startDate);
+                continue;
+            }
+            
             if (method === 'lump') {
                 // 一次過提取
                 if (startYearOffset >= 0 && startYearOffset < workYears + retireYears) {
