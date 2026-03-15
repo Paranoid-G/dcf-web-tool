@@ -1,7 +1,7 @@
 // DCF 財富規劃工具 - 主要腳本（雲端版）
 
 // ==================== 版本號 ====================
-const APP_VERSION = 'v2.4.7';
+const APP_VERSION = 'v2.4.8';
 
 // ==================== API 配置 ====================
 const API_BASE_URL = 'https://api.sgwm.cloud/api';
@@ -888,6 +888,7 @@ async function loadUserHistory() {
 // ==================== DCF 計算 v2.2.0 ====================
 function calculate() {
     console.log('[DEBUG] calculate() 函數開始執行');
+    try {
     // 基本參數
     const age = parseInt(document.getElementById('current_age').value) || 45;
     const retire = parseInt(document.getElementById('retirement_age').value) || 55;
@@ -1264,6 +1265,10 @@ function calculate() {
     // 更新按鈕文字為「重算」
     const calcButton = document.getElementById('calcButton');
     if (calcButton) calcButton.textContent = '🔄 重算';
+    } catch (error) {
+        console.error('[DEBUG] calculate() 函數執行出錯:', error);
+        alert('計算過程中出現錯誤: ' + error.message);
+    }
 }
 
 // 生成資產明細表
