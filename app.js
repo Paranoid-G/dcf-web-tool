@@ -1,7 +1,7 @@
 // DCF 財富規劃工具 - 主要腳本（雲端版）
 
 // ==================== 版本號 ====================
-const APP_VERSION = 'v2.4.14';
+const APP_VERSION = 'v2.4.15';
 
 // ==================== API 配置 ====================
 const API_BASE_URL = 'https://api.sgwm.cloud/api';
@@ -1066,6 +1066,32 @@ function calculate() {
         annualPensionIncome = (pension + annuity + otherPension) * pensionYears / retireYears;
     }
     
+    // 先計算大額支出（供 neededAtRetire 使用）
+    const largeExpensesByYear = {};
+    const largeExpenseCards = document.querySelectorAll('[id^="expense_"]');
+    largeExpenseCards.forEach(card => {
+        const id = card.id.replace('expense_', '');
+        const amount = parseFloat(document.getElementById(`exp_amount_${id}`)?.value) || 0;
+        const type = document.getElementById(`exp_type_${id}`)?.value || '現值';
+        const year = parseInt(document.getElementById(`exp_year_${id}`)?.value) || 0;
+        
+        if (amount > 0 && year > 0) {
+            const yearsFromNow = year - currentYear;
+            const totalYears = workYears + retireYears;
+            
+            if (yearsFromNow >= 0 && yearsFromNow < totalYears) {
+                let finalAmount = amount;
+                if (type === '現值') {
+                    finalAmount = amount * Math.pow(1 + inflation, yearsFromNow);
+                }
+                if (!largeExpensesByYear[yearsFromNow]) {
+                    largeExpensesByYear[yearsFromNow] = 0;
+                }
+                largeExpensesByYear[yearsFromNow] += finalAmount;
+            }
+        }
+    });
+
     // 處理動態添加的其他退休金來源
     const otherPensionByYear = {}; // 按年份存儲其他退休金收入
     const otherPensionCards = document.querySelectorAll('[id^="other_pension_"]');
@@ -1177,35 +1203,9 @@ function calculate() {
         neededAtRetire = requiredAsset;
     }
 
-    // ========== 計算按年份的各項支出（供 calcRetireAsset、generateAssetTable 和 neededAtRetire 使用）==========
+    // ========== 計算按年份的各項支出（供 calcRetireAsset、generateAssetTable 使用）==========
     const educationByYear = {};
     const loanByYear = {};
-    const largeExpensesByYear = {};
-    
-    // 先計算大額支出（供 neededAtRetire 使用）
-    const largeExpenseCards = document.querySelectorAll('[id^="expense_"]');
-    largeExpenseCards.forEach(card => {
-        const id = card.id.replace('expense_', '');
-        const amount = parseFloat(document.getElementById(`exp_amount_${id}`)?.value) || 0;
-        const type = document.getElementById(`exp_type_${id}`)?.value || '現值';
-        const year = parseInt(document.getElementById(`exp_year_${id}`)?.value) || 0;
-        
-        if (amount > 0 && year > 0) {
-            const yearsFromNow = year - currentYear;
-            const totalYears = workYears + retireYears;
-            
-            if (yearsFromNow >= 0 && yearsFromNow < totalYears) {
-                let finalAmount = amount;
-                if (type === '現值') {
-                    finalAmount = amount * Math.pow(1 + inflation, yearsFromNow);
-                }
-                if (!largeExpensesByYear[yearsFromNow]) {
-                    largeExpensesByYear[yearsFromNow] = 0;
-                }
-                largeExpensesByYear[yearsFromNow] += finalAmount;
-            }
-        }
-    });
     
     // 計算子女教育支出（按年份）
     for (let i = 0; i < childCount; i++) {
