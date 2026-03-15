@@ -1,7 +1,7 @@
 // DCF 財富規劃工具 - 主要腳本（雲端版）
 
 // ==================== 版本號 ====================
-const APP_VERSION = 'v2.4.6';
+const APP_VERSION = 'v2.4.7';
 
 // ==================== API 配置 ====================
 const API_BASE_URL = 'https://api.sgwm.cloud/api';
@@ -216,9 +216,55 @@ function loadProgress() {
     }
 }
 
+// 表單驗證函數
+function validateForm() {
+    const errors = [];
+    const requiredFields = [
+        { id: 'client_name', name: '客戶姓名' },
+        { id: 'birth_date', name: '出生日期' },
+        { id: 'current_age', name: '當前年齡' },
+        { id: 'initial_assets', name: '當前可投資資產' },
+        { id: 'annual_income', name: '年收入' },
+        { id: 'living_expense', name: '年支出' },
+        { id: 'retirement_age', name: '計劃退休年齡' },
+        { id: 'replacement_rate', name: '收入替代率' },
+        { id: 'retirement_return', name: '退休後要求回報率' },
+        { id: 'legacy_goal', name: '傳承目標' },
+        { id: 'life_expectancy', name: '預期壽命' }
+    ];
+    
+    requiredFields.forEach(field => {
+        const el = document.getElementById(field.id);
+        if (!el || !el.value.trim()) {
+            errors.push(field.name);
+            if (el) {
+                el.style.borderColor = '#dc3545';
+                el.style.backgroundColor = '#fff5f5';
+            }
+        } else {
+            if (el) {
+                el.style.borderColor = '';
+                el.style.backgroundColor = '';
+            }
+        }
+    });
+    
+    if (errors.length > 0) {
+        alert('請填寫以下必填項：\n' + errors.join('、'));
+        return false;
+    }
+    
+    return true;
+}
+
 async function saveAndCalculate() {
     if (!currentUser) {
         alert('請先登錄');
+        return;
+    }
+    
+    // 表單驗證
+    if (!validateForm()) {
         return;
     }
     
@@ -725,6 +771,38 @@ function loadReportData(report) {
             if (amountEl) amountEl.value = exp.amount || '';
             if (typeEl) typeEl.value = exp.type || '';
             if (yearEl) yearEl.value = exp.year || '';
+        });
+    }
+    
+    // 還原其他退休金來源
+    if (report.other_pensions && Array.isArray(report.other_pensions)) {
+        // 先清空現有的其他退休金
+        otherPensionCount = 0;
+        document.getElementById('other_pension_container').innerHTML = '';
+        
+        // 重新添加保存的其他退休金
+        report.other_pensions.forEach(pension => {
+            addOtherPension();
+            const id = otherPensionCount - 1;
+            const nameEl = document.getElementById(`op_name_${id}`);
+            const methodEl = document.getElementById(`op_method_${id}`);
+            const amountEl = document.getElementById(`op_amount_${id}`);
+            const startDateEl = document.getElementById(`op_start_date_${id}`);
+            const durationTypeEl = document.getElementById(`op_duration_type_${id}`);
+            const yearsEl = document.getElementById(`op_years_${id}`);
+            
+            if (nameEl) nameEl.value = pension.name || '';
+            if (methodEl) {
+                methodEl.value = pension.method || 'annual';
+                togglePensionYears(id);
+            }
+            if (amountEl) amountEl.value = pension.amount || '';
+            if (startDateEl) startDateEl.value = pension.startDate || '';
+            if (durationTypeEl) {
+                durationTypeEl.value = pension.durationType || 'limited';
+                togglePensionDuration(id);
+            }
+            if (yearsEl) yearsEl.value = pension.years || '1';
         });
     }
     
