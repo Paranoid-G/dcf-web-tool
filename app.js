@@ -1,7 +1,7 @@
 // DCF 財富規劃工具 - 主要腳本（雲端版）
 
 // ==================== 版本號 ====================
-const APP_VERSION = 'v2.4.20';
+const APP_VERSION = 'v2.4.21';
 
 // ==================== API 配置 ====================
 const API_BASE_URL = 'https://api.sgwm.cloud/api';
@@ -1386,12 +1386,15 @@ function calculate() {
 // 生成資產明細表
 // 生成資產明細表（根據修改意見重新編寫）
 function generateAssetTable(age, retire, life, initialAssets, income, expense, replacement, retireReturn, workRate, inflation, inflationEdu, inflationMedical, educationByYear, loanByYear, largeExpensesByYear, totalPension, legacy, pension, mpf, companyPension, otherPensionByYear, legalRetirementYearOffset) {
+    // 輔助函數：保留4位小數進行計算
+    const round4 = (num) => Math.round(num * 10000) / 10000;
+    
     const tableBody = document.getElementById('assetTableBody');
     if (!tableBody) return;
 
     tableBody.innerHTML = '';
     const currentYear = new Date().getFullYear();
-    let asset = initialAssets;
+    let asset = round4(initialAssets);
     const workYears = retire - age;
     const retireYears = life - retire;
 
@@ -1406,16 +1409,16 @@ function generateAssetTable(age, retire, life, initialAssets, income, expense, r
         const currentAge = age + i;
         const startAsset = asset;
 
-        // 當年各項支出
-        const yearEducation = educationByYear[i] || 0;
-        const yearLoan = loanByYear[i] || 0;
-        const yearLargeExpense = largeExpensesByYear[i] || 0;
+        // 當年各項支出（保留4位小數）
+        const yearEducation = round4(educationByYear[i] || 0);
+        const yearLoan = round4(loanByYear[i] || 0);
+        const yearLargeExpense = round4(largeExpensesByYear[i] || 0);
         
         // 生活支出（考慮通脹）- 修改意見 #3
-        const yearLivingExpense = expense * Math.pow(1 + inflation, i);
+        const yearLivingExpense = round4(expense * Math.pow(1 + inflation, i));
 
         // 當年總支出
-        const yearExpense = yearLivingExpense + yearEducation + yearLoan + yearLargeExpense;
+        const yearExpense = round4(yearLivingExpense + yearEducation + yearLoan + yearLargeExpense);
         
         // 調試：顯示2048年的支出明細
         if (year === 2048) {
@@ -1430,17 +1433,17 @@ function generateAssetTable(age, retire, life, initialAssets, income, expense, r
         }
 
         // 其他退休金收入（如果在工作期間開始提取）
-        const yearOtherPension = otherPensionByYear[i] || 0;
-        const totalIncome = income + yearOtherPension;
+        const yearOtherPension = round4(otherPensionByYear[i] || 0);
+        const totalIncome = round4(income + yearOtherPension);
 
         // 投資收益
-        const investmentIncome = startAsset * workRate;
+        const investmentIncome = round4(startAsset * workRate);
 
         // 資產變化
-        const assetChange = investmentIncome + totalIncome - yearExpense;
+        const assetChange = round4(investmentIncome + totalIncome - yearExpense);
 
         // 年終資產
-        asset = startAsset + assetChange;
+        asset = round4(startAsset + assetChange);
 
         const row = document.createElement('tr');
         row.style.background = i % 2 === 0 ? '#f8f9fa' : 'white';
@@ -1486,10 +1489,10 @@ function generateAssetTable(age, retire, life, initialAssets, income, expense, r
         medicalExpense *= Math.pow(1 + inflationMedical, i);
 
         // 退休期大額支出（修改意見 #4）- 擴展大額支出到退休期
-        const yearLargeExpense = largeExpensesByYear[workYears + i] || 0;
+        const yearLargeExpense = round4(largeExpensesByYear[workYears + i] || 0);
 
         // 當年總支出
-        const yearExpense = yearLivingExpense + medicalExpense + yearLargeExpense;
+        const yearExpense = round4(yearLivingExpense + medicalExpense + yearLargeExpense);
 
         // 當年收入（退休金來源）- 修改意見 #5
         // 強積金、企業年金等作為一次性收入在法定退休年份計入
@@ -1508,17 +1511,17 @@ function generateAssetTable(age, retire, life, initialAssets, income, expense, r
         }
         
         // 加上其他退休金來源
-        const yearOtherPension = otherPensionByYear[actualYear] || 0;
-        yearIncome += yearOtherPension;
+        const yearOtherPension = round4(otherPensionByYear[actualYear] || 0);
+        yearIncome = round4(yearIncome + yearOtherPension);
 
         // 投資收益（退休期：支出提前發生，不能參與投資）
-        const investmentIncome = (startAsset - yearExpense) * retireReturn;
+        const investmentIncome = round4((startAsset - yearExpense) * retireReturn);
 
         // 資產變化 = 投資收益 + 收入 - 支出
-        const assetChange = investmentIncome + yearIncome - yearExpense;
+        const assetChange = round4(investmentIncome + yearIncome - yearExpense);
 
         // 年終資產 = 年初資產 + 資產變化
-        asset = startAsset + assetChange;
+        asset = round4(startAsset + assetChange);
 
         const row = document.createElement('tr');
         row.style.background = (workYears + i) % 2 === 0 ? '#f8f9fa' : 'white';
