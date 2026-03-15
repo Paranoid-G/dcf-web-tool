@@ -1,7 +1,7 @@
 // DCF 財富規劃工具 - 主要腳本（雲端版）
 
 // ==================== 版本號 ====================
-const APP_VERSION = 'v2.4.1';
+const APP_VERSION = 'v2.4.2';
 
 // ==================== API 配置 ====================
 const API_BASE_URL = 'https://api.sgwm.cloud/api';
@@ -724,6 +724,7 @@ function calculate() {
 
     const workYears = retire - age;
     const retireYears = life - retire;
+    const currentYear = new Date().getFullYear();
 
     if (workYears <= 0) {
         alert('退休年齡必須大於當前年齡');
