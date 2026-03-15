@@ -1,7 +1,7 @@
 // DCF 財富規劃工具 - 主要腳本（雲端版）
 
 // ==================== 版本號 ====================
-const APP_VERSION = 'v2.4.4';
+const APP_VERSION = 'v2.4.5';
 
 // ==================== API 配置 ====================
 const API_BASE_URL = 'https://api.sgwm.cloud/api';
@@ -818,8 +818,9 @@ function calculate() {
     const annuity = parseFloat(document.getElementById('annuity').value) || 0;
     const otherPension = parseFloat(document.getElementById('other_pension').value) || 0;
     const totalPension = mpf + companyPension + pension + annuity + otherPension;
+    const annualPensionIncome = pension + annuity + otherPension; // 每年持續的養老金收入
 
-    const netRetireExpense = Math.max(0, retireExpenseYear1 - totalPension);
+    const netRetireExpense = Math.max(0, retireExpenseYear1 - annualPensionIncome);
 
     // 計算退休期醫療支出（使用醫療通脹）
     let totalMedicalExpense = 0;
