@@ -1440,8 +1440,49 @@ function calculate() {
     }
 }
 
-// 生成資產明細表
-// 生成資產明細表（根據修改意見重新編寫）
+// V2.5.1: 統一支出計算函數
+// 根據年份索引計算當年各項支出
+function calcYearExpenseUnified(yearIndex, isRetirement, expense, replacement, inflation, inflationMedical, workYears, educationByYear, loanByYear, largeExpensesByYear, currentAge) {
+    const round4 = (num) => Math.round(num * 10000) / 10000;
+    
+    // 計算日常支出
+    let yearLivingExpense;
+    if (!isRetirement) {
+        // 工作期：原始支出 × (1 + 通脹率)^年數
+        yearLivingExpense = expense * Math.pow(1 + inflation, yearIndex);
+    } else {
+        // 退休期：退休前一年支出 × 替代率 × (1 + 通脹率)^(退休年數+1)
+        const lastWorkYearLivingExpense = expense * Math.pow(1 + inflation, workYears - 1);
+        const retireExpenseBase = lastWorkYearLivingExpense * replacement;
+        yearLivingExpense = retireExpenseBase * Math.pow(1 + inflation, yearIndex - workYears + 1);
+    }
+    
+    // 醫療支出（僅退休期有）
+    let medicalExpense = 0;
+    if (isRetirement) {
+        if (currentAge < 65) medicalExpense = 11;
+        else if (currentAge < 75) medicalExpense = 25;
+        else if (currentAge < 85) medicalExpense = 53;
+        else medicalExpense = 85;
+        medicalExpense *= Math.pow(1 + inflationMedical, yearIndex - workYears);
+    }
+    
+    // 其他支出（教育、貸款、大額）
+    const yearEducation = educationByYear[yearIndex] || 0;
+    const yearLoan = loanByYear[yearIndex] || 0;
+    const yearLargeExpense = largeExpensesByYear[yearIndex] || 0;
+    
+    return {
+        living: round4(yearLivingExpense),
+        medical: round4(medicalExpense),
+        education: round4(yearEducation),
+        loan: round4(yearLoan),
+        large: round4(yearLargeExpense),
+        total: round4(yearLivingExpense + medicalExpense + yearEducation + yearLoan + yearLargeExpense)
+    };
+}
+
+// 生成資產明細表（V2.5.1 統一公式版本）
 function generateAssetTable(age, retire, life, initialAssets, income, expense, replacement, retireReturn, workRate, inflation, inflationEdu, inflationMedical, educationByYear, loanByYear, largeExpensesByYear, totalPension, legacy, pension, mpf, companyPension, otherPensionByYear, legalRetirementYearOffset) {
     // 輔助函數：保留4位小數進行計算
     const round4 = (num) => Math.round(num * 10000) / 10000;
@@ -1466,27 +1507,15 @@ function generateAssetTable(age, retire, life, initialAssets, income, expense, r
         const currentAge = age + i;
         const startAsset = asset;
 
-        // 當年各項支出（保留4位小數）
-        const yearEducation = round4(educationByYear[i] || 0);
-        const yearLoan = round4(loanByYear[i] || 0);
-        const yearLargeExpense = round4(largeExpensesByYear[i] || 0);
-        
-        // 生活支出（考慮通脹）- 修改意見 #3
-        const yearLivingExpense = round4(expense * Math.pow(1 + inflation, i));
-
-        // 當年總支出
-        const yearExpense = round4(yearLivingExpense + yearEducation + yearLoan + yearLargeExpense);
+        // V2.5.1: 使用統一函數計算支出
+        const yearExpenses = calcYearExpenseUnified(
+            i, false, expense, replacement, inflation, inflationMedical, 
+            workYears, educationByYear, loanByYear, largeExpensesByYear, currentAge
+        );
         
         // 調試：顯示2048年的支出明細
         if (year === 2048) {
-            console.log(`年份 ${year} 支出明細:`, {
-                yearLivingExpense,
-                yearEducation,
-                yearLoan,
-                yearLargeExpense,
-                yearExpense,
-                largeExpensesByYear_i: largeExpensesByYear[i]
-            });
+            console.log(`年份 ${year} 支出明細:`, yearExpenses);
         }
 
         // 其他退休金收入（如果在工作期間開始提取）
@@ -1497,7 +1526,7 @@ function generateAssetTable(age, retire, life, initialAssets, income, expense, r
         const investmentIncome = round4(startAsset * workRate);
 
         // 資產變化
-        const assetChange = round4(investmentIncome + totalIncome - yearExpense);
+        const assetChange = round4(investmentIncome + totalIncome - yearExpenses.total);
 
         // 年終資產
         asset = round4(startAsset + assetChange);
@@ -1506,7 +1535,7 @@ function generateAssetTable(age, retire, life, initialAssets, income, expense, r
         row.style.background = i % 2 === 0 ? '#f8f9fa' : 'white';
         
         // 如果有大額支出，高亮顯示
-        if (yearLargeExpense > 0) {
+        if (yearExpenses.large > 0) {
             row.style.background = '#fff3cd';
         }
         
@@ -1514,7 +1543,7 @@ function generateAssetTable(age, retire, life, initialAssets, income, expense, r
             <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${year}</td>
             <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${currentAge}</td>
             <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${Math.round(startAsset).toLocaleString()}</td>
-            <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${Math.round(yearExpense).toLocaleString()}</td>
+            <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${Math.round(yearExpenses.total).toLocaleString()}</td>
             <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${Math.round(totalIncome).toLocaleString()}</td>
             <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${Math.round(investmentIncome).toLocaleString()}</td>
             <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${(workRate * 100).toFixed(2)}%</td>
@@ -1525,39 +1554,20 @@ function generateAssetTable(age, retire, life, initialAssets, income, expense, r
     }
 
     // ========== 退休期 ==========
-    // V2.5.1: 退休後日常支出公式修改
-    // 退休前一年的日常支出（已考慮通脹）× 替代率
-    const lastWorkYearLivingExpense = expense * Math.pow(1 + inflation, workYears - 1);
-    const retireExpenseBase = lastWorkYearLivingExpense * replacement;
-    
     for (let i = 0; i < retireYears; i++) {
         const year = currentYear + workYears + i;
         const currentAge = retire + i;
         const startAsset = asset;
         const actualYear = workYears + i;
 
-        // V2.5.1: 退休後日常支出 = 退休前一年支出 × 替代率 × (1 + 通脹率)^(i+1)
-        const yearLivingExpense = retireExpenseBase * Math.pow(1 + inflation, i + 1);
-
-        // 醫療支出
-        let medicalExpense = 0;
-        if (currentAge < 65) medicalExpense = 11;
-        else if (currentAge < 75) medicalExpense = 25;
-        else if (currentAge < 85) medicalExpense = 53;
-        else medicalExpense = 85;
-        medicalExpense *= Math.pow(1 + inflationMedical, i);
-
-        // V2.5.1: 退休期支出統一計算（與工作期相同邏輯）
-        const yearEducation = round4(educationByYear[actualYear] || 0);
-        const yearLoan = round4(loanByYear[actualYear] || 0);
-        const yearLargeExpense = round4(largeExpensesByYear[actualYear] || 0);
-
-        // V2.5.1: 當年總支出統一計算
-        const yearExpense = round4(yearLivingExpense + medicalExpense + yearEducation + yearLoan + yearLargeExpense);
+        // V2.5.1: 使用統一函數計算支出（退休期）
+        const yearExpenses = calcYearExpenseUnified(
+            actualYear, true, expense, replacement, inflation, inflationMedical,
+            workYears, educationByYear, loanByYear, largeExpensesByYear, currentAge
+        );
 
         // 當年收入（退休金來源）- 修改意見 #5
         // 強積金、企業年金等作為一次性收入在法定退休年份計入
-        const actualYear = workYears + i;
         let yearIncome = 0;
         
         // 檢查是否已經達到法定退休年份
@@ -1576,10 +1586,10 @@ function generateAssetTable(age, retire, life, initialAssets, income, expense, r
         yearIncome = round4(yearIncome + yearOtherPension);
 
         // 投資收益（退休期：支出提前發生，不能參與投資）
-        const investmentIncome = round4((startAsset - yearExpense) * retireReturn);
+        const investmentIncome = round4((startAsset - yearExpenses.total) * retireReturn);
 
         // 資產變化 = 投資收益 + 收入 - 支出
-        const assetChange = round4(investmentIncome + yearIncome - yearExpense);
+        const assetChange = round4(investmentIncome + yearIncome - yearExpenses.total);
 
         // 年終資產 = 年初資產 + 資產變化
         asset = round4(startAsset + assetChange);
@@ -1596,7 +1606,7 @@ function generateAssetTable(age, retire, life, initialAssets, income, expense, r
             <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${year}</td>
             <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${currentAge}</td>
             <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${Math.round(startAsset).toLocaleString()}</td>
-            <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${Math.round(yearExpense).toLocaleString()}</td>
+            <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${Math.round(yearExpenses.total).toLocaleString()}</td>
             <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${Math.round(yearIncome).toLocaleString()}</td>
             <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${Math.round(investmentIncome).toLocaleString()}</td>
             <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${(retireReturn * 100).toFixed(2)}%</td>
