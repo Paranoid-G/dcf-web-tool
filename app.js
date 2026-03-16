@@ -1,7 +1,7 @@
 // DCF 財富規劃工具 - 主要腳本（雲端版）
 
 // ==================== 版本號 ====================
-const APP_VERSION = 'v2.5.3';
+const APP_VERSION = 'v2.5.4';
 
 // ==================== API 配置 ====================
 const API_BASE_URL = 'https://api.sgwm.cloud/api';
@@ -1199,7 +1199,8 @@ function calculate() {
         // 簡單相加（無投資收益）
         let totalNeeded = legacy;
         for (let i = 0; i < retireYears; i++) {
-            const yearLivingExpense = retireExpenseYear1 * Math.pow(1 + inflation, i);
+            // V2.5.4: 修正退休後日常支出公式，考慮退休當年通脹
+            const yearLivingExpense = retireExpenseYear1 * Math.pow(1 + inflation, i + 1);
             const ageAtYear = retire + i;
             let baseMedical = 0;
             if (ageAtYear < 65) baseMedical = 11;
@@ -1230,7 +1231,8 @@ function calculate() {
         let requiredAsset = legacy;
         
         for (let i = retireYears - 1; i >= 0; i--) {
-            const yearLivingExpense = retireExpenseYear1 * Math.pow(1 + inflation, i);
+            // V2.5.4: 修正退休後日常支出公式，考慮退休當年通脹
+            const yearLivingExpense = retireExpenseYear1 * Math.pow(1 + inflation, i + 1);
             const ageAtYear = retire + i;
             let baseMedical = 0;
             if (ageAtYear < 65) baseMedical = 11;
