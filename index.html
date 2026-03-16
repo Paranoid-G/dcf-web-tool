@@ -6,7 +6,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>DCF 財富規劃工具 v2.5.4 - 香港雲杉財富</title>
+    <title>DCF 財富規劃工具 v2.5.5 - 香港雲杉財富</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -682,22 +682,23 @@
                         <div id="feasibility" style="margin-top: 15px; font-size: 1.5rem; font-weight: bold;"></div>
                     </div>
                     
+                    <!-- V2.5.5: 修改指標展示 -->
                     <div class="metrics">
+                        <div class="metric-card">
+                            <div class="metric-value" id="retirement_age">--</div>
+                            <div class="metric-label">退休年齡</div>
+                        </div>
                         <div class="metric-card">
                             <div class="metric-value" id="work_years">--</div>
                             <div class="metric-label">工作年限</div>
-                        </div>
-                        <div class="metric-card">
-                            <div class="metric-value" id="retirement_years">--</div>
-                            <div class="metric-label">退休年限</div>
                         </div>
                         <div class="metric-card">
                             <div class="metric-value" id="retirement_assets">--</div>
                             <div class="metric-label">退休時需資產（萬）</div>
                         </div>
                         <div class="metric-card">
-                            <div class="metric-value" id="total_expenses">--</div>
-                            <div class="metric-label">總支出現值（萬）</div>
+                            <div class="metric-value" id="legacy_goal">--</div>
+                            <div class="metric-label">傳承目標（萬）</div>
                         </div>
                     </div>
                     

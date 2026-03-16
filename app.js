@@ -1,7 +1,7 @@
 // DCF 財富規劃工具 - 主要腳本（雲端版）
 
 // ==================== 版本號 ====================
-const APP_VERSION = 'v2.5.4';
+const APP_VERSION = 'v2.5.5';
 
 // ==================== API 配置 ====================
 const API_BASE_URL = 'https://api.sgwm.cloud/api';
@@ -1402,17 +1402,18 @@ function calculate() {
         }
     }
     
+    // V2.5.5: 更新指標顯示
+    const retirementAgeEl = document.getElementById('retirement_age');
+    if (retirementAgeEl) retirementAgeEl.textContent = retire;
+    
     const workYearsEl = document.getElementById('work_years');
     if (workYearsEl) workYearsEl.textContent = workYears;
     
-    const retireYearsEl = document.getElementById('retirement_years');
-    if (retireYearsEl) retireYearsEl.textContent = retireYears;
-    
     const retireAssetsEl = document.getElementById('retirement_assets');
-    if (retireAssetsEl) retireAssetsEl.textContent = Math.round(neededAtRetire);
+    if (retireAssetsEl) retireAssetsEl.textContent = Math.round(neededAtRetire).toLocaleString();
     
-    const totalExpensesEl = document.getElementById('total_expenses');
-    if (totalExpensesEl) totalExpensesEl.textContent = Math.round(calcRetireAsset(rate));
+    const legacyGoalEl = document.getElementById('legacy_goal');
+    if (legacyGoalEl) legacyGoalEl.textContent = Math.round(legacy).toLocaleString();
 
     // 保存計算結果
     window.lastCalculation = {
@@ -1644,27 +1645,30 @@ function generateReport() {
                 <tr><td>年支出</td><td>${data.expense} 萬港幣</td></tr>
             </table>
 
+            <!-- V2.5.5: 修改報告內容 -->
             <h2>二、退休計劃</h2>
             <table>
                 <tr><th>項目</th><th>內容</th></tr>
-                <tr><td>計劃退休年齡</td><td>${data.retire_age} 歲</td></tr>
-                <tr><td>收入替代率</td><td>${data.replacement}%</td></tr>
-                <tr><td>退休後回報率</td><td>${data.retire_return}%</td></tr>
-                <tr><td>傳承目標</td><td>${data.legacy} 萬港幣</td></tr>
-                <tr><td>預期壽命</td><td>${data.life_expect} 歲</td></tr>
+                <tr><td>計劃退休年齡</td><td>${data.retirement_age || data.retire_age || '--'} 歲</td></tr>
+                <tr><td>收入替代率</td><td>${data.replacement_rate || data.replacement || '--'}%</td></tr>
+                <tr><td>退休後回報率</td><td>${data.retirement_return || data.retire_return || '--'}%</td></tr>
+                <tr><td>傳承目標</td><td>${data.legacy_goal || data.legacy || '--'} 萬港幣</td></tr>
+                <tr><td>傳承時點</td><td>${data.life_expectancy || data.life_expect || '--'} 歲</td></tr>
             </table>
 
+            <!-- V2.5.5: 退休金來源為0的不展示 -->
             <h2>三、退休金來源</h2>
             <table>
                 <tr><th>項目</th><th>金額（萬/年）</th></tr>
-                <tr><td>強積金</td><td>${data.mpf || 0}</td></tr>
-                <tr><td>企業年金</td><td>${data.company_pension || 0}</td></tr>
-                <tr><td>退休金</td><td>${data.pension || 0}</td></tr>
-                <tr><td>養老金</td><td>${data.annuity || 0}</td></tr>
-                <tr><td>其他</td><td>${data.other_pension || 0}</td></tr>
+                ${(data.mpf || 0) > 0 ? `<tr><td>強積金</td><td>${data.mpf}</td></tr>` : ''}
+                ${(data.company_pension || 0) > 0 ? `<tr><td>企業年金</td><td>${data.company_pension}</td></tr>` : ''}
+                ${(data.pension || 0) > 0 ? `<tr><td>退休金</td><td>${data.pension}</td></tr>` : ''}
+                ${(data.annuity || 0) > 0 ? `<tr><td>養老金</td><td>${data.annuity}</td></tr>` : ''}
+                ${(data.other_pension || 0) > 0 ? `<tr><td>其他</td><td>${data.other_pension}</td></tr>` : ''}
                 ${data.other_pension_note ? `<tr><td>其他備註</td><td>${data.other_pension_note}</td></tr>` : ''}
             </table>
 
+            <!-- V2.5.5: 修改計算結果指標 -->
             <h2>四、計算結果</h2>
             <div class="result-box">
                 <div class="result-value">${calc.rate || '0.00'}%</div>
@@ -1672,10 +1676,10 @@ function generateReport() {
             </div>
             <table>
                 <tr><th>指標</th><th>數值</th></tr>
+                <tr><td>退休年齡</td><td>${data.retirement_age || data.retire_age || '--'} 歲</td></tr>
                 <tr><td>工作年限</td><td>${calc.workYears || 0} 年</td></tr>
-                <tr><td>退休年限</td><td>${calc.retireYears || 0} 年</td></tr>
-                <tr><td>退休所需資產</td><td>${calc.neededAtRetire || 0} 萬港幣</td></tr>
-                <tr><td>目標總額</td><td>${calc.totalAsset || 0} 萬港幣</td></tr>
+                <tr><td>退休所需資產</td><td>${(calc.neededAtRetire || 0).toLocaleString()} 萬港幣</td></tr>
+                <tr><td>傳承目標</td><td>${(parseInt(data.legacy_goal || data.legacy) || 0).toLocaleString()} 萬港幣</td></tr>
             </table>
 
             <div class="footer">
