@@ -391,12 +391,12 @@
             <div id="registerForm" class="hidden">
                 <!-- V2.5.0: 郵箱欄位移到第一位 -->
                 <div class="form-group required">
-                    <label>郵箱 *</label>
+                    <label>郵箱</label>
                     <input type="email" id="regEmail" placeholder="請輸入郵箱" oninput="updateUsernameFromSource()">
                 </div>
                 <!-- V2.5.0: 手機號添加區號選擇 -->
                 <div class="form-group required">
-                    <label>手機號 *</label>
+                    <label>手機號</label>
                     <div style="display: flex; gap: 10px;">
                         <select id="regPhoneCountry" style="width: 100px; flex-shrink: 0;" onchange="updateUsernameFromSource()">
                             <option value="+86">+86</option>
@@ -407,16 +407,16 @@
                 </div>
                 <!-- V2.5.0: 用戶名輸入方式選擇 -->
                 <div class="form-group required">
-                    <label>用戶名 *</label>
+                    <label>用戶名</label>
                     <div style="display: flex; gap: 15px; margin-bottom: 8px; flex-wrap: wrap;">
                         <label style="display: flex; align-items: center; gap: 5px; font-weight: normal; cursor: pointer;">
-                            <input type="radio" name="username_mode" value="email" onchange="toggleUsernameInput()"> 同郵箱
+                            <input type="radio" name="username_mode" value="email" checked onchange="toggleUsernameInput()"> 同郵箱
                         </label>
                         <label style="display: flex; align-items: center; gap: 5px; font-weight: normal; cursor: pointer;">
                             <input type="radio" name="username_mode" value="phone" onchange="toggleUsernameInput()"> 同手機
                         </label>
                         <label style="display: flex; align-items: center; gap: 5px; font-weight: normal; cursor: pointer;">
-                            <input type="radio" name="username_mode" value="custom" checked onchange="toggleUsernameInput()"> 自定義
+                            <input type="radio" name="username_mode" value="custom" onchange="toggleUsernameInput()"> 自定義
                         </label>
                     </div>
                     <input type="text" id="regUsername" placeholder="請設置用戶名">

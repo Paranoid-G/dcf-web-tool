@@ -1060,7 +1060,8 @@ function calculate() {
     }
 
     // ========== 計算大額支出 ==========
-    let totalLargeExpense = 0;
+    // V2.5.0: 大額支出按年份存儲，根據現值/終值判斷是否考慮通脹
+    const largeExpensesByYear = {};
     const expenseCards = document.querySelectorAll('[id^="expense_"]');
     
     expenseCards.forEach(card => {
@@ -1072,15 +1073,19 @@ function calculate() {
         if (amount > 0 && year > 0) {
             const currentYear = new Date().getFullYear();
             const yearsFromNow = year - currentYear;
+            const totalYears = workYears + retireYears;
             
-            if (yearsFromNow >= 0 && yearsFromNow < workYears) {
+            if (yearsFromNow >= 0 && yearsFromNow < totalYears) {
+                let finalAmount = amount;
                 if (type === '現值') {
                     // 現值：按通脹增長到支出年份
-                    totalLargeExpense += amount * Math.pow(1 + inflation, yearsFromNow);
-                } else {
-                    // 終值：直接使用
-                    totalLargeExpense += amount;
+                    finalAmount = amount * Math.pow(1 + inflation, yearsFromNow);
                 }
+                // 終值：直接使用，不考慮通脹
+                if (!largeExpensesByYear[yearsFromNow]) {
+                    largeExpensesByYear[yearsFromNow] = 0;
+                }
+                largeExpensesByYear[yearsFromNow] += finalAmount;
             }
         }
     });
@@ -1120,32 +1125,6 @@ function calculate() {
         annualPensionIncome = (pension + annuity + otherPension) * pensionYears / retireYears;
     }
     
-    // 先計算大額支出（供 neededAtRetire 使用）
-    const largeExpensesByYear = {};
-    const largeExpenseCards = document.querySelectorAll('[id^="expense_"]');
-    largeExpenseCards.forEach(card => {
-        const id = card.id.replace('expense_', '');
-        const amount = parseFloat(document.getElementById(`exp_amount_${id}`)?.value) || 0;
-        const type = document.getElementById(`exp_type_${id}`)?.value || '現值';
-        const year = parseInt(document.getElementById(`exp_year_${id}`)?.value) || 0;
-        
-        if (amount > 0 && year > 0) {
-            const yearsFromNow = year - currentYear;
-            const totalYears = workYears + retireYears;
-            
-            if (yearsFromNow >= 0 && yearsFromNow < totalYears) {
-                let finalAmount = amount;
-                if (type === '現值') {
-                    finalAmount = amount * Math.pow(1 + inflation, yearsFromNow);
-                }
-                if (!largeExpensesByYear[yearsFromNow]) {
-                    largeExpensesByYear[yearsFromNow] = 0;
-                }
-                largeExpensesByYear[yearsFromNow] += finalAmount;
-            }
-        }
-    });
-
     // 處理動態添加的其他退休金來源
     const otherPensionByYear = {}; // 按年份存儲其他退休金收入
     const otherPensionCards = document.querySelectorAll('[id^="other_pension_"]');
@@ -1523,7 +1502,8 @@ function generateAssetTable(age, retire, life, initialAssets, income, expense, r
     }
 
     // ========== 退休期 ==========
-    // 計算退休前一年的日常支出（考慮通脹）- 修改意見 #7
+    // V2.5.0: 退休後日常支出公式修改
+    // 退休前一年的日常支出（已考慮通脹）× 替代率
     const lastWorkYearLivingExpense = expense * Math.pow(1 + inflation, workYears - 1);
     const retireExpenseBase = lastWorkYearLivingExpense * replacement;
     
@@ -1531,9 +1511,10 @@ function generateAssetTable(age, retire, life, initialAssets, income, expense, r
         const year = currentYear + workYears + i;
         const currentAge = retire + i;
         const startAsset = asset;
+        const actualYear = workYears + i;
 
-        // 退休後日常支出（含通脹）- 修改意見 #7
-        const yearLivingExpense = retireExpenseBase * Math.pow(1 + inflation, i);
+        // V2.5.0: 退休後日常支出 = 退休前一年支出 × 替代率 × (1 + 通脹率)^(i+1)
+        const yearLivingExpense = retireExpenseBase * Math.pow(1 + inflation, i + 1);
 
         // 醫療支出
         let medicalExpense = 0;
@@ -1543,11 +1524,15 @@ function generateAssetTable(age, retire, life, initialAssets, income, expense, r
         else medicalExpense = 85;
         medicalExpense *= Math.pow(1 + inflationMedical, i);
 
-        // 退休期大額支出（修改意見 #4）- 擴展大額支出到退休期
-        const yearLargeExpense = round4(largeExpensesByYear[workYears + i] || 0);
+        // V2.5.0: 退休期支出統一計算（與工作期相同邏輯）
+        // 教育支出、貸款還款、大額支出在退休期也可能存在
+        const yearEducation = round4(educationByYear[actualYear] || 0);
+        const yearLoan = round4(loanByYear[actualYear] || 0);
+        const yearLargeExpense = round4(largeExpensesByYear[actualYear] || 0);
 
-        // 當年總支出
-        const yearExpense = round4(yearLivingExpense + medicalExpense + yearLargeExpense);
+        // V2.5.0: 當年總支出統一計算
+        // 退休期日常支出使用退休後標準，其他支出與工作期相同邏輯
+        const yearExpense = round4(yearLivingExpense + medicalExpense + yearEducation + yearLoan + yearLargeExpense);
 
         // 當年收入（退休金來源）- 修改意見 #5
         // 強積金、企業年金等作為一次性收入在法定退休年份計入
