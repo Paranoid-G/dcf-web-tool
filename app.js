@@ -1402,9 +1402,9 @@ function calculate() {
         }
     }
     
-    // V2.5.5: 更新指標顯示
-    const retirementAgeEl = document.getElementById('retirement_age');
-    if (retirementAgeEl) retirementAgeEl.textContent = retire;
+    // V2.5.5: 更新指標顯示（修正 ID 衝突）
+    const resultRetirementAgeEl = document.getElementById('result_retirement_age');
+    if (resultRetirementAgeEl) resultRetirementAgeEl.textContent = retire;
     
     const workYearsEl = document.getElementById('work_years');
     if (workYearsEl) workYearsEl.textContent = workYears;
