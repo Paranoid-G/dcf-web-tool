@@ -1412,8 +1412,8 @@ function calculate() {
     const retireAssetsEl = document.getElementById('retirement_assets');
     if (retireAssetsEl) retireAssetsEl.textContent = Math.round(neededAtRetire).toLocaleString();
     
-    const legacyGoalEl = document.getElementById('legacy_goal');
-    if (legacyGoalEl) legacyGoalEl.textContent = Math.round(legacy).toLocaleString();
+    const resultLegacyGoalEl = document.getElementById('result_legacy_goal');
+    if (resultLegacyGoalEl) resultLegacyGoalEl.textContent = Math.round(legacy).toLocaleString();
 
     // 保存計算結果
     window.lastCalculation = {
