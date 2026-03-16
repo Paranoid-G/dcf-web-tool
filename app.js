@@ -12,21 +12,66 @@ let currentRole = 'user';
 let expenseCount = 0;
 let currentReportId = null;
 
+// V2.5.1: 統一支出計算函數（移到前面確保優先加載）
+function calcYearExpenseUnified(yearIndex, isRetirement, expense, replacement, inflation, inflationMedical, workYears, educationByYear, loanByYear, largeExpensesByYear, currentAge) {
+    const round4 = (num) => Math.round(num * 10000) / 10000;
+    
+    // 計算日常支出
+    let yearLivingExpense;
+    if (!isRetirement) {
+        // 工作期：原始支出 × (1 + 通脹率)^年數
+        yearLivingExpense = expense * Math.pow(1 + inflation, yearIndex);
+    } else {
+        // 退休期：退休前一年支出 × 替代率 × (1 + 通脹率)^(退休年數+1)
+        const lastWorkYearLivingExpense = expense * Math.pow(1 + inflation, workYears - 1);
+        const retireExpenseBase = lastWorkYearLivingExpense * replacement;
+        yearLivingExpense = retireExpenseBase * Math.pow(1 + inflation, yearIndex - workYears + 1);
+    }
+    
+    // 醫療支出（僅退休期有）
+    let medicalExpense = 0;
+    if (isRetirement) {
+        if (currentAge < 65) medicalExpense = 11;
+        else if (currentAge < 75) medicalExpense = 25;
+        else if (currentAge < 85) medicalExpense = 53;
+        else medicalExpense = 85;
+        medicalExpense *= Math.pow(1 + inflationMedical, yearIndex - workYears);
+    }
+    
+    // 其他支出（教育、貸款、大額）
+    const yearEducation = educationByYear[yearIndex] || 0;
+    const yearLoan = loanByYear[yearIndex] || 0;
+    const yearLargeExpense = largeExpensesByYear[yearIndex] || 0;
+    
+    return {
+        living: round4(yearLivingExpense),
+        medical: round4(medicalExpense),
+        education: round4(yearEducation),
+        loan: round4(yearLoan),
+        large: round4(yearLargeExpense),
+        total: round4(yearLivingExpense + medicalExpense + yearEducation + yearLoan + yearLargeExpense)
+    };
+}
+
 // ==================== DOM 載入初始化 ====================
 document.addEventListener('DOMContentLoaded', async function() {
-    // 更新標題和版本號
-    document.title = `DCF 財富規劃工具 ${APP_VERSION} - 香港雲杉財富`;
-    console.log('正在更新版本號:', APP_VERSION);
-    
-    // 更新所有 h1 元素（登錄頁和主頁都有）
-    const allTitles = document.querySelectorAll('.header h1');
-    allTitles.forEach((title, index) => {
-        title.innerHTML = `💰 DCF 財富規劃工具 ${APP_VERSION}`;
-        console.log(`已更新標題 ${index + 1}:`, title.innerHTML);
-    });
-    
-    if (allTitles.length === 0) {
-        console.log('沒有找到 h1 元素');
+    // V2.5.1: 首先更新標題和版本號（確保在任何可能出錯的代碼之前執行）
+    try {
+        document.title = `DCF 財富規劃工具 ${APP_VERSION} - 香港雲杉財富`;
+        console.log('正在更新版本號:', APP_VERSION);
+        
+        // 更新所有 h1 元素（登錄頁和主頁都有）
+        const allTitles = document.querySelectorAll('.header h1');
+        allTitles.forEach((title, index) => {
+            title.innerHTML = `💰 DCF 財富規劃工具 ${APP_VERSION}`;
+            console.log(`已更新標題 ${index + 1}:`, title.innerHTML);
+        });
+        
+        if (allTitles.length === 0) {
+            console.log('沒有找到 h1 元素');
+        }
+    } catch (e) {
+        console.error('更新版本號時出錯:', e);
     }
     
     const fillDateEl = document.getElementById('fill_date');
@@ -1438,48 +1483,6 @@ function calculate() {
         console.error('[DEBUG] calculate() 函數執行出錯:', error);
         alert('計算過程中出現錯誤: ' + error.message);
     }
-}
-
-// V2.5.1: 統一支出計算函數
-// 根據年份索引計算當年各項支出
-function calcYearExpenseUnified(yearIndex, isRetirement, expense, replacement, inflation, inflationMedical, workYears, educationByYear, loanByYear, largeExpensesByYear, currentAge) {
-    const round4 = (num) => Math.round(num * 10000) / 10000;
-    
-    // 計算日常支出
-    let yearLivingExpense;
-    if (!isRetirement) {
-        // 工作期：原始支出 × (1 + 通脹率)^年數
-        yearLivingExpense = expense * Math.pow(1 + inflation, yearIndex);
-    } else {
-        // 退休期：退休前一年支出 × 替代率 × (1 + 通脹率)^(退休年數+1)
-        const lastWorkYearLivingExpense = expense * Math.pow(1 + inflation, workYears - 1);
-        const retireExpenseBase = lastWorkYearLivingExpense * replacement;
-        yearLivingExpense = retireExpenseBase * Math.pow(1 + inflation, yearIndex - workYears + 1);
-    }
-    
-    // 醫療支出（僅退休期有）
-    let medicalExpense = 0;
-    if (isRetirement) {
-        if (currentAge < 65) medicalExpense = 11;
-        else if (currentAge < 75) medicalExpense = 25;
-        else if (currentAge < 85) medicalExpense = 53;
-        else medicalExpense = 85;
-        medicalExpense *= Math.pow(1 + inflationMedical, yearIndex - workYears);
-    }
-    
-    // 其他支出（教育、貸款、大額）
-    const yearEducation = educationByYear[yearIndex] || 0;
-    const yearLoan = loanByYear[yearIndex] || 0;
-    const yearLargeExpense = largeExpensesByYear[yearIndex] || 0;
-    
-    return {
-        living: round4(yearLivingExpense),
-        medical: round4(medicalExpense),
-        education: round4(yearEducation),
-        loan: round4(yearLoan),
-        large: round4(yearLargeExpense),
-        total: round4(yearLivingExpense + medicalExpense + yearEducation + yearLoan + yearLargeExpense)
-    };
 }
 
 // 生成資產明細表（V2.5.1 統一公式版本）
