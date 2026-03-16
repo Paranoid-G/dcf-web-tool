@@ -1,7 +1,7 @@
 // DCF 財富規劃工具 - 主要腳本（雲端版）
 
 // ==================== 版本號 ====================
-const APP_VERSION = 'v2.5.0';
+const APP_VERSION = 'v2.4.22';
 
 // ==================== API 配置 ====================
 const API_BASE_URL = 'https://api.sgwm.cloud/api';
@@ -14,23 +14,19 @@ let currentReportId = null;
 
 // ==================== DOM 載入初始化 ====================
 document.addEventListener('DOMContentLoaded', async function() {
-    // V2.5.0: 首先更新標題和版本號（確保在任何可能出錯的代碼之前執行）
-    try {
-        document.title = `DCF 財富規劃工具 ${APP_VERSION} - 香港雲杉財富`;
-        console.log('正在更新版本號:', APP_VERSION);
-        
-        // 更新所有 h1 元素（登錄頁和主頁都有）
-        const allTitles = document.querySelectorAll('.header h1');
-        allTitles.forEach((title, index) => {
-            title.innerHTML = `💰 DCF 財富規劃工具 ${APP_VERSION}`;
-            console.log(`已更新標題 ${index + 1}:`, title.innerHTML);
-        });
-        
-        if (allTitles.length === 0) {
-            console.log('沒有找到 h1 元素');
-        }
-    } catch (e) {
-        console.error('更新版本號時出錯:', e);
+    // 更新標題和版本號
+    document.title = `DCF 財富規劃工具 ${APP_VERSION} - 香港雲杉財富`;
+    console.log('正在更新版本號:', APP_VERSION);
+    
+    // 更新所有 h1 元素（登錄頁和主頁都有）
+    const allTitles = document.querySelectorAll('.header h1');
+    allTitles.forEach((title, index) => {
+        title.innerHTML = `💰 DCF 財富規劃工具 ${APP_VERSION}`;
+        console.log(`已更新標題 ${index + 1}:`, title.innerHTML);
+    });
+    
+    if (allTitles.length === 0) {
+        console.log('沒有找到 h1 元素');
     }
     
     const fillDateEl = document.getElementById('fill_date');
@@ -84,68 +80,17 @@ function showLogin() {
     document.getElementById('loginTitle').textContent = '用戶登錄';
 }
 
-// ==================== V2.5.0: 用戶名輸入方式切換 ====================
-function toggleUsernameInput() {
-    const usernameMode = document.querySelector('input[name="username_mode"]:checked')?.value || 'custom';
-    const usernameInput = document.getElementById('regUsername');
-    const emailInput = document.getElementById('regEmail');
-    const phoneInput = document.getElementById('regPhone');
-    
-    if (usernameMode === 'email') {
-        usernameInput.value = emailInput.value || '';
-        usernameInput.disabled = true;
-        usernameInput.style.backgroundColor = '#e9ecef';
-    } else if (usernameMode === 'phone') {
-        const countryCode = document.getElementById('regPhoneCountry')?.value || '+86';
-        const phoneNumber = phoneInput.value || '';
-        usernameInput.value = phoneNumber ? countryCode + phoneNumber : '';
-        usernameInput.disabled = true;
-        usernameInput.style.backgroundColor = '#e9ecef';
-    } else {
-        usernameInput.disabled = false;
-        usernameInput.style.backgroundColor = '';
-    }
-}
-
-// 監聽郵箱和手機變化，自動更新用戶名
-function updateUsernameFromSource() {
-    const usernameMode = document.querySelector('input[name="username_mode"]:checked')?.value || 'custom';
-    if (usernameMode === 'email') {
-        const email = document.getElementById('regEmail')?.value || '';
-        document.getElementById('regUsername').value = email;
-    } else if (usernameMode === 'phone') {
-        const countryCode = document.getElementById('regPhoneCountry')?.value || '+86';
-        const phone = document.getElementById('regPhone')?.value || '';
-        document.getElementById('regUsername').value = phone ? countryCode + phone : '';
-    }
-}
-
-// V2.5.0: 郵箱格式驗證
-function validateEmail(email) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-}
-
 async function register() {
     const username = document.getElementById('regUsername').value;
-    const phoneCountry = document.getElementById('regPhoneCountry')?.value || '+86';
-    const phoneNumber = document.getElementById('regPhone').value;
-    const phone = phoneCountry + phoneNumber;
+    const phone = document.getElementById('regPhone').value;
     const email = document.getElementById('regEmail').value;
     const password = document.getElementById('regPassword').value;
     const password2 = document.getElementById('regPassword2').value;
 
-    if (!username || !phoneNumber || !email || !password) {
+    if (!username || !phone || !email || !password) {
         alert('請填寫所有必填項');
         return;
     }
-    
-    // V2.5.0: 郵箱格式驗證
-    if (!validateEmail(email)) {
-        alert('請輸入正確的郵箱格式');
-        return;
-    }
-    
     if (password.length < 6) {
         alert('密碼至少6位');
         return;
@@ -1064,8 +1009,7 @@ function calculate() {
     }
 
     // ========== 計算大額支出 ==========
-    // V2.5.0: 大額支出按年份存儲，根據現值/終值判斷是否考慮通脹
-    const largeExpensesByYear = {};
+    let totalLargeExpense = 0;
     const expenseCards = document.querySelectorAll('[id^="expense_"]');
     
     expenseCards.forEach(card => {
@@ -1077,19 +1021,15 @@ function calculate() {
         if (amount > 0 && year > 0) {
             const currentYear = new Date().getFullYear();
             const yearsFromNow = year - currentYear;
-            const totalYears = workYears + retireYears;
             
-            if (yearsFromNow >= 0 && yearsFromNow < totalYears) {
-                let finalAmount = amount;
+            if (yearsFromNow >= 0 && yearsFromNow < workYears) {
                 if (type === '現值') {
                     // 現值：按通脹增長到支出年份
-                    finalAmount = amount * Math.pow(1 + inflation, yearsFromNow);
+                    totalLargeExpense += amount * Math.pow(1 + inflation, yearsFromNow);
+                } else {
+                    // 終值：直接使用
+                    totalLargeExpense += amount;
                 }
-                // 終值：直接使用，不考慮通脹
-                if (!largeExpensesByYear[yearsFromNow]) {
-                    largeExpensesByYear[yearsFromNow] = 0;
-                }
-                largeExpensesByYear[yearsFromNow] += finalAmount;
             }
         }
     });
@@ -1129,6 +1069,32 @@ function calculate() {
         annualPensionIncome = (pension + annuity + otherPension) * pensionYears / retireYears;
     }
     
+    // 先計算大額支出（供 neededAtRetire 使用）
+    const largeExpensesByYear = {};
+    const largeExpenseCards = document.querySelectorAll('[id^="expense_"]');
+    largeExpenseCards.forEach(card => {
+        const id = card.id.replace('expense_', '');
+        const amount = parseFloat(document.getElementById(`exp_amount_${id}`)?.value) || 0;
+        const type = document.getElementById(`exp_type_${id}`)?.value || '現值';
+        const year = parseInt(document.getElementById(`exp_year_${id}`)?.value) || 0;
+        
+        if (amount > 0 && year > 0) {
+            const yearsFromNow = year - currentYear;
+            const totalYears = workYears + retireYears;
+            
+            if (yearsFromNow >= 0 && yearsFromNow < totalYears) {
+                let finalAmount = amount;
+                if (type === '現值') {
+                    finalAmount = amount * Math.pow(1 + inflation, yearsFromNow);
+                }
+                if (!largeExpensesByYear[yearsFromNow]) {
+                    largeExpensesByYear[yearsFromNow] = 0;
+                }
+                largeExpensesByYear[yearsFromNow] += finalAmount;
+            }
+        }
+    });
+
     // 處理動態添加的其他退休金來源
     const otherPensionByYear = {}; // 按年份存儲其他退休金收入
     const otherPensionCards = document.querySelectorAll('[id^="other_pension_"]');
@@ -1417,7 +1383,7 @@ function calculate() {
 }
 
 // 生成資產明細表
-// 生成資產明細表（V2.5.0 優化版本）
+// 生成資產明細表（根據修改意見重新編寫）
 function generateAssetTable(age, retire, life, initialAssets, income, expense, replacement, retireReturn, workRate, inflation, inflationEdu, inflationMedical, educationByYear, loanByYear, largeExpensesByYear, totalPension, legacy, pension, mpf, companyPension, otherPensionByYear, legalRetirementYearOffset) {
     // 輔助函數：保留4位小數進行計算
     const round4 = (num) => Math.round(num * 10000) / 10000;
@@ -1443,19 +1409,14 @@ function generateAssetTable(age, retire, life, initialAssets, income, expense, r
         const startAsset = asset;
 
         // 當年各項支出（保留4位小數）
-        // V2.5.0: 教育支出已經使用教育通脹計算（在 calculate 函數中處理）
         const yearEducation = round4(educationByYear[i] || 0);
         const yearLoan = round4(loanByYear[i] || 0);
-        
-        // V2.5.0: 大額支出根據現值/終值判斷是否考慮通脹
-        // 現值：已經在 calculate 中通過通脹計算
-        // 終值：直接使用，不考慮通脹
         const yearLargeExpense = round4(largeExpensesByYear[i] || 0);
         
-        // 生活支出（考慮通脹）
+        // 生活支出（考慮通脹）- 修改意見 #3
         const yearLivingExpense = round4(expense * Math.pow(1 + inflation, i));
 
-        // V2.5.0: 當年支出統一計算，不分兩段
+        // 當年總支出
         const yearExpense = round4(yearLivingExpense + yearEducation + yearLoan + yearLargeExpense);
         
         // 調試：顯示2048年的支出明細
@@ -1506,8 +1467,7 @@ function generateAssetTable(age, retire, life, initialAssets, income, expense, r
     }
 
     // ========== 退休期 ==========
-    // V2.5.0: 退休後日常支出公式修改
-    // 退休前一年的日常支出（已考慮通脹）× 替代率
+    // 計算退休前一年的日常支出（考慮通脹）- 修改意見 #7
     const lastWorkYearLivingExpense = expense * Math.pow(1 + inflation, workYears - 1);
     const retireExpenseBase = lastWorkYearLivingExpense * replacement;
     
@@ -1515,10 +1475,9 @@ function generateAssetTable(age, retire, life, initialAssets, income, expense, r
         const year = currentYear + workYears + i;
         const currentAge = retire + i;
         const startAsset = asset;
-        const actualYear = workYears + i;
 
-        // V2.5.0: 退休後日常支出 = 退休前一年支出 × 替代率 × (1 + 通脹率)^(i+1)
-        const yearLivingExpense = retireExpenseBase * Math.pow(1 + inflation, i + 1);
+        // 退休後日常支出（含通脹）- 修改意見 #7
+        const yearLivingExpense = retireExpenseBase * Math.pow(1 + inflation, i);
 
         // 醫療支出
         let medicalExpense = 0;
@@ -1528,15 +1487,11 @@ function generateAssetTable(age, retire, life, initialAssets, income, expense, r
         else medicalExpense = 85;
         medicalExpense *= Math.pow(1 + inflationMedical, i);
 
-        // V2.5.0: 退休期支出統一計算（與工作期相同邏輯）
-        // 教育支出、貸款還款、大額支出在退休期也可能存在
-        const yearEducation = round4(educationByYear[actualYear] || 0);
-        const yearLoan = round4(loanByYear[actualYear] || 0);
-        const yearLargeExpense = round4(largeExpensesByYear[actualYear] || 0);
+        // 退休期大額支出（修改意見 #4）- 擴展大額支出到退休期
+        const yearLargeExpense = round4(largeExpensesByYear[workYears + i] || 0);
 
-        // V2.5.0: 當年總支出統一計算
-        // 退休期日常支出使用退休後標準，其他支出與工作期相同邏輯
-        const yearExpense = round4(yearLivingExpense + medicalExpense + yearEducation + yearLoan + yearLargeExpense);
+        // 當年總支出
+        const yearExpense = round4(yearLivingExpense + medicalExpense + yearLargeExpense);
 
         // 當年收入（退休金來源）- 修改意見 #5
         // 強積金、企業年金等作為一次性收入在法定退休年份計入
