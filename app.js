@@ -1,7 +1,7 @@
 // DCF 財富規劃工具 - 主要腳本（雲端版）
 
 // ==================== 版本號 ====================
-const APP_VERSION = 'v2.5.6';
+const APP_VERSION = 'v2.5.7';
 
 // ==================== API 配置 ====================
 const API_BASE_URL = 'https://api.sgwm.cloud/api';
@@ -1657,15 +1657,16 @@ function generateReport() {
                 <tr><td>傳承時點</td><td>${data.life_expectancy || '--'} 歲</td></tr>
             </table>
 
-            <!-- V2.5.5: 退休金來源為0的不展示（修正：顯示所有退休金來源） -->
+            <!-- V2.5.7: 退休金來源為0的不展示，並包含動態添加的項目 -->
             <h2>三、退休金來源</h2>
             <table>
                 <tr><th>項目</th><th>金額（萬/年）</th></tr>
-                <tr><td>強積金</td><td>${data.mpf || 0}</td></tr>
-                <tr><td>企業年金</td><td>${data.company_pension || 0}</td></tr>
-                <tr><td>退休金</td><td>${data.pension || 0}</td></tr>
-                <tr><td>養老金</td><td>${data.annuity || 0}</td></tr>
-                <tr><td>其他</td><td>${data.other_pension || 0}</td></tr>
+                ${(parseFloat(data.mpf) || 0) > 0 ? `<tr><td>強積金</td><td>${data.mpf}</td></tr>` : ''}
+                ${(parseFloat(data.company_pension) || 0) > 0 ? `<tr><td>企業年金</td><td>${data.company_pension}</td></tr>` : ''}
+                ${(parseFloat(data.pension) || 0) > 0 ? `<tr><td>退休金</td><td>${data.pension}</td></tr>` : ''}
+                ${(parseFloat(data.annuity) || 0) > 0 ? `<tr><td>養老金</td><td>${data.annuity}</td></tr>` : ''}
+                ${(parseFloat(data.other_pension) || 0) > 0 ? `<tr><td>其他</td><td>${data.other_pension}</td></tr>` : ''}
+                ${(data.other_pensions || []).map(op => (parseFloat(op.amount) || 0) > 0 ? `<tr><td>${op.name || '其他退休金'}</td><td>${op.amount}</td></tr>` : '').join('')}
                 ${data.other_pension_note ? `<tr><td>其他備註</td><td>${data.other_pension_note}</td></tr>` : ''}
             </table>
 
