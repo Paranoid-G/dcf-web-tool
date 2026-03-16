@@ -1,7 +1,7 @@
 // DCF 財富規劃工具 - 主要腳本（雲端版）
 
 // ==================== 版本號 ====================
-const APP_VERSION = 'v2.5.5';
+const APP_VERSION = 'v2.5.6';
 
 // ==================== API 配置 ====================
 const API_BASE_URL = 'https://api.sgwm.cloud/api';
@@ -1634,15 +1634,16 @@ function generateReport() {
             <p style="text-align: center; color: #666;">香港雲杉財富管理有限公司</p>
             <p style="text-align: center;">報告生成時間：${new Date().toLocaleString()}</p>
 
+            <!-- V2.5.6: 修正基本資料欄位名稱 -->
             <h2>一、客戶基本資料</h2>
             <table>
                 <tr><th>項目</th><th>內容</th></tr>
-                <tr><td>客戶姓名</td><td>${data.client_name}</td></tr>
-                <tr><td>當前年齡</td><td>${data.current_age} 歲</td></tr>
-                <tr><td>婚姻狀況</td><td>${data.marital}</td></tr>
-                <tr><td>當前可投資資產</td><td>${data.assets} 萬港幣</td></tr>
-                <tr><td>年收入</td><td>${data.income} 萬港幣</td></tr>
-                <tr><td>年支出</td><td>${data.expense} 萬港幣</td></tr>
+                <tr><td>客戶姓名</td><td>${data.client_name || '--'}</td></tr>
+                <tr><td>當前年齡</td><td>${data.current_age || '--'} 歲</td></tr>
+                <tr><td>婚姻狀況</td><td>${data.marital_status || '--'}</td></tr>
+                <tr><td>當前可投資資產</td><td>${data.initial_assets || '--'} 萬港幣</td></tr>
+                <tr><td>年收入</td><td>${data.annual_income || '--'} 萬港幣</td></tr>
+                <tr><td>年支出</td><td>${data.living_expense || '--'} 萬港幣</td></tr>
             </table>
 
             <!-- V2.5.5: 修改報告內容（修正欄位名稱） -->
