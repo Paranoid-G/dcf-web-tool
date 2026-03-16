@@ -1,7 +1,7 @@
 // DCF 財富規劃工具 - 主要腳本（雲端版）
 
 // ==================== 版本號 ====================
-const APP_VERSION = 'v2.4.22';
+const APP_VERSION = 'v2.5.0';
 
 // ==================== API 配置 ====================
 const API_BASE_URL = 'https://api.sgwm.cloud/api';
@@ -80,17 +80,68 @@ function showLogin() {
     document.getElementById('loginTitle').textContent = '用戶登錄';
 }
 
+// ==================== V2.5.0: 用戶名輸入方式切換 ====================
+function toggleUsernameInput() {
+    const usernameMode = document.querySelector('input[name="username_mode"]:checked')?.value || 'custom';
+    const usernameInput = document.getElementById('regUsername');
+    const emailInput = document.getElementById('regEmail');
+    const phoneInput = document.getElementById('regPhone');
+    
+    if (usernameMode === 'email') {
+        usernameInput.value = emailInput.value || '';
+        usernameInput.disabled = true;
+        usernameInput.style.backgroundColor = '#e9ecef';
+    } else if (usernameMode === 'phone') {
+        const countryCode = document.getElementById('regPhoneCountry')?.value || '+86';
+        const phoneNumber = phoneInput.value || '';
+        usernameInput.value = phoneNumber ? countryCode + phoneNumber : '';
+        usernameInput.disabled = true;
+        usernameInput.style.backgroundColor = '#e9ecef';
+    } else {
+        usernameInput.disabled = false;
+        usernameInput.style.backgroundColor = '';
+    }
+}
+
+// 監聽郵箱和手機變化，自動更新用戶名
+function updateUsernameFromSource() {
+    const usernameMode = document.querySelector('input[name="username_mode"]:checked')?.value || 'custom';
+    if (usernameMode === 'email') {
+        const email = document.getElementById('regEmail')?.value || '';
+        document.getElementById('regUsername').value = email;
+    } else if (usernameMode === 'phone') {
+        const countryCode = document.getElementById('regPhoneCountry')?.value || '+86';
+        const phone = document.getElementById('regPhone')?.value || '';
+        document.getElementById('regUsername').value = phone ? countryCode + phone : '';
+    }
+}
+
+// V2.5.0: 郵箱格式驗證
+function validateEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
+
 async function register() {
     const username = document.getElementById('regUsername').value;
-    const phone = document.getElementById('regPhone').value;
+    const phoneCountry = document.getElementById('regPhoneCountry')?.value || '+86';
+    const phoneNumber = document.getElementById('regPhone').value;
+    const phone = phoneCountry + phoneNumber;
     const email = document.getElementById('regEmail').value;
     const password = document.getElementById('regPassword').value;
     const password2 = document.getElementById('regPassword2').value;
 
-    if (!username || !phone || !email || !password) {
+    if (!username || !phoneNumber || !email || !password) {
         alert('請填寫所有必填項');
         return;
     }
+    
+    // V2.5.0: 郵箱格式驗證
+    if (!validateEmail(email)) {
+        alert('請輸入正確的郵箱格式');
+        return;
+    }
+    
     if (password.length < 6) {
         alert('密碼至少6位');
         return;
@@ -1383,7 +1434,7 @@ function calculate() {
 }
 
 // 生成資產明細表
-// 生成資產明細表（根據修改意見重新編寫）
+// 生成資產明細表（V2.5.0 優化版本）
 function generateAssetTable(age, retire, life, initialAssets, income, expense, replacement, retireReturn, workRate, inflation, inflationEdu, inflationMedical, educationByYear, loanByYear, largeExpensesByYear, totalPension, legacy, pension, mpf, companyPension, otherPensionByYear, legalRetirementYearOffset) {
     // 輔助函數：保留4位小數進行計算
     const round4 = (num) => Math.round(num * 10000) / 10000;
@@ -1409,14 +1460,19 @@ function generateAssetTable(age, retire, life, initialAssets, income, expense, r
         const startAsset = asset;
 
         // 當年各項支出（保留4位小數）
+        // V2.5.0: 教育支出已經使用教育通脹計算（在 calculate 函數中處理）
         const yearEducation = round4(educationByYear[i] || 0);
         const yearLoan = round4(loanByYear[i] || 0);
+        
+        // V2.5.0: 大額支出根據現值/終值判斷是否考慮通脹
+        // 現值：已經在 calculate 中通過通脹計算
+        // 終值：直接使用，不考慮通脹
         const yearLargeExpense = round4(largeExpensesByYear[i] || 0);
         
-        // 生活支出（考慮通脹）- 修改意見 #3
+        // 生活支出（考慮通脹）
         const yearLivingExpense = round4(expense * Math.pow(1 + inflation, i));
 
-        // 當年總支出
+        // V2.5.0: 當年支出統一計算，不分兩段
         const yearExpense = round4(yearLivingExpense + yearEducation + yearLoan + yearLargeExpense);
         
         // 調試：顯示2048年的支出明細

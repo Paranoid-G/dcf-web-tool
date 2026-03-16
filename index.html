@@ -6,7 +6,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>DCF 財富規劃工具 v2.4.22 - 香港雲杉財富</title>
+    <title>DCF 財富規劃工具 v2.5.0 - 香港雲杉財富</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -389,17 +389,37 @@
             </div>
             
             <div id="registerForm" class="hidden">
-                <div class="form-group">
-                    <label>用戶名 *</label>
-                    <input type="text" id="regUsername" placeholder="請設置用戶名">
-                </div>
-                <div class="form-group">
-                    <label>手機號 *</label>
-                    <input type="tel" id="regPhone" placeholder="請輸入手機號">
-                </div>
-                <div class="form-group">
+                <!-- V2.5.0: 郵箱欄位移到第一位 -->
+                <div class="form-group required">
                     <label>郵箱 *</label>
-                    <input type="email" id="regEmail" placeholder="請輸入郵箱">
+                    <input type="email" id="regEmail" placeholder="請輸入郵箱" oninput="updateUsernameFromSource()">
+                </div>
+                <!-- V2.5.0: 手機號添加區號選擇 -->
+                <div class="form-group required">
+                    <label>手機號 *</label>
+                    <div style="display: flex; gap: 10px;">
+                        <select id="regPhoneCountry" style="width: 100px; flex-shrink: 0;" onchange="updateUsernameFromSource()">
+                            <option value="+86">+86</option>
+                            <option value="+852">+852</option>
+                        </select>
+                        <input type="tel" id="regPhone" placeholder="請輸入手機號" style="flex: 1;" oninput="updateUsernameFromSource()">
+                    </div>
+                </div>
+                <!-- V2.5.0: 用戶名輸入方式選擇 -->
+                <div class="form-group required">
+                    <label>用戶名 *</label>
+                    <div style="display: flex; gap: 15px; margin-bottom: 8px; flex-wrap: wrap;">
+                        <label style="display: flex; align-items: center; gap: 5px; font-weight: normal; cursor: pointer;">
+                            <input type="radio" name="username_mode" value="email" onchange="toggleUsernameInput()"> 同郵箱
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 5px; font-weight: normal; cursor: pointer;">
+                            <input type="radio" name="username_mode" value="phone" onchange="toggleUsernameInput()"> 同手機
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 5px; font-weight: normal; cursor: pointer;">
+                            <input type="radio" name="username_mode" value="custom" checked onchange="toggleUsernameInput()"> 自定義
+                        </label>
+                    </div>
+                    <input type="text" id="regUsername" placeholder="請設置用戶名">
                 </div>
                 <div class="form-group">
                     <label>密碼 *</label>
