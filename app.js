@@ -14,19 +14,23 @@ let currentReportId = null;
 
 // ==================== DOM 載入初始化 ====================
 document.addEventListener('DOMContentLoaded', async function() {
-    // 更新標題和版本號
-    document.title = `DCF 財富規劃工具 ${APP_VERSION} - 香港雲杉財富`;
-    console.log('正在更新版本號:', APP_VERSION);
-    
-    // 更新所有 h1 元素（登錄頁和主頁都有）
-    const allTitles = document.querySelectorAll('.header h1');
-    allTitles.forEach((title, index) => {
-        title.innerHTML = `💰 DCF 財富規劃工具 ${APP_VERSION}`;
-        console.log(`已更新標題 ${index + 1}:`, title.innerHTML);
-    });
-    
-    if (allTitles.length === 0) {
-        console.log('沒有找到 h1 元素');
+    // V2.5.0: 首先更新標題和版本號（確保在任何可能出錯的代碼之前執行）
+    try {
+        document.title = `DCF 財富規劃工具 ${APP_VERSION} - 香港雲杉財富`;
+        console.log('正在更新版本號:', APP_VERSION);
+        
+        // 更新所有 h1 元素（登錄頁和主頁都有）
+        const allTitles = document.querySelectorAll('.header h1');
+        allTitles.forEach((title, index) => {
+            title.innerHTML = `💰 DCF 財富規劃工具 ${APP_VERSION}`;
+            console.log(`已更新標題 ${index + 1}:`, title.innerHTML);
+        });
+        
+        if (allTitles.length === 0) {
+            console.log('沒有找到 h1 元素');
+        }
+    } catch (e) {
+        console.error('更新版本號時出錯:', e);
     }
     
     const fillDateEl = document.getElementById('fill_date');
