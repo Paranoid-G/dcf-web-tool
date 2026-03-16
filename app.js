@@ -1645,30 +1645,30 @@ function generateReport() {
                 <tr><td>年支出</td><td>${data.expense} 萬港幣</td></tr>
             </table>
 
-            <!-- V2.5.5: 修改報告內容 -->
+            <!-- V2.5.5: 修改報告內容（修正欄位名稱） -->
             <h2>二、退休計劃</h2>
             <table>
                 <tr><th>項目</th><th>內容</th></tr>
-                <tr><td>計劃退休年齡</td><td>${data.retirement_age || data.retire_age || '--'} 歲</td></tr>
-                <tr><td>收入替代率</td><td>${data.replacement_rate || data.replacement || '--'}%</td></tr>
-                <tr><td>退休後回報率</td><td>${data.retirement_return || data.retire_return || '--'}%</td></tr>
-                <tr><td>傳承目標</td><td>${data.legacy_goal || data.legacy || '--'} 萬港幣</td></tr>
-                <tr><td>傳承時點</td><td>${data.life_expectancy || data.life_expect || '--'} 歲</td></tr>
+                <tr><td>計劃退休年齡</td><td>${data.retirement_age || '--'} 歲</td></tr>
+                <tr><td>收入替代率</td><td>${data.replacement_rate || '--'}%</td></tr>
+                <tr><td>退休後回報率</td><td>${data.retirement_return || '--'}%</td></tr>
+                <tr><td>傳承目標</td><td>${data.legacy_goal || '--'} 萬港幣</td></tr>
+                <tr><td>傳承時點</td><td>${data.life_expectancy || '--'} 歲</td></tr>
             </table>
 
-            <!-- V2.5.5: 退休金來源為0的不展示 -->
+            <!-- V2.5.5: 退休金來源為0的不展示（修正：顯示所有退休金來源） -->
             <h2>三、退休金來源</h2>
             <table>
                 <tr><th>項目</th><th>金額（萬/年）</th></tr>
-                ${(data.mpf || 0) > 0 ? `<tr><td>強積金</td><td>${data.mpf}</td></tr>` : ''}
-                ${(data.company_pension || 0) > 0 ? `<tr><td>企業年金</td><td>${data.company_pension}</td></tr>` : ''}
-                ${(data.pension || 0) > 0 ? `<tr><td>退休金</td><td>${data.pension}</td></tr>` : ''}
-                ${(data.annuity || 0) > 0 ? `<tr><td>養老金</td><td>${data.annuity}</td></tr>` : ''}
-                ${(data.other_pension || 0) > 0 ? `<tr><td>其他</td><td>${data.other_pension}</td></tr>` : ''}
+                <tr><td>強積金</td><td>${data.mpf || 0}</td></tr>
+                <tr><td>企業年金</td><td>${data.company_pension || 0}</td></tr>
+                <tr><td>退休金</td><td>${data.pension || 0}</td></tr>
+                <tr><td>養老金</td><td>${data.annuity || 0}</td></tr>
+                <tr><td>其他</td><td>${data.other_pension || 0}</td></tr>
                 ${data.other_pension_note ? `<tr><td>其他備註</td><td>${data.other_pension_note}</td></tr>` : ''}
             </table>
 
-            <!-- V2.5.5: 修改計算結果指標 -->
+            <!-- V2.5.5: 修改計算結果指標（修正欄位名稱） -->
             <h2>四、計算結果</h2>
             <div class="result-box">
                 <div class="result-value">${calc.rate || '0.00'}%</div>
@@ -1676,10 +1676,10 @@ function generateReport() {
             </div>
             <table>
                 <tr><th>指標</th><th>數值</th></tr>
-                <tr><td>退休年齡</td><td>${data.retirement_age || data.retire_age || '--'} 歲</td></tr>
+                <tr><td>退休年齡</td><td>${data.retirement_age || '--'} 歲</td></tr>
                 <tr><td>工作年限</td><td>${calc.workYears || 0} 年</td></tr>
                 <tr><td>退休所需資產</td><td>${(calc.neededAtRetire || 0).toLocaleString()} 萬港幣</td></tr>
-                <tr><td>傳承目標</td><td>${(parseInt(data.legacy_goal || data.legacy) || 0).toLocaleString()} 萬港幣</td></tr>
+                <tr><td>傳承目標</td><td>${(parseInt(data.legacy_goal) || 0).toLocaleString()} 萬港幣</td></tr>
             </table>
 
             <div class="footer">
