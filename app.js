@@ -1,7 +1,7 @@
 // DCF 財富規劃工具 - 主要腳本（雲端版）
 
 // ==================== 版本號 ====================
-const APP_VERSION = 'v2.5.7';
+const APP_VERSION = 'v2.5.9';
 
 // ==================== API 配置 ====================
 const API_BASE_URL = 'https://api.sgwm.cloud/api';
@@ -1480,15 +1480,17 @@ function calcYearExpense(yearIndex, isRetirement, expense, replacement, inflatio
     };
 }
 
-// 生成資產明細表（V2.5.3 統一公式版本）
+// 生成資產明細表（V2.5.8 新增支出明細表和浮動表頭）
 function generateAssetTable(age, retire, life, initialAssets, income, expense, replacement, retireReturn, workRate, inflation, inflationEdu, inflationMedical, educationByYear, loanByYear, largeExpensesByYear, totalPension, legacy, pension, mpf, companyPension, otherPensionByYear, legalRetirementYearOffset) {
     // 輔助函數：保留4位小數進行計算
     const round4 = (num) => Math.round(num * 10000) / 10000;
     
     const tableBody = document.getElementById('assetTableBody');
-    if (!tableBody) return;
+    const expenseTableBody = document.getElementById('expenseTableBody');
+    if (!tableBody || !expenseTableBody) return;
 
     tableBody.innerHTML = '';
+    expenseTableBody.innerHTML = '';
     const currentYear = new Date().getFullYear();
     let asset = round4(initialAssets);
     const workYears = retire - age;
@@ -1526,6 +1528,26 @@ function generateAssetTable(age, retire, life, initialAssets, income, expense, r
         // 年終資產
         asset = round4(startAsset + assetChange);
 
+        // ========== V2.5.8: 生成支出明細表行 ==========
+        const expenseRow = document.createElement('tr');
+        expenseRow.style.background = i % 2 === 0 ? '#f8f9fa' : 'white';
+        if (yearExpenses.large > 0) {
+            expenseRow.style.background = '#fff3cd';
+        }
+        expenseRow.innerHTML = `
+            <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${year}</td>
+            <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${currentAge}</td>
+            <td style="padding: 8px; border: 1px solid #ddd; text-align: center;" class="phase-work">工作期</td>
+            <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${Math.round(yearExpenses.living).toLocaleString()}</td>
+            <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">-</td>
+            <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${yearExpenses.education > 0 ? Math.round(yearExpenses.education).toLocaleString() : '-'}</td>
+            <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${yearExpenses.loan > 0 ? Math.round(yearExpenses.loan).toLocaleString() : '-'}</td>
+            <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${yearExpenses.large > 0 ? Math.round(yearExpenses.large).toLocaleString() : '-'}</td>
+            <td style="padding: 8px; border: 1px solid #ddd; text-align: right; font-weight: bold; color: #dc3545;" class="total-expense">${Math.round(yearExpenses.total).toLocaleString()}</td>
+        `;
+        expenseTableBody.appendChild(expenseRow);
+
+        // ========== 生成資產明細表行 ==========
         const row = document.createElement('tr');
         row.style.background = i % 2 === 0 ? '#f8f9fa' : 'white';
         
@@ -1586,6 +1608,29 @@ function generateAssetTable(age, retire, life, initialAssets, income, expense, r
         // 年終資產 = 年初資產 + 資產變化
         asset = round4(startAsset + assetChange);
 
+        // ========== V2.5.8: 生成支出明細表行 ==========
+        const expenseRow = document.createElement('tr');
+        expenseRow.style.background = (workYears + i) % 2 === 0 ? '#f8f9fa' : 'white';
+        if (i === retireYears - 1) {
+            expenseRow.style.background = '#d4edda';
+        }
+        if (yearExpenses.large > 0) {
+            expenseRow.style.background = '#fff3cd';
+        }
+        expenseRow.innerHTML = `
+            <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${year}</td>
+            <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${currentAge}</td>
+            <td style="padding: 8px; border: 1px solid #ddd; text-align: center;" class="phase-retire">退休期</td>
+            <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${Math.round(yearExpenses.living).toLocaleString()}</td>
+            <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${yearExpenses.medical > 0 ? Math.round(yearExpenses.medical).toLocaleString() : '-'}</td>
+            <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">-</td>
+            <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">-</td>
+            <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${yearExpenses.large > 0 ? Math.round(yearExpenses.large).toLocaleString() : '-'}</td>
+            <td style="padding: 8px; border: 1px solid #ddd; text-align: right; font-weight: bold; color: #dc3545;" class="total-expense">${Math.round(yearExpenses.total).toLocaleString()}</td>
+        `;
+        expenseTableBody.appendChild(expenseRow);
+
+        // ========== 生成資產明細表行 ==========
         const row = document.createElement('tr');
         row.style.background = (workYears + i) % 2 === 0 ? '#f8f9fa' : 'white';
         

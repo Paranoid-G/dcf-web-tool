@@ -6,7 +6,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>DCF 財富規劃工具 v2.5.7 - 香港雲杉財富</title>
+    <title>DCF 財富規劃工具 v2.5.9 - 香港雲杉財富</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -359,6 +359,50 @@
             cursor: pointer;
         }
         .user-item:hover, .user-item.active { background: #e3f2fd; }
+        
+        /* V2.5.8: 浮動表頭樣式 */
+        .table-container {
+            overflow-x: auto;
+            max-height: 600px;
+            position: relative;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .sticky-header th {
+            position: sticky;
+            top: 0;
+            background: #0066CC !important;
+            color: white !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .sticky-header th:first-child {
+            border-top-left-radius: 8px;
+        }
+        .sticky-header th:last-child {
+            border-top-right-radius: 8px;
+        }
+        
+        /* 支出明細表特殊樣式 */
+        #expenseTable tbody tr:hover {
+            background-color: #e3f2fd !important;
+        }
+        #expenseTable .total-expense {
+            font-weight: bold;
+            color: #dc3545;
+        }
+        #expenseTable .phase-work {
+            color: #0066CC;
+            font-weight: bold;
+        }
+        #expenseTable .phase-retire {
+            color: #28a745;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -710,23 +754,45 @@
                     </div>
                     
                     <!-- 資產明細表 -->
-                    <div class="part-title" style="margin-top: 30px;">資產明細表（從現在到90歲）</div>
-                    <div style="overflow-x: auto;">
+                    <div class="part-title" style="margin-top: 30px;">💰 資產明細表（從現在到90歲）</div>
+                    <div class="table-container" style="overflow-x: auto; max-height: 600px; position: relative;">
                         <table id="assetTable" style="width: 100%; border-collapse: collapse; margin-top: 15px;">
-                            <thead>
+                            <thead class="sticky-header">
                                 <tr style="background: #0066CC; color: white;">
-                                    <th style="padding: 10px; border: 1px solid #ddd;">年份</th>
-                                    <th style="padding: 10px; border: 1px solid #ddd;">年齡</th>
-                                    <th style="padding: 10px; border: 1px solid #ddd;">年初資產（萬）</th>
-                                    <th style="padding: 10px; border: 1px solid #ddd;">當年支出（萬）</th>
-                                    <th style="padding: 10px; border: 1px solid #ddd;">當年收入（萬）</th>
-                                    <th style="padding: 10px; border: 1px solid #ddd;">投資收益（萬）</th>
-                                    <th style="padding: 10px; border: 1px solid #ddd;">回報率</th>
-                                    <th style="padding: 10px; border: 1px solid #ddd;">資產變化（萬）</th>
-                                    <th style="padding: 10px; border: 1px solid #ddd;">年終資產（萬）</th>
+                                    <th style="padding: 10px; border: 1px solid #ddd; min-width: 80px;">年份</th>
+                                    <th style="padding: 10px; border: 1px solid #ddd; min-width: 60px;">年齡</th>
+                                    <th style="padding: 10px; border: 1px solid #ddd; min-width: 120px;">年初資產（萬）</th>
+                                    <th style="padding: 10px; border: 1px solid #ddd; min-width: 120px;">當年支出（萬）</th>
+                                    <th style="padding: 10px; border: 1px solid #ddd; min-width: 120px;">當年收入（萬）</th>
+                                    <th style="padding: 10px; border: 1px solid #ddd; min-width: 120px;">投資收益（萬）</th>
+                                    <th style="padding: 10px; border: 1px solid #ddd; min-width: 80px;">回報率</th>
+                                    <th style="padding: 10px; border: 1px solid #ddd; min-width: 120px;">資產變化（萬）</th>
+                                    <th style="padding: 10px; border: 1px solid #ddd; min-width: 120px;">年終資產（萬）</th>
                                 </tr>
                             </thead>
                             <tbody id="assetTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- 支出明細表 -->
+                    <div class="part-title" style="margin-top: 30px;">📊 每年支出明細表</div>
+                    <div class="table-container" style="overflow-x: auto; max-height: 600px; position: relative;">
+                        <table id="expenseTable" style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                            <thead class="sticky-header">
+                                <tr style="background: #0066CC; color: white;">
+                                    <th style="padding: 10px; border: 1px solid #ddd; min-width: 80px;">年份</th>
+                                    <th style="padding: 10px; border: 1px solid #ddd; min-width: 60px;">年齡</th>
+                                    <th style="padding: 10px; border: 1px solid #ddd; min-width: 100px;">階段</th>
+                                    <th style="padding: 10px; border: 1px solid #ddd; min-width: 100px;">日常支出</th>
+                                    <th style="padding: 10px; border: 1px solid #ddd; min-width: 100px;">醫療支出</th>
+                                    <th style="padding: 10px; border: 1px solid #ddd; min-width: 100px;">教育支出</th>
+                                    <th style="padding: 10px; border: 1px solid #ddd; min-width: 100px;">貸款還款</th>
+                                    <th style="padding: 10px; border: 1px solid #ddd; min-width: 100px;">大額支出</th>
+                                    <th style="padding: 10px; border: 1px solid #ddd; min-width: 120px; background: #0052a3;">總支出</th>
+                                </tr>
+                            </thead>
+                            <tbody id="expenseTableBody">
                             </tbody>
                         </table>
                     </div>
