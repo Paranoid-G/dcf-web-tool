@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FCN产品介绍 v1.1.1</title>
+    <title>FCN产品介绍 v1.1.2</title>
     <meta property="og:title" content="产品介绍 - FCN固定票息票据">
     <meta property="og:description" content="享受高固定收益的同时，有机会以折扣价买入优质股票 「香港雲杉財富」">
     <meta property="og:image" content="https://paranoid-g.github.io/dcf-web-tool/%E5%85%AC%E5%8F%B8logo%EF%BC%88%E4%BB%85%E5%9B%BE%E6%A0%87%EF%BC%89.png">
@@ -639,7 +639,7 @@
             <p>THANKS FOR WATCHING</p>
             <div style="margin-top: 20px;"></div>
             <img src="香港雲杉財富logo.png" alt="香港雲杉財富" class="logo" onerror="this.style.display='none'" style="margin: 5px 0;">
-            <div class="date" style="margin-top: 10px;">版本 v1.1.1</div>
+            <div class="date" style="margin-top: 10px;">版本 v1.1.2</div>
         </section>
     </div>
 <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
@@ -839,7 +839,7 @@
         scenarioChart.resize();
     });
     
-    // 安全墊型FCN（被敲入）圖表
+    // 安全墊型FCN（被敲入）圖表 - v1.1.2 重新製作
     var knockInChart = echarts.init(document.getElementById('knockInChart'));
     
     var knockInOption = {
@@ -879,7 +879,7 @@
             {
                 name: '敲出價',
                 type: 'line',
-                data: [100, 100, 100, 100, 100, 100, 100],
+                data: [100, 100, 100, 100, 100, 100],
                 lineStyle: {
                     color: 'rgba(255,255,255,0.4)',
                     type: 'dashed',
@@ -892,7 +892,7 @@
             {
                 name: '行權價',
                 type: 'line',
-                data: [70, 70, 70, 70, 70, 70, 70],
+                data: [70, 70, 70, 70, 70, 70],
                 lineStyle: {
                     color: 'rgba(255,255,255,0.4)',
                     type: 'dashed',
@@ -905,7 +905,7 @@
             {
                 name: '敲入價',
                 type: 'line',
-                data: [40, 40, 40, 40, 40, 40, 40],
+                data: [40, 40, 40, 40, 40, 40],
                 lineStyle: {
                     color: 'rgba(255,255,255,0.4)',
                     type: 'dashed',
@@ -918,7 +918,7 @@
             {
                 name: '標準走勢',
                 type: 'line',
-                data: [100, 65, 38, 68, null, null, null],
+                data: [100, 65, 38, 68, null, null],
                 smooth: 0.5,
                 lineStyle: { color: '#0d47a1', width: 2.5 },
                 itemStyle: { color: '#0d47a1' },
@@ -928,7 +928,7 @@
             {
                 name: '敲出',
                 type: 'line',
-                data: [null, null, null, 68, 100, null, null],
+                data: [null, null, null, 68, 100, null],
                 smooth: 0.5,
                 lineStyle: { color: '#4da6ff', width: 2.5, type: 'dashed' },
                 itemStyle: { color: '#4da6ff' },
@@ -938,7 +938,7 @@
                     symbolSize: 8,
                     itemStyle: { color: '#4da6ff' },
                     data: [
-                        { coord: [3, 100], value: '敲出' }
+                        { coord: [4, 100], value: '敲出' }
                     ],
                     label: { show: false }
                 }
@@ -947,7 +947,7 @@
             {
                 name: '到期未行權',
                 type: 'line',
-                data: [null, null, null, 68, 92, 82, 78],
+                data: [null, null, null, 68, 92, 82],
                 smooth: 0.5,
                 lineStyle: { color: '#28a745', width: 2.5, type: 'dashed' },
                 itemStyle: { color: '#28a745' },
@@ -957,7 +957,7 @@
                     symbolSize: 8,
                     itemStyle: { color: '#28a745' },
                     data: [
-                        { coord: [5, 78], value: '到期未行權' }
+                        { coord: [5, 82], value: '到期未行權' }
                     ],
                     label: { show: false }
                 }
@@ -966,7 +966,7 @@
             {
                 name: '到期行權',
                 type: 'line',
-                data: [null, null, null, 68, 88, 78, 68],
+                data: [null, null, null, 68, 88, 68],
                 smooth: 0.5,
                 lineStyle: { color: '#fd7e14', width: 2.5, type: 'dashed' },
                 itemStyle: { color: '#fd7e14' },
