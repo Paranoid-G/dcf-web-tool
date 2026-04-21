@@ -852,7 +852,7 @@
         },
         xAxis: {
             type: 'category',
-            data: ['起點', '', '', '', '', '', '到期'],
+            data: ['起點', '', '', '', '', '到期'],
             axisLabel: {
                 fontSize: 10,
                 color: 'rgba(255,255,255,0.7)'
@@ -918,7 +918,7 @@
             {
                 name: '標準走勢',
                 type: 'line',
-                data: [100, 65, 38, 68, null, null, null, null],
+                data: [100, 65, 38, 68, null, null, null],
                 smooth: 0.5,
                 lineStyle: { color: '#0d47a1', width: 2.5 },
                 itemStyle: { color: '#0d47a1' },
@@ -928,7 +928,7 @@
             {
                 name: '敲出',
                 type: 'line',
-                data: [null, null, null, 68, 100, null, null, null],
+                data: [null, null, null, 68, 100, null, null],
                 smooth: 0.5,
                 lineStyle: { color: '#4da6ff', width: 2.5, type: 'dashed' },
                 itemStyle: { color: '#4da6ff' },
@@ -947,7 +947,7 @@
             {
                 name: '到期未行權',
                 type: 'line',
-                data: [null, null, null, 68, 75, 82, 78, 85],
+                data: [null, null, null, 68, 92, 82, 78],
                 smooth: 0.5,
                 lineStyle: { color: '#28a745', width: 2.5, type: 'dashed' },
                 itemStyle: { color: '#28a745' },
@@ -957,7 +957,7 @@
                     symbolSize: 8,
                     itemStyle: { color: '#28a745' },
                     data: [
-                        { coord: [7, 85], value: '到期未行權' }
+                        { coord: [6, 78], value: '到期未行權' }
                     ],
                     label: { show: false }
                 }
@@ -966,7 +966,7 @@
             {
                 name: '到期行權',
                 type: 'line',
-                data: [null, null, null, 68, 62, 38, 35, 42],
+                data: [null, null, null, 68, 88, 78, 68],
                 smooth: 0.5,
                 lineStyle: { color: '#fd7e14', width: 2.5, type: 'dashed' },
                 itemStyle: { color: '#fd7e14' },
@@ -976,8 +976,7 @@
                     symbolSize: 8,
                     itemStyle: { color: '#fd7e14' },
                     data: [
-                        { coord: [5, 38], value: '敲入' },
-                        { coord: [7, 42], value: '行權' }
+                        { coord: [6, 68], value: '行權' }
                     ],
                     label: { show: false }
                 }
