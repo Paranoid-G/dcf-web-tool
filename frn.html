@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FRN产品介绍 v1.3.10</title>
+    <!-- Open Graph 标签 - 微信分享卡片 -->
+    <meta property="og:title" content="产品介绍 - FRN浮动利率票据">
+    <meta property="og:description" content="保本基础上博取更高票息 「香港雲杉財富」">
+    <meta property="og:image" content="https://paranoid-g.github.io/dcf-web-tool/香港雲杉財富logo.png">
+    <meta property="og:url" content="https://paranoid-g.github.io/dcf-web-tool/frn.html">
+    <meta property="og:type" content="website">
+    <!-- 微信专用 -->
+    <meta name="description" content="云杉财富FRN产品介绍 - 浮动利率票据投资方案">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh; color: #fff; overflow-x: hidden;
+        }
+        .container { max-width: 480px; margin: 0 auto; }
+        .logo {
+            width: 180px;
+            height: auto;
+            margin-bottom: 30px;
+            filter: brightness(1.2);
+        }
+        .cover {
+            min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center;
+            text-align: center; padding: 40px 24px;
+            background: linear-gradient(180deg, rgba(233, 69, 96, 0.3) 0%, transparent 50%);
+        }
+        .cover h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: 16px;
+            background: linear-gradient(135deg, #fff 0%, #e94560 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .cover .subtitle { font-size: 1.3rem; color: #e94560; font-weight: 500; margin-bottom: 40px; }
+        .cover .dept { font-size: 0.9rem; color: rgba(255,255,255,0.6); }
+        .scroll-hint { position: absolute; bottom: 30px; animation: bounce 2s infinite; color: rgba(255,255,255,0.5); font-size: 0.8rem; }
+        @keyframes bounce { 0%, 20%, 50%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-10px); } 60% { transform: translateY(-5px); } }
+        .toc { padding: 60px 24px; background: rgba(0,0,0,0.2); }
+        .section-title { font-size: 1.5rem; font-weight: 600; margin-bottom: 24px; padding-left: 16px; border-left: 4px solid #e94560; }
+        .toc-list { list-style: none; }
+        .toc-list li { padding: 16px; margin-bottom: 12px; background: rgba(255,255,255,0.05); border-radius: 12px; display: flex; align-items: center; gap: 16px; }
+        .toc-num { width: 36px; height: 36px; background: linear-gradient(135deg, #e94560, #ff6b6b); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.9rem; flex-shrink: 0; }
+        .section { padding: 48px 24px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .section:nth-child(even) { background: rgba(0,0,0,0.15); }
+        .frn-intro { text-align: center; }
+        .frn-name { font-size: 1.1rem; color: #e94560; margin-bottom: 8px; }
+        .frn-fullname { font-size: 0.9rem; color: rgba(255,255,255,0.6); margin-bottom: 32px; }
+        .core-values { display: flex; flex-direction: column; gap: 16px; }
+        .value-card { background: linear-gradient(135deg, rgba(233, 69, 96, 0.2), rgba(255, 107, 107, 0.1)); border: 1px solid rgba(233, 69, 96, 0.3); border-radius: 16px; padding: 24px; text-align: left; }
+        .value-card h3 { color: #e94560; font-size: 1.1rem; margin-bottom: 8px; }
+        .value-card p { color: rgba(255,255,255,0.8); font-size: 0.95rem; line-height: 1.6; }
+        .elements-grid { display: flex; flex-direction: column; gap: 20px; }
+        .element-card { background: rgba(255,255,255,0.05); border-radius: 16px; padding: 20px; }
+        .element-card h3 { font-size: 1rem; color: #ffd700; margin-bottom: 12px; }
+        .element-card ul { list-style: none; }
+        .element-card li { padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; color: rgba(255,255,255,0.85); line-height: 1.5; }
+        .element-card li:last-child { border-bottom: none; }
+        .highlight-box { background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 215, 0, 0.05)); border: 1px solid rgba(255, 215, 0, 0.3); border-radius: 12px; padding: 16px; margin-top: 12px; }
+        .highlight-box .label { font-size: 0.8rem; color: #ffd700; margin-bottom: 4px; }
+        .highlight-box .value { font-size: 1.3rem; font-weight: 600; color: #ffd700; }
+        .specs-table { display: flex; flex-direction: column; gap: 12px; }
+        .spec-row { display: flex; justify-content: space-between; align-items: center; padding: 16px; background: rgba(255,255,255,0.05); border-radius: 12px; }
+        .spec-label { font-size: 0.9rem; color: rgba(255,255,255,0.6); }
+        .spec-value { font-size: 1rem; font-weight: 500; color: #fff; text-align: right; }
+        .spec-value.highlight { color: #e94560; font-weight: 600; }
+        .issuer-tags { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+        .issuer-tag { background: rgba(233, 69, 96, 0.2); color: #e94560; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; }
+        .compare-table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.8rem; }
+        .compare-table th, .compare-table td { padding: 10px 6px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .compare-table th { background: rgba(233, 69, 96, 0.2); color: #e94560; font-weight: 600; }
+        .compare-table td { color: rgba(255,255,255,0.85); line-height: 1.4; }
+        .compare-table tr:nth-child(even) { background: rgba(255,255,255,0.03); }
+        .compare-table .dim-label { font-weight: 600; color: #ffd700; }
+        .market-analysis { display: flex; flex-direction: column; gap: 16px; }
+        .market-card { background: rgba(255,255,255,0.05); border-radius: 16px; padding: 20px; border-left: 4px solid; }
+        .market-card.positive { border-color: #28a745; } .market-card.warning { border-color: #ffc107; } .market-card.negative { border-color: #dc3545; }
+        .market-card h4 { font-size: 1rem; margin-bottom: 8px; }
+        .market-card.positive h4 { color: #28a745; } .market-card.warning h4 { color: #ffc107; } .market-card.negative h4 { color: #dc3545; }
+        .market-card p { font-size: 0.9rem; color: rgba(255,255,255,0.8); line-height: 1.5; }
+        .market-chart { background: rgba(0,0,0,0.2); border-radius: 16px; padding: 24px; margin-top: 20px; }
+        .chart-title { font-size: 1rem; color: #ffd700; margin-bottom: 20px; text-align: center; }
+        .chart-bars { display: flex; flex-direction: column; gap: 16px; }
+        .chart-bar-item { display: flex; align-items: center; gap: 12px; }
+        .chart-label { width: 80px; font-size: 0.8rem; color: rgba(255,255,255,0.7); text-align: right; }
+        .chart-bar-wrapper { flex: 1; background: rgba(255,255,255,0.1); border-radius: 8px; height: 32px; position: relative; overflow: hidden; }
+        .chart-bar { height: 100%; border-radius: 8px; display: flex; align-items: center; justify-content: flex-end; padding-right: 12px; font-size: 0.75rem; font-weight: 600; }
+        .chart-bar.frn { background: linear-gradient(90deg, #e94560, #ff6b6b); width: 90%; }
+        .chart-bar.bond { background: linear-gradient(90deg, #007bff, #4da6ff); width: 60%; }
+        .chart-bar.deposit { background: linear-gradient(90deg, #6c757d, #adb5bd); width: 40%; }
+        .formula-box { background: linear-gradient(135deg, rgba(0, 123, 255, 0.15), rgba(0, 123, 255, 0.05)); border: 1px solid rgba(0, 123, 255, 0.3); border-radius: 16px; padding: 24px; margin-bottom: 24px; }
+        .formula-box h4 { color: #007bff; font-size: 0.9rem; margin-bottom: 12px; }
+        .formula { font-family: 'Courier New', monospace; font-size: 0.85rem; color: #fff; background: rgba(0,0,0,0.3); padding: 16px; border-radius: 8px; overflow-x: auto; margin-bottom: 12px; }
+        .formula-params { font-size: 0.8rem; color: rgba(255,255,255,0.7); line-height: 1.6; }
+        .scenario-card { background: rgba(255,255,255,0.05); border-radius: 16px; padding: 24px; margin-bottom: 16px; }
+        .scenario-card h4 { color: #ffd700; font-size: 1.1rem; margin-bottom: 16px; }
+        .scenario-detail { background: rgba(0,0,0,0.2); border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+        .scenario-detail h5 { font-size: 0.9rem; color: rgba(255,255,255,0.8); margin-bottom: 12px; }
+        .calc-result { background: linear-gradient(135deg, rgba(40, 167, 69, 0.2), rgba(40, 167, 69, 0.1)); border: 1px solid rgba(40, 167, 69, 0.3); border-radius: 12px; padding: 16px; text-align: center; }
+        .calc-result .amount { font-size: 1.8rem; font-weight: 700; color: #28a745; }
+        .calc-result .label { font-size: 0.8rem; color: rgba(255,255,255,0.6); margin-top: 4px; }
+        .sub-scenario { background: rgba(255,255,255,0.03); border-radius: 12px; padding: 16px; margin-bottom: 12px; }
+        .sub-scenario h5 { font-size: 0.9rem; color: #007bff; margin-bottom: 8px; }
+        .sub-scenario .result { font-size: 1.2rem; color: #28a745; font-weight: 600; }
+        .factors-grid { display: flex; flex-direction: column; gap: 16px; }
+        .factor-card { background: rgba(255,255,255,0.05); border-radius: 16px; padding: 20px; }
+        .factor-card h4 { color: #e94560; font-size: 1rem; margin-bottom: 8px; }
+        .factor-card p { font-size: 0.9rem; color: rgba(255,255,255,0.8); line-height: 1.5; }
+        .formula-main { background: linear-gradient(135deg, rgba(233, 69, 96, 0.2), rgba(233, 69, 96, 0.1)); border: 1px solid rgba(233, 69, 96, 0.3); border-radius: 12px; padding: 20px; margin-bottom: 24px; text-align: center; }
+        .formula-main p { font-family: 'Courier New', monospace; font-size: 0.85rem; color: #fff; }
+        .history-stat { text-align: center; padding: 40px 24px; background: linear-gradient(135deg, rgba(40, 167, 69, 0.15), rgba(40, 167, 69, 0.05)); border-radius: 16px; }
+        .history-stat .big-number { font-size: 4rem; font-weight: 700; color: #28a745; line-height: 1; }
+        .history-stat .stat-label { font-size: 1rem; color: rgba(255,255,255,0.8); margin-top: 16px; }
+        .history-stat .stat-detail { font-size: 0.85rem; color: rgba(255,255,255,0.6); margin-top: 8px; }
+        .risks-grid { display: flex; flex-direction: column; gap: 12px; }
+        .risk-card { background: rgba(220, 53, 69, 0.1); border: 1px solid rgba(220, 53, 69, 0.2); border-radius: 12px; padding: 16px; }
+        .risk-card h4 { color: #dc3545; font-size: 0.95rem; margin-bottom: 6px; }
+        .risk-card p { font-size: 0.85rem; color: rgba(255,255,255,0.75); line-height: 1.5; }
+        .important-notice { background: linear-gradient(135deg, rgba(255, 193, 7, 0.15), rgba(255, 193, 7, 0.05)); border: 1px solid rgba(255, 193, 7, 0.3); border-radius: 12px; padding: 16px; margin-top: 20px; }
+        .important-notice p { font-size: 0.85rem; color: #ffc107; line-height: 1.6; }
+        .performance-cards { display: flex; flex-direction: column; gap: 16px; }
+        .perf-card { background: rgba(255,255,255,0.05); border-radius: 16px; padding: 20px; border-top: 4px solid; }
+        .perf-card.best { border-color: #28a745; } .perf-card.good { border-color: #007bff; } .perf-card.bad { border-color: #dc3545; }
+        .perf-card h4 { font-size: 1.1rem; margin-bottom: 8px; }
+        .perf-card.best h4 { color: #28a745; } .perf-card.good h4 { color: #007bff; } .perf-card.bad h4 { color: #dc3545; }
+        .perf-card .tag { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; margin-bottom: 12px; }
+        .perf-card.best .tag { background: rgba(40, 167, 69, 0.2); color: #28a745; }
+        .perf-card.good .tag { background: rgba(0, 123, 255, 0.2); color: #007bff; }
+        .perf-card.bad .tag { background: rgba(220, 53, 69, 0.2); color: #dc3545; }
+        .perf-card p { font-size: 0.9rem; color: rgba(255,255,255,0.8); line-height: 1.5; }
+        .disclaimer { background: rgba(0,0,0,0.3); border-radius: 16px; padding: 24px; }
+        .disclaimer-item { display: flex; gap: 12px; margin-bottom: 16px; align-items: flex-start; }
+        .disclaimer-item:last-child { margin-bottom: 0; }
+        .disclaimer-icon { width: 24px; height: 24px; background: #e94560; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; flex-shrink: 0; }
+        .disclaimer-item p { font-size: 0.9rem; color: rgba(255,255,255,0.8); line-height: 1.5; }
+        .disclaimer-item strong { color: #e94560; }
+        .ending { min-height: 60vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 40px 24px; background: linear-gradient(180deg, transparent 0%, rgba(233, 69, 96, 0.2) 100%); }
+        .ending .logo { margin-bottom: 20px; }
+        .ending h2 { font-size: 2rem; margin-bottom: 16px; }
+        .ending p { color: rgba(255,255,255,0.6); font-size: 1rem; }
+        .date { margin-top: 40px; font-size: 0.8rem; color: rgba(255,255,255,0.4); }
+        @media (max-width: 380px) { .cover h1 { font-size: 2rem; } .history-stat .big-number { font-size: 3rem; } .compare-table { font-size: 0.75rem; } .compare-table th, .compare-table td { padding: 8px 4px; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <section class="cover">
+            <img src="香港雲杉財富.png" alt="香港雲杉財富" class="logo" onerror="this.style.display='none'">
+            <h1>FRN产品介绍</h1>
+            <p class="subtitle">进可攻 退可守</p>
+            <p class="dept">全球金融市场分析与投资策略部</p>
+            <div class="scroll-hint">↓ 向下滑动浏览</div>
+        </section>
+        
+        <section class="toc">
+            <h2 class="section-title">目录</h2>
+            <ul class="toc-list">
+                <li><span class="toc-num">01</span><span>什么是FRN？</span></li>
+                <li><span class="toc-num">02</span><span>产品核心要素</span></li>
+                <li><span class="toc-num">03</span><span>FRN与国债和定存对比</span></li>
+                <li><span class="toc-num">04</span><span>产品收益详解</span></li>
+                <li><span class="toc-num">05</span><span>市场环境分析</span></li>
+                <li><span class="toc-num">06</span><span>风险提示与总结</span></li>
+            </ul>
+        </section>
+        
+        <section class="section">
+            <h2 class="section-title">什么是FRN？</h2>
+            <div class="frn-intro">
+                <p class="frn-name">FRN = Floating Rate Note</p>
+                <p class="frn-fullname">浮动利率票据</p>
+                <div class="core-values">
+                    <div class="value-card"><h3>🛡️ 保本</h3><p>无论利息如何波动，产品保证本金偿付</p></div>
+                    <div class="value-card"><h3>💰 浮动高票息</h3><p>基准利率高于设定阀值，按日计息<br>票息明显高于同期限国债收益率</p></div>
+                    <div class="value-card"><h3>🎯 核心价值</h3><p>保本基础上，对赌利率走势，博取高收益</p></div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="section">
+            <h2 class="section-title">产品核心要素</h2>
+            <div class="elements-grid">
+                <div class="element-card">
+                    <h3>📊 挂钩标的及阀值</h3>
+                    <ul>
+                        <li>通常挂钩10年期美国国债收益率</li>
+                        <li>阀值自由选择，阀值越高票息越低</li>
+                        <li>当前较流行：4.75% 和 5%</li>
+<li>当前10年期美国债收益率：4.24%</li>
+                    </ul>
+                </div>
+                <div class="element-card">
+                    <h3>📝 计息规则</h3>
+                    <ul>
+                        <li>10年期美债收益率 ≤ 4.75%：计息</li>
+                        <li>10年期美债收益率 > 4.75%：不计息</li>
+                    </ul>
+                    <!-- 计息规则示意图 -->
+                    <div style="background: rgba(0,0,0,0.2); border-radius: 12px; padding: 16px; margin: 12px 0;">
+                        <svg viewBox="0 0 400 180" style="width: 100%; height: auto;">
+                            <!-- 坐标轴 -->
+                            <line x1="40" y1="20" x2="40" y2="150" stroke="rgba(255,255,255,0.5)" stroke-width="2"/>
+                            <line x1="40" y1="150" x2="380" y2="150" stroke="rgba(255,255,255,0.5)" stroke-width="2"/>
+                            <!-- 箭头 -->
+                            <path d="M35,25 L40,20 L45,25" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2"/>
+                            <path d="M375,145 L380,150 L375,155" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2"/>
+                            <!-- 4.75% 阈值线 -->
+                            <line x1="40" y1="55" x2="380" y2="55" stroke="#ffd700" stroke-width="2" stroke-dasharray="5,3"/>
+                            <text x="35" y="59" fill="#ffd700" font-size="12" font-weight="bold" text-anchor="end">4.75</text>
+
+                            <!-- 面积图：曲线到X轴，按阈值分色 -->
+                            <!-- 绿色区域（计息）：第1点到第3点 (40,120)->(120,100)->(220,55)，控制點(80,90)和(160,110) -->
+                            <path d="M40,150 L40,120 Q80,90 120,100 Q160,110 220,55 L220,150 Z" fill="rgba(40,167,69,0.4)" stroke="none"/>
+                            <!-- 红色区域（不计息）：第3点到第4点 (220,55)->(300,55)，控制點(260,25) -->
+                            <path d="M220,150 L220,55 Q260,25 300,55 L300,150 Z" fill="rgba(220,53,69,0.5)" stroke="none"/>
+                            <!-- 绿色区域（计息）：第4点到第5点 (300,55)->(360,90)，控制點(330,80) -->
+                            <path d="M300,150 L300,55 Q330,80 360,90 L360,150 Z" fill="rgba(40,167,69,0.4)" stroke="none"/>
+                            <!-- 利率曲线：5個點，第5點控制點Y改為80 -->
+                            <path d="M40,120 Q80,90 120,100 Q160,110 220,55 Q260,25 300,55 Q330,80 360,90" fill="none" stroke="#fff" stroke-width="2"/>
+                            <!-- 标签 -->
+                            <text x="130" y="130" fill="#28a745" font-size="11" font-weight="bold">计息</text>
+                            <text x="260" y="100" fill="#dc3545" font-size="11" font-weight="bold">不计息</text>
+                            <text x="330" y="130" fill="#28a745" font-size="11" font-weight="bold">计息</text>
+                            <!-- 轴标签 -->
+                            <text x="210" y="170" fill="rgba(255,255,255,0.6)" font-size="10" text-anchor="middle">时间</text>
+                            <text x="20" y="30" fill="rgba(255,255,255,0.6)" font-size="10" text-anchor="middle">利率</text>
+                        </svg>
+                    </div>
+                    <div class="highlight-box"><div class="label">当前参考报价（3年期）</div><div class="value">4.7% / 年</div><div style="font-size: 0.7rem; color: rgba(255,215,0,0.7); margin-top: 4px;">美国3年期国债3.72%</div></div>
+                    <div class="highlight-box"><div class="label">当前参考报价（5年期）</div><div class="value">6.8% / 年</div><div style="font-size: 0.7rem; color: rgba(255,215,0,0.7); margin-top: 4px;">美国5年期国债3.84%</div></div>
+                    <p style="font-size: 0.75rem; color: rgba(255,255,255,0.5); margin-top: 12px; font-style: italic;">注：报价及美债收益率随市场波动每日变化，展示值仅作示意。</p>
+                </div>
+                <div class="element-card">
+                    <h3>💵 计息与派息方式</h3>
+                    <ul><li>按日计息</li><li>按季派发</li></ul>
+                </div>
+            </div>
+        </section>
+        
+        <section class="section">
+            <h2 class="section-title">产品规格详情</h2>
+            <div class="specs-table">
+                <div class="spec-row"><span class="spec-label">产品年期</span><span class="spec-value">3、5、10年（中期）</span></div>
+                <div class="spec-row"><span class="spec-label">最低投资金额</span><span class="spec-value highlight">50万美元</span></div>
+                <div class="spec-row"><span class="spec-label">保本机制</span><span class="spec-value highlight">发行人100%保本</span></div>
+                <div class="spec-row"><span class="spec-label">风险评级</span><span class="spec-value">中低风险</span></div>
+                <div class="spec-row">
+                    <span class="spec-label">发行人</span>
+                    <span class="spec-value"><div class="issuer-tags"><span class="issuer-tag">高盛</span><span class="issuer-tag">摩根士丹利</span><span class="issuer-tag">法兴</span><span class="issuer-tag">瑞银</span></div></span>
+                </div>
+                <div class="spec-row"><span class="spec-label">赎回条件</span><span class="spec-value">发行商有权在一年后<br>每季度初提前赎回</span></div>
+            </div>
+            <div class="highlight-box" style="margin-top: 24px;">
+                <div class="label">核心亮点</div>
+                <p style="color: rgba(255,255,255,0.9); font-size: 0.95rem; line-height: 1.6; margin-top: 8px;">由国际顶级投行发行，并提供100%本金保障<br>为中期中低风险投资，提供更高回报可能</p>
+            </div>
+        </section>
+        
+        <section class="section">
+            <h2 class="section-title">FRN、国债和定存的对比</h2>
+            <table class="compare-table">
+                <tr>
+                    <th>对比维度</th>
+                    <th>美国国债</th>
+                    <th>FRN</th>
+                    <th>定期存款</th>
+                </tr>
+                <tr>
+                    <td class="dim-label">本金保障</td>
+                    <td>持有到期保本<br>（国家信用）</td>
+                    <td>保本<br>（顶级投行）</td>
+                    <td>保本<br>（银行信用）</td>
+                </tr>
+                <tr>
+                    <td class="dim-label">收益</td>
+                    <td>利息中等+资本利得</td>
+                    <td><strong>约定票息最高</strong></td>
+                    <td>约定收益最低</td>
+                </tr>
+                <tr>
+                    <td class="dim-label">收益确定性</td>
+                    <td>持有到期利息锁定，资本利得不确定</td>
+                    <td>挂钩利率走势，<strong>票息不确定性高</strong></td>
+                    <td><strong>100%确定</strong></td>
+                </tr>
+                <tr>
+                    <td class="dim-label">流动性</td>
+                    <td><strong>最好，可二级市场交易</strong></td>
+                    <td>较差，持有至赎回或到期</td>
+                    <td>最差，提前支取损失全部利息</td>
+                </tr>
+                <tr>
+                    <td class="dim-label">起投门槛</td>
+                    <td>低，1000美元起投</td>
+                    <td>高，50万美元起投</td>
+                    <td>中，1万美元</td>
+                </tr>
+            </table>
+            
+            <div style="margin-top: 24px; padding: 20px; background: rgba(0,0,0,0.2); border-radius: 12px;">
+                <h4 style="color: #ffd700; margin-bottom: 16px; text-align: center;">📊 三种投资特点对比</h4>
+                <div class="chart-bars">
+                    <div class="chart-bar-item">
+                        <span class="chart-label">FRN</span>
+                        <div class="chart-bar-wrapper">
+                            <div class="chart-bar frn">最高收益潜力</div>
+                        </div>
+                    </div>
+                    <div class="chart-bar-item">
+                        <span class="chart-label">美国国债</span>
+                        <div class="chart-bar-wrapper">
+                            <div class="chart-bar bond">流动性最好</div>
+                        </div>
+                    </div>
+                    <div class="chart-bar-item">
+                        <span class="chart-label">定期存款</span>
+                        <div class="chart-bar-wrapper">
+                            <div class="chart-bar deposit">确定性最高</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="section">
+            <h2 class="section-title">不同市场环境下收益分析</h2>
+            
+            <table class="compare-table" style="margin-top: 20px;">
+                <tr>
+                    <th style="background: rgba(13, 37, 63, 0.8); color: #fff;">市场情景</th>
+                    <th style="background: rgba(13, 37, 63, 0.8); color: #fff;">美国国债</th>
+                    <th style="background: rgba(13, 37, 63, 0.8); color: #fff;">FRN</th>
+                    <th style="background: rgba(13, 37, 63, 0.8); color: #fff;">定期存款</th>
+                </tr>
+                <tr style="background: rgba(13, 37, 63, 0.2);">
+                    <td style="font-weight: bold; color: #ffd700;">利率下跌</td>
+                    <td>债券价格上升<br>交易可获资本利得</td>
+                    <td><strong>收取高票息</strong><br>但大概率被赎回<br>再投资风险高</td>
+                    <td>收益固定<br>锁定较高利息</td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold; color: #ffd700;">利率不变</td>
+                    <td>债券价格波动较小<br>持有到期赚取利息</td>
+                    <td><strong>收取高票息</strong></td>
+                    <td>无影响</td>
+                </tr>
+                <tr style="background: rgba(13, 37, 63, 0.2);">
+                    <td style="font-weight: bold; color: #ffd700;">利率上升</td>
+                    <td>债券价格下跌<br>产生亏损<br>持有到期无影响</td>
+                    <td><strong>损失利息</strong><br>持有到期拿回本金<br><strong>实际购买力下降</strong></td>
+                    <td>收益固定<br>实际购买力下降</td>
+                </tr>
+            </table>
+            
+            <div class="market-analysis" style="margin-top: 24px;">
+                <div class="market-card positive"><h4>✅ 利率波动较小的市场</h4><p>FRN能够稳定地获得高收益<br>这是对FRN投资最友好的市场情况</p></div>
+                <div class="market-card warning"><h4>⚠️ 利率大幅下降的市场</h4><p>可能被提前赎回，再投资时利率变低</p></div>
+                <div class="market-card negative"><h4>❌ 利率大幅上涨的市场</h4><p>虽然能保本，但无法获得利息，本金贬值</p></div>
+            </div>
+        </section>
+        
+        <section class="section">
+            <h2 class="section-title">产品收益详解</h2>
+            <div class="scenario-card" style="margin-bottom: 24px;">
+                <h4>📋 案例分析 - 产品信息</h4>
+                <table class="compare-table">
+                    <tr>
+                        <td class="dim-label">期限</td>
+                        <td>5年期 (5y)</td>
+                    </tr>
+                    <tr>
+                        <td class="dim-label">锁定期</td>
+                        <td>1年 (NC1y)</td>
+                    </tr>
+                    <tr>
+                        <td class="dim-label">派息</td>
+                        <td>每3个月 (x 3m)</td>
+                    </tr>
+                    <tr>
+                        <td class="dim-label">发行人</td>
+                        <td><strong>摩根士丹利</strong><br>(Morgan Stanley)</td>
+                    </tr>
+                    <tr>
+                        <td class="dim-label">票息率</td>
+                        <td><strong style="color: #D4AF37; font-size: 1.2rem;">7.65%</strong></td>
+                    </tr>
+                    <tr>
+                        <td class="dim-label">阀值</td>
+                        <td><strong>4.75%</strong></td>
+                    </tr>
+                    <tr>
+                        <td class="dim-label">投资金额</td>
+                        <td><strong>100万美元</strong></td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="formula-box">
+                <h4>📐 收益计算公式</h4>
+                <div class="formula">票息 = 票息率 × D/N × 面值 × 计日基准</div>
+                <div class="formula-params"><strong>D</strong> = 在相关票息期内，美国10年期国债收益率低于4.75%的天数<br><strong>N</strong> = 在相关票息期内，总天数<br><strong>计日基准</strong> = 90/360（即1/4，按季度付息）</div>
+            </div>
+            <div class="scenario-card">
+                <h4>📈 情景一：持有到期</h4>
+                <div class="scenario-detail">
+                    <h5>持有情景说明</h5>
+                    <ul style="list-style: none; font-size: 0.9rem; color: rgba(255,255,255,0.8); line-height: 1.8;">
+                        <li>• 持有产品至<strong>5年到期</strong></li><li>• 期间未触发提前赎回条款</li><li>• <strong>95%</strong>的日期未超过阀值</li>
+                    </ul>
+                </div>
+                <div class="scenario-detail" style="margin-top: 16px; background: rgba(0,0,0,0.2);">
+                    <h5>收益计算示例</h5>
+                    <p style="font-size: 0.85rem; color: rgba(255,255,255,0.8); line-height: 1.6; margin-bottom: 8px;">收益构成 = 20次季度派息</p>
+                    <p style="font-size: 0.85rem; color: rgba(255,255,255,0.8); line-height: 1.6; margin-bottom: 8px;">到期总额 = 7.65% × 0.95 × 1/4 × 100万 × 20</p>
+                    <p style="font-size: 0.85rem; color: rgba(255,255,255,0.8); line-height: 1.6;">最终收益 = <strong style="color: #28a745; font-size: 1.1rem;">361,000 美元</strong></p>
+                </div>
+                <div class="calc-result"><div class="amount">$1,361,000</div><div class="label">到期预计总资产 | 5年总回报率 36.1%</div></div>
+            </div>
+            <div class="scenario-card">
+                <h4>🔄 情景二：被提前赎回</h4>
+                <div class="sub-scenario">
+                    <h5>子情景一：第1年被赎回</h5>
+                    <p style="font-size: 0.85rem; color: rgba(255,255,255,0.7); margin-bottom: 8px;"><strong>收益构成：</strong>4次季度派息</p>
+                    <div style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; margin: 12px 0;">
+                        <p style="font-size: 0.8rem; color: rgba(255,255,255,0.7); margin-bottom: 4px;">收益 = (100万 × 7.65% / 4) × 4 = 76,500 美元</p>
+                        <p style="font-size: 0.8rem; color: rgba(255,255,255,0.7);">期末总资产 = 100万 + 76,500 = <strong style="color: #D4AF37;">1,076,500</strong> 美元</p>
+                    </div>
+                    <div class="result">期末总资产 $1,076,500 美元</div>
+                </div>
+                <div class="sub-scenario">
+                    <h5>子情景二：第3年被赎回</h5>
+                    <p style="font-size: 0.85rem; color: rgba(255,255,255,0.7); margin-bottom: 8px;"><strong>收益构成：</strong>12次季度派息</p>
+                    <div style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; margin: 12px 0;">
+                        <p style="font-size: 0.8rem; color: rgba(255,255,255,0.7); margin-bottom: 4px;">收益 = (100万 × 7.65% / 4) × 12 = 229,500 美元</p>
+                        <p style="font-size: 0.8rem; color: rgba(255,255,255,0.7);">期末总资产 = 100万 + 229,500 = <strong style="color: #D4AF37;">1,229,500</strong> 美元</p>
+                    </div>
+                    <div class="result">期末总资产 $1,229,500 美元</div>
+                </div>
+                <p style="font-size: 0.75rem; color: rgba(255,255,255,0.5); margin-top: 16px;">* 以上计算基于年化票息率7.65%的假设，且持有期利率下行从未触及阀值（4.75%），实际收益以产品合同及市场情况为准</p>
+            </div>
+        </section>
+        
+        <section class="section">
+            <h2 class="section-title">影响10年期美债利率的四大因素</h2>
+            <div class="formula-main"><p>10年期美债利率 = 未来平均短端利率 + 通胀预期 + 增长预期 + 期限溢价</p></div>
+            <div class="factors-grid">
+                <div class="factor-card"><h4>📊 未来平均短端利率</h4><p>市场对未来短期利率的预期<br>美联储加息会推升长期利率</p></div>
+                <div class="factor-card"><h4>📈 通胀预期</h4><p>投资者对未来物价上涨的预判<br>预期通胀率越高，长期收益率越高</p></div>
+                <div class="factor-card"><h4>💼 经济增长预期</h4><p>对未来宏观经济增速的展望<br>经济强劲，信贷增加，利率上升</p></div>
+                <div class="factor-card"><h4>⏱️ 期限溢价</h4><p>长期持有，承担更多不确定性<br>市场风险偏好、流动性等因素影响</p></div>
+            </div>
+        </section>
+        
+        <section class="section">
+            <h2 class="section-title">市场环境分析 - 历史数据</h2>
+            
+            <!-- 历史利率走势图 -->
+            <div style="margin-top: 0; margin-bottom: 24px; background: rgba(0,0,0,0.2); border-radius: 16px; padding: 20px;">
+                <h4 style="color: #ffd700; text-align: center; margin-bottom: 16px; font-size: 0.95rem;">📈 美国10年期国债收益率历史走势 (2011-2026)</h4>
+                <div style="position: relative; width: 100%; height: 200px;">
+                    <svg viewBox="0 0 400 200" style="width: 100%; height: 100%;">
+                        <defs>
+                            <linearGradient id="safeArea" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" style="stop-color:#28a745;stop-opacity:0.3" />
+                                <stop offset="100%" style="stop-color:#28a745;stop-opacity:0.05" />
+                            </linearGradient>
+                            <linearGradient id="riskArea" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" style="stop-color:#dc3545;stop-opacity:0.5" />
+                                <stop offset="100%" style="stop-color:#dc3545;stop-opacity:0.1" />
+                            </linearGradient>
+                        </defs>
+                        <line x1="40" y1="50.9" x2="360" y2="50.9" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+                        <line x1="40" y1="72.7" x2="360" y2="72.7" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+                        <line x1="40" y1="94.5" x2="360" y2="94.5" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+                        <line x1="40" y1="116.4" x2="360" y2="116.4" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+                        <line x1="40" y1="138.2" x2="360" y2="138.2" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+                        <line x1="40" y1="56.4" x2="360" y2="56.4" stroke="#ffd700" stroke-width="2" stroke-dasharray="5,3"/>
+                        <text x="365" y="59.4" fill="#ffd700" font-size="9" font-weight="bold">4.75%</text>
+                        <path d="M40,88 L42,84.1 L43.5,85.6 L45.3,84.5 L47,87.6 L48.8,95.4 L50.5,89.7 L52.3,99.6 L54.1,113.1 L55.8,118.1 L57.6,116.1 L59.3,114 L61.1,118.8 L62.9,119.2 L64.6,115.7 L66.4,111.3 L68.1,116.8 L69.9,127.9 L71.6,123.6 L73.4,126 L75.2,125.7 L76.9,124.2 L78.7,121.8 L80.4,124.7 L82.2,121.2 L84,115.5 L85.7,119.4 L87.5,119.4 L89.2,123.8 L91,112.9 L92.7,105.5 L94.5,100.2 L96.3,99.3 L98,102 L99.8,102.2 L101.5,100 L103.3,93.7 L105.1,101.7 L106.8,102 L108.6,99.6 L110.3,102.6 L112.1,105.9 L113.8,103.7 L115.6,105 L117.4,108.7 L119.1,107.2 L120.9,108.7 L122.6,111.6 L124.4,112.7 L126.2,123.3 L127.9,116.4 L129.7,119.2 L131.4,113.7 L133.2,112.2 L135,107 L136.7,112 L138.5,112.7 L140.2,115.3 L142,112.9 L143.7,113.1 L145.5,110.5 L147.3,117 L149,120.1 L150.8,120.9 L152.5,120.1 L154.3,119.6 L156,128.1 L157.8,127.1 L159.6,125.7 L161.3,125.1 L163.1,120.1 L164.8,106.5 L166.6,106.5 L168.4,105.9 L170.1,106.3 L171.9,107.6 L173.6,109.2 L175.4,111.8 L177.1,109.6 L178.9,110.7 L180.7,112.9 L182.4,109.2 L184.2,108.3 L186,108.3 L187.7,107.6 L189.5,99.3 L191.2,98.7 L193,100.2 L194.7,95.2 L196.5,96.9 L198.2,97.8 L200,94.5 L201.8,97.6 L203.5,92.6 L205.3,91.5 L207,94.3 L208.8,101.3 L210.5,101.1 L212.3,99.8 L214.1,105.7 L215.8,105 L217.6,113.3 L219.3,115.7 L221.1,118.5 L222.9,127.3 L224.6,124 L226.4,122.3 L228.1,121.2 L229.9,118.1 L231.6,127.1 L233.4,135.3 L235.2,146.5 L236.9,146 L238.7,145.6 L240.4,144.9 L242.2,148 L244,145.2 L245.7,145.2 L247.5,140.8 L249.2,139.9 L251,139.7 L252.7,136.2 L254.5,128.4 L256.3,123.1 L258,124 L259.8,124.7 L261.5,127.7 L263.3,132.9 L265.1,131.4 L266.8,127.7 L268.6,125.5 L270.3,128.8 L272.1,126.8 L273.8,120.5 L275.6,122.5 L277.4,107.9 L279.1,96.9 L280.9,95.9 L282.6,97.2 L284.4,103.3 L286.2,88.9 L287.9,76.4 L289.7,71.2 L291.4,83 L293.2,75.3 L295,86 L296.7,72.5 L298.5,84.1 L300.2,81.7 L302,81.2 L303.7,76.9 L305.5,71.6 L307.3,68.8 L309,59.9 L310.8,55.9 L312.5,67.9 L314.3,75.3 L316,75.6 L317.8,68.6 L319.6,65.5 L321.3,59 L323.1,61.6 L324.8,62.3 L326.6,72.9 L328.4,74.7 L330.1,78.4 L331.9,64.7 L333.6,68.8 L335.4,60.1 L337.1,60.1 L338.9,67.5 L340.7,69 L342.4,67.3 L344.2,63.8 L345.9,67.1 L347.7,67.7 L349.4,67.7 L351.2,70.1 L353,70.3 L354.7,70.8 L356.5,68.8 L358.2,67.1 L360,73.4" fill="none" stroke="#fff" stroke-width="1.5"/>
+                        <circle cx="310.8" cy="55.9" r="2" fill="#dc3545"/>
+                        <text x="40" y="195" fill="rgba(255,255,255,0.6)" font-size="8" text-anchor="middle">2011</text>
+                        <text x="82.2" y="195" fill="rgba(255,255,255,0.6)" font-size="8" text-anchor="middle">2013</text>
+                        <text x="124.4" y="195" fill="rgba(255,255,255,0.6)" font-size="8" text-anchor="middle">2015</text>
+                        <text x="166.6" y="195" fill="rgba(255,255,255,0.6)" font-size="8" text-anchor="middle">2017</text>
+                        <text x="208.8" y="195" fill="rgba(255,255,255,0.6)" font-size="8" text-anchor="middle">2019</text>
+                        <text x="251" y="195" fill="rgba(255,255,255,0.6)" font-size="8" text-anchor="middle">2021</text>
+                        <text x="293.2" y="195" fill="rgba(255,255,255,0.6)" font-size="8" text-anchor="middle">2023</text>
+                        <text x="335.4" y="195" fill="rgba(255,255,255,0.6)" font-size="8" text-anchor="middle">2025</text>
+                        <text x="35" y="53.9" fill="rgba(255,255,255,0.5)" font-size="8" text-anchor="end">5%</text>
+                        <text x="35" y="75.7" fill="rgba(255,255,255,0.5)" font-size="8" text-anchor="end">4%</text>
+                        <text x="35" y="97.5" fill="rgba(255,255,255,0.5)" font-size="8" text-anchor="end">3%</text>
+                        <text x="35" y="119.4" fill="rgba(255,255,255,0.5)" font-size="8" text-anchor="end">2%</text>
+                        <text x="35" y="141.2" fill="rgba(255,255,255,0.5)" font-size="8" text-anchor="end">1%</text>
+                        <rect x="40" y="5" width="10" height="6" fill="#28a745" opacity="0.5"/>
+                        <text x="55" y="11" fill="rgba(255,255,255,0.7)" font-size="8">计息区域 (99.5%)</text>
+                        <rect x="140" y="5" width="10" height="6" fill="#dc3545" opacity="0.5"/>
+                        <text x="155" y="11" fill="rgba(255,255,255,0.7)" font-size="8">不计息区域 (0.5%)</text>
+                    </svg>
+                </div>
+            </div>
+            
+            <div class="history-stat">
+                <div class="big-number">99.5%</div>
+                <div class="stat-label">低于阀值天数占比</div>
+                <div class="stat-detail">自2011年起的15年（5,579天）<br>仅26天利率超过4.75%</div>
+            </div>
+        </section>
+        
+        <section class="section">
+            <h2 class="section-title">风险提示</h2>
+            <div class="risks-grid">
+                <div class="risk-card"><h4>📉 市场风险</h4><p>利率波动可能影响票息收益</p></div>
+                <div class="risk-card"><h4>💧 流动性风险</h4><p>产品需持有至到期或被赎回，否则难以变现，流动性相对较差</p></div>
+                <div class="risk-card"><h4>🏦 信用风险</h4><p>需持续关注发行人的经营状况及信用评级变化，可能面临违约风险</p></div>
+                <div class="risk-card"><h4>💱 汇率风险</h4><p>产品以美元计价，美元汇率波动影响投资本金的相对购买力</p></div>
+                <div class="risk-card"><h4>🔄 再投资风险</h4><p>若产品被提前赎回，客户再投资时面临更低的投资收益</p></div>
+            </div>
+            <div class="important-notice"><p>⚠️ 本产品仅供符合条件的专业投资者认购，请仔细阅读产品说明书</p></div>
+        </section>
+        
+        <section class="section">
+            <h2 class="section-title">不同利率环境下的表现分析</h2>
+            <div class="performance-cards">
+                <div class="perf-card best">
+                    <h4>利率平稳</h4>
+                    <span class="tag">FRN表现最佳</span>
+                    <p>利率稳定在4.75%以下<br>持续获得高票息收益<br>且无需担心产品提前结束</p>
+                </div>
+                <div class="perf-card good">
+                    <h4>利率下行</h4>
+                    <span class="tag">仍能获得票息</span>
+                    <p>可能被发行商提前赎回<br>投资者面临以更低利率进行再投资的风险<br>无法享受长期高息</p>
+                </div>
+                <div class="perf-card bad">
+                    <h4>利率上行</h4>
+                    <span class="tag">最不利情况</span>
+                    <p>利率超4.75%阈值时<br>投资者将无法获得票息<br>虽然保本，但高通胀加速本金真实购买力贬值</p>
+                </div>
+            </div>
+        </section>
+        
+        <section class="section">
+            <h2 class="section-title">重要提醒</h2>
+            <div class="disclaimer">
+                <div class="disclaimer-item"><div class="disclaimer-icon">!</div><p>本介绍仅供参考，<strong>不构成投资建议</strong></p></div>
+                <div class="disclaimer-item"><div class="disclaimer-icon">!</div><p>FRN是复杂的结构性产品，投资前请<strong>详阅产品说明书</strong></p></div>
+                <div class="disclaimer-item"><div class="disclaimer-icon">!</div><p>请咨询<strong>专业理财顾问</strong>，确保产品符合您的风险承受能力</p></div>
+                <div class="disclaimer-item"><div class="disclaimer-icon">!</div><p>过去表现不代表未来结果，<strong>投资有风险</strong></p></div>
+            </div>
+        </section>
+        
+        <section class="ending">
+            <h2>感谢观看</h2>
+            <p>THANKS FOR WATCHING</p>
+            <div style="margin-top: 20px;"></div>
+            <img src="香港雲杉財富.png" alt="香港雲杉財富" class="logo" onerror="this.style.display='none'" style="margin: 5px 0;">
+            <div class="date" style="margin-top: 10px;">版本 v1.3.10</div>
+        </section>
+    </div>
+</body>
+</html>
