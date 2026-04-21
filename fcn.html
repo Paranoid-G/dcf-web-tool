@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FCN产品介绍 v1.0.12</title>
+    <title>FCN产品介绍 v1.1.1</title>
     <meta property="og:title" content="产品介绍 - FCN固定票息票据">
     <meta property="og:description" content="享受高固定收益的同时，有机会以折扣价买入优质股票 「香港雲杉財富」">
     <meta property="og:image" content="https://paranoid-g.github.io/dcf-web-tool/%E5%85%AC%E5%8F%B8logo%EF%BC%88%E4%BB%85%E5%9B%BE%E6%A0%87%EF%BC%89.png">
@@ -131,6 +131,21 @@
                         <li><strong>标准型</strong><br>本身含有期权，到期自动行权或不行权</li>
                         <li><strong>安全垫型</strong><br>需触发敲入条件才激活期权，提供更多保护</li>
                     </ul>
+                </div>
+                <div class="element-card" style="grid-column: 1 / -1;">
+                    <h3>📈 標準型FCN示意</h3>
+                    <!-- 情境模擬圖表容器 -->
+                    <div id="scenarioChart" style="width: 100%; height: 280px; margin: 20px 0;"></div>
+                </div>
+                <div class="element-card" style="grid-column: 1 / -1;">
+                    <h3>📈 安全墊型FCN示意（被敲入）</h3>
+                    <!-- 安全墊型被敲入圖表容器 -->
+                    <div id="knockInChart" style="width: 100%; height: 280px; margin: 20px 0;"></div>
+                </div>
+                <div class="element-card" style="grid-column: 1 / -1;">
+                    <h3>📈 安全墊型FCN示意（未敲入）</h3>
+                    <!-- 安全墊型未敲入圖表容器 -->
+                    <div id="noKnockInChart" style="width: 100%; height: 280px; margin: 20px 0;"></div>
                 </div>
                 <div class="element-card">
                     <h3>⚙️ 可定制化参数</h3>
@@ -624,11 +639,632 @@
             <p>THANKS FOR WATCHING</p>
             <div style="margin-top: 20px;"></div>
             <img src="香港雲杉財富logo.png" alt="香港雲杉財富" class="logo" onerror="this.style.display='none'" style="margin: 5px 0;">
-            <div class="date" style="margin-top: 10px;">版本 v1.0.12</div>
+            <div class="date" style="margin-top: 10px;">版本 v1.1.1</div>
         </section>
     </div>
 <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
 <script>
+    // 情境模擬圖表
+    var scenarioChart = echarts.init(document.getElementById('scenarioChart'));
+    
+    var scenarioOption = {
+        backgroundColor: 'transparent',
+        grid: {
+            left: '18%',
+            right: '5%',
+            top: '12%',
+            bottom: '20%'
+        },
+        xAxis: {
+            type: 'category',
+            data: ['起點', '', '', '', '', '', '', '到期'],
+            axisLabel: {
+                fontSize: 10,
+                color: 'rgba(255,255,255,0.7)'
+            },
+            axisLine: { lineStyle: { color: 'rgba(255,255,255,0.3)' } },
+            axisTick: { show: false }
+        },
+        yAxis: {
+            type: 'value',
+            min: 60,
+            max: 105,
+            interval: 35,
+            axisLabel: {
+                fontSize: 11,
+                color: 'rgba(255,255,255,0.8)',
+                formatter: function(value) {
+                    return value === 100 || value === 70 ? value + '%' : '';
+                }
+            },
+            axisLine: { lineStyle: { color: 'rgba(255,255,255,0.3)' } },
+            splitLine: { show: false }
+        },
+        series: [
+            // 敲出價參考線（100%）
+            {
+                name: '敲出價',
+                type: 'line',
+                data: [100, 100, 100, 100, 100, 100, 100, 100],
+                lineStyle: {
+                    color: 'rgba(255,255,255,0.4)',
+                    type: 'dashed',
+                    width: 1
+                },
+                symbol: 'none',
+                silent: true
+            },
+            // 行權價參考線（70%）
+            {
+                name: '行權價',
+                type: 'line',
+                data: [70, 70, 70, 70, 70, 70, 70, 70],
+                lineStyle: {
+                    color: 'rgba(255,255,255,0.4)',
+                    type: 'dashed',
+                    width: 1
+                },
+                symbol: 'none',
+                silent: true
+            },
+            // 1組（藏藍，實線）：標準走勢
+            {
+                name: '標準走勢',
+                type: 'line',
+                data: [100, 90, 86, 90, null, null, null, null],
+                smooth: 0.5,
+                lineStyle: { color: '#0d47a1', width: 2.5 },
+                itemStyle: { color: '#0d47a1' },
+                symbol: 'none'
+            },
+            // 2組（藍，虛線）：敲出
+            {
+                name: '敲出',
+                type: 'line',
+                data: [null, null, null, 90, 100, null, null, null],
+                smooth: 0.5,
+                lineStyle: { color: '#4da6ff', width: 2.5, type: 'dashed' },
+                itemStyle: { color: '#4da6ff' },
+                symbol: 'none',
+                markPoint: {
+                    symbol: 'circle',
+                    symbolSize: 8,
+                    itemStyle: { color: '#4da6ff' },
+                    data: [
+                        { coord: [4, 100], value: '敲出' }
+                    ],
+                    label: { show: false }
+                }
+            },
+            // 3組（綠，虛線）：到期未行權
+            {
+                name: '到期未行權',
+                type: 'line',
+                data: [null, null, null, 90, 94, 91, 86, 88],
+                smooth: 0.5,
+                lineStyle: { color: '#28a745', width: 2.5, type: 'dashed' },
+                itemStyle: { color: '#28a745' },
+                symbol: 'none',
+                markPoint: {
+                    symbol: 'circle',
+                    symbolSize: 8,
+                    itemStyle: { color: '#28a745' },
+                    data: [
+                        { coord: [7, 88], value: '到期未行權' }
+                    ],
+                    label: { show: false }
+                }
+            },
+            // 4組（橙，虛線）：到期行權
+            {
+                name: '到期行權',
+                type: 'line',
+                data: [null, null, null, 90, 92, 85, 74, 68],
+                smooth: 0.5,
+                lineStyle: { color: '#fd7e14', width: 2.5, type: 'dashed' },
+                itemStyle: { color: '#fd7e14' },
+                symbol: 'none',
+                markPoint: {
+                    symbol: 'circle',
+                    symbolSize: 8,
+                    itemStyle: { color: '#fd7e14' },
+                    data: [
+                        { coord: [7, 68], value: '行權' }
+                    ],
+                    label: { show: false }
+                }
+            }
+        ],
+        // 左側100%和70%文字標籤
+        graphic: [
+            {
+                type: 'text',
+                left: '3%',
+                top: '18%',
+                style: {
+                    text: '敲出價 100%',
+                    fill: '#4da6ff',
+                    fontSize: 10,
+                    fontWeight: 'bold'
+                }
+            },
+            {
+                type: 'text',
+                left: '3%',
+                top: '72%',
+                style: {
+                    text: '行權價 70%',
+                    fill: '#fd7e14',
+                    fontSize: 10,
+                    fontWeight: 'bold'
+                }
+            },
+            {
+                type: 'text',
+                left: '85%',
+                top: '20%',
+                style: {
+                    text: '敲出\n（本金+持有期利息）',
+                    fill: '#4da6ff',
+                    fontSize: 9,
+                    textAlign: 'left'
+                }
+            },
+            {
+                type: 'text',
+                left: '85%',
+                top: '50%',
+                style: {
+                    text: '到期未行權\n（本金+利息）',
+                    fill: '#28a745',
+                    fontSize: 9,
+                    textAlign: 'left'
+                }
+            },
+            {
+                type: 'text',
+                left: '85%',
+                top: '75%',
+                style: {
+                    text: '到期行權\n（股票+利息）',
+                    fill: '#fd7e14',
+                    fontSize: 9,
+                    textAlign: 'left'
+                }
+            }
+        ]
+    };
+    scenarioChart.setOption(scenarioOption);
+    window.addEventListener('resize', function() {
+        scenarioChart.resize();
+    });
+    
+    // 安全墊型FCN（被敲入）圖表
+    var knockInChart = echarts.init(document.getElementById('knockInChart'));
+    
+    var knockInOption = {
+        backgroundColor: 'transparent',
+        grid: {
+            left: '18%',
+            right: '5%',
+            top: '12%',
+            bottom: '20%'
+        },
+        xAxis: {
+            type: 'category',
+            data: ['起點', '', '', '', '', '', '到期'],
+            axisLabel: {
+                fontSize: 10,
+                color: 'rgba(255,255,255,0.7)'
+            },
+            axisLine: { lineStyle: { color: 'rgba(255,255,255,0.3)' } },
+            axisTick: { show: false }
+        },
+        yAxis: {
+            type: 'value',
+            min: 30,
+            max: 110,
+            axisLabel: {
+                fontSize: 11,
+                color: 'rgba(255,255,255,0.8)',
+                formatter: function(value) {
+                    return value === 100 || value === 70 || value === 40 ? value + '%' : '';
+                }
+            },
+            axisLine: { lineStyle: { color: 'rgba(255,255,255,0.3)' } },
+            splitLine: { show: false }
+        },
+        series: [
+            // 敲出價參考線（100%）
+            {
+                name: '敲出價',
+                type: 'line',
+                data: [100, 100, 100, 100, 100, 100, 100, 100],
+                lineStyle: {
+                    color: 'rgba(255,255,255,0.4)',
+                    type: 'dashed',
+                    width: 1
+                },
+                symbol: 'none',
+                silent: true
+            },
+            // 行權價參考線（70%）
+            {
+                name: '行權價',
+                type: 'line',
+                data: [70, 70, 70, 70, 70, 70, 70, 70],
+                lineStyle: {
+                    color: 'rgba(255,255,255,0.4)',
+                    type: 'dashed',
+                    width: 1
+                },
+                symbol: 'none',
+                silent: true
+            },
+            // 敲入價參考線（40%）
+            {
+                name: '敲入價',
+                type: 'line',
+                data: [40, 40, 40, 40, 40, 40, 40, 40],
+                lineStyle: {
+                    color: 'rgba(255,255,255,0.4)',
+                    type: 'dashed',
+                    width: 1
+                },
+                symbol: 'none',
+                silent: true
+            },
+            // 1組（藏藍，實線）：標準走勢
+            {
+                name: '標準走勢',
+                type: 'line',
+                data: [100, 90, 82, 88, null, null, null, null],
+                smooth: 0.5,
+                lineStyle: { color: '#0d47a1', width: 2.5 },
+                itemStyle: { color: '#0d47a1' },
+                symbol: 'none'
+            },
+            // 2組（藍，虛線）：敲出
+            {
+                name: '敲出',
+                type: 'line',
+                data: [null, null, null, 88, 100, null, null, null],
+                smooth: 0.5,
+                lineStyle: { color: '#4da6ff', width: 2.5, type: 'dashed' },
+                itemStyle: { color: '#4da6ff' },
+                symbol: 'none',
+                markPoint: {
+                    symbol: 'circle',
+                    symbolSize: 8,
+                    itemStyle: { color: '#4da6ff' },
+                    data: [
+                        { coord: [4, 100], value: '敲出' }
+                    ],
+                    label: { show: false }
+                }
+            },
+            // 3組（綠，虛線）：到期未行權
+            {
+                name: '到期未行權',
+                type: 'line',
+                data: [null, null, null, 88, 75, 82, 78, 85],
+                smooth: 0.5,
+                lineStyle: { color: '#28a745', width: 2.5, type: 'dashed' },
+                itemStyle: { color: '#28a745' },
+                symbol: 'none',
+                markPoint: {
+                    symbol: 'circle',
+                    symbolSize: 8,
+                    itemStyle: { color: '#28a745' },
+                    data: [
+                        { coord: [7, 85], value: '到期未行權' }
+                    ],
+                    label: { show: false }
+                }
+            },
+            // 4組（橙，虛線）：到期行權（被敲入）
+            {
+                name: '到期行權',
+                type: 'line',
+                data: [null, null, null, 88, 62, 38, 35, 42],
+                smooth: 0.5,
+                lineStyle: { color: '#fd7e14', width: 2.5, type: 'dashed' },
+                itemStyle: { color: '#fd7e14' },
+                symbol: 'none',
+                markPoint: {
+                    symbol: 'circle',
+                    symbolSize: 8,
+                    itemStyle: { color: '#fd7e14' },
+                    data: [
+                        { coord: [5, 38], value: '敲入' },
+                        { coord: [7, 42], value: '行權' }
+                    ],
+                    label: { show: false }
+                }
+            }
+        ],
+        // 左側價格標籤
+        graphic: [
+            {
+                type: 'text',
+                left: '3%',
+                top: '18%',
+                style: {
+                    text: '敲出價 100%',
+                    fill: '#4da6ff',
+                    fontSize: 10,
+                    fontWeight: 'bold'
+                }
+            },
+            {
+                type: 'text',
+                left: '3%',
+                top: '50%',
+                style: {
+                    text: '行權價 70%',
+                    fill: '#28a745',
+                    fontSize: 10,
+                    fontWeight: 'bold'
+                }
+            },
+            {
+                type: 'text',
+                left: '3%',
+                top: '78%',
+                style: {
+                    text: '敲入價 40%',
+                    fill: '#fd7e14',
+                    fontSize: 10,
+                    fontWeight: 'bold'
+                }
+            },
+            {
+                type: 'text',
+                left: '85%',
+                top: '20%',
+                style: {
+                    text: '敲出\n（本金+持有期利息）',
+                    fill: '#4da6ff',
+                    fontSize: 9,
+                    textAlign: 'left'
+                }
+            },
+            {
+                type: 'text',
+                left: '85%',
+                top: '52%',
+                style: {
+                    text: '到期未行權\n（本金+利息）',
+                    fill: '#28a745',
+                    fontSize: 9,
+                    textAlign: 'left'
+                }
+            },
+            {
+                type: 'text',
+                left: '85%',
+                top: '80%',
+                style: {
+                    text: '到期行權\n（股票+利息）',
+                    fill: '#fd7e14',
+                    fontSize: 9,
+                    textAlign: 'left'
+                }
+            }
+        ]
+    };
+    knockInChart.setOption(knockInOption);
+    window.addEventListener('resize', function() {
+        knockInChart.resize();
+    });
+    
+    // 安全墊型FCN（未敲入）圖表
+    var noKnockInChart = echarts.init(document.getElementById('noKnockInChart'));
+    
+    var noKnockInOption = {
+        backgroundColor: 'transparent',
+        grid: {
+            left: '18%',
+            right: '5%',
+            top: '12%',
+            bottom: '20%'
+        },
+        xAxis: {
+            type: 'category',
+            data: ['起點', '', '', '', '', '', '到期'],
+            axisLabel: {
+                fontSize: 10,
+                color: 'rgba(255,255,255,0.7)'
+            },
+            axisLine: { lineStyle: { color: 'rgba(255,255,255,0.3)' } },
+            axisTick: { show: false }
+        },
+        yAxis: {
+            type: 'value',
+            min: 30,
+            max: 110,
+            axisLabel: {
+                fontSize: 11,
+                color: 'rgba(255,255,255,0.8)',
+                formatter: function(value) {
+                    return value === 100 || value === 70 || value === 40 ? value + '%' : '';
+                }
+            },
+            axisLine: { lineStyle: { color: 'rgba(255,255,255,0.3)' } },
+            splitLine: { show: false }
+        },
+        series: [
+            // 敲出價參考線（100%）
+            {
+                name: '敲出價',
+                type: 'line',
+                data: [100, 100, 100, 100, 100, 100, 100, 100],
+                lineStyle: {
+                    color: 'rgba(255,255,255,0.4)',
+                    type: 'dashed',
+                    width: 1
+                },
+                symbol: 'none',
+                silent: true
+            },
+            // 行權價參考線（70%）
+            {
+                name: '行權價',
+                type: 'line',
+                data: [70, 70, 70, 70, 70, 70, 70, 70],
+                lineStyle: {
+                    color: 'rgba(255,255,255,0.4)',
+                    type: 'dashed',
+                    width: 1
+                },
+                symbol: 'none',
+                silent: true
+            },
+            // 敲入價參考線（40%）
+            {
+                name: '敲入價',
+                type: 'line',
+                data: [40, 40, 40, 40, 40, 40, 40, 40],
+                lineStyle: {
+                    color: 'rgba(255,255,255,0.4)',
+                    type: 'dashed',
+                    width: 1
+                },
+                symbol: 'none',
+                silent: true
+            },
+            // 1組（藏藍，實線）：標準走勢
+            {
+                name: '標準走勢',
+                type: 'line',
+                data: [100, 88, 78, 82, null, null, null, null],
+                smooth: 0.5,
+                lineStyle: { color: '#0d47a1', width: 2.5 },
+                itemStyle: { color: '#0d47a1' },
+                symbol: 'none'
+            },
+            // 2組（藍，虛線）：敲出
+            {
+                name: '敲出',
+                type: 'line',
+                data: [null, null, null, 82, 100, null, null, null],
+                smooth: 0.5,
+                lineStyle: { color: '#4da6ff', width: 2.5, type: 'dashed' },
+                itemStyle: { color: '#4da6ff' },
+                symbol: 'none',
+                markPoint: {
+                    symbol: 'circle',
+                    symbolSize: 8,
+                    itemStyle: { color: '#4da6ff' },
+                    data: [
+                        { coord: [4, 100], value: '敲出' }
+                    ],
+                    label: { show: false }
+                }
+            },
+            // 3組（綠，虛線）：未敲入期權，還本付息
+            {
+                name: '未敲入期權',
+                type: 'line',
+                data: [null, null, null, 82, 68, 58, 65, 78],
+                smooth: 0.5,
+                lineStyle: { color: '#28a745', width: 2.5, type: 'dashed' },
+                itemStyle: { color: '#28a745' },
+                symbol: 'none',
+                markPoint: {
+                    symbol: 'circle',
+                    symbolSize: 8,
+                    itemStyle: { color: '#28a745' },
+                    data: [
+                        { coord: [7, 78], value: '未敲入' }
+                    ],
+                    label: { show: false }
+                }
+            },
+            // 4組（綠，虛線）：未敲入期權，還本付息（第二條）
+            {
+                name: '未敲入期權2',
+                type: 'line',
+                data: [null, null, null, 82, 72, 62, 68, 75],
+                smooth: 0.5,
+                lineStyle: { color: '#20c997', width: 2.5, type: 'dashed' },
+                itemStyle: { color: '#20c997' },
+                symbol: 'none',
+                markPoint: {
+                    symbol: 'circle',
+                    symbolSize: 8,
+                    itemStyle: { color: '#20c997' },
+                    data: [
+                        { coord: [7, 75], value: '未敲入' }
+                    ],
+                    label: { show: false }
+                }
+            }
+        ],
+        // 左側價格標籤
+        graphic: [
+            {
+                type: 'text',
+                left: '3%',
+                top: '18%',
+                style: {
+                    text: '敲出價 100%',
+                    fill: '#4da6ff',
+                    fontSize: 10,
+                    fontWeight: 'bold'
+                }
+            },
+            {
+                type: 'text',
+                left: '3%',
+                top: '50%',
+                style: {
+                    text: '行權價 70%',
+                    fill: '#28a745',
+                    fontSize: 10,
+                    fontWeight: 'bold'
+                }
+            },
+            {
+                type: 'text',
+                left: '3%',
+                top: '78%',
+                style: {
+                    text: '敲入價 40%',
+                    fill: '#20c997',
+                    fontSize: 10,
+                    fontWeight: 'bold'
+                }
+            },
+            {
+                type: 'text',
+                left: '85%',
+                top: '20%',
+                style: {
+                    text: '敲出\n（本金+持有期利息）',
+                    fill: '#4da6ff',
+                    fontSize: 9,
+                    textAlign: 'left'
+                }
+            },
+            {
+                type: 'text',
+                left: '85%',
+                top: '55%',
+                style: {
+                    text: '未敲入期權\n（還本付息）',
+                    fill: '#28a745',
+                    fontSize: 9,
+                    textAlign: 'left'
+                }
+            }
+        ]
+    };
+    noKnockInChart.setOption(noKnockInOption);
+    window.addEventListener('resize', function() {
+        noKnockInChart.resize();
+    });
+    
     // 子母饼图 - 回测分析
     var backtestChart = echarts.init(document.getElementById('backtestChart'));
     
