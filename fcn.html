@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FCN产品介绍 v1.0.9</title>
+    <meta property="og:title" content="产品介绍 - FCN固定票息票据">
+    <meta property="og:description" content="享受高固定收益的同时，有机会以折扣价买入优质股票 「香港雲杉財富」">
+    <meta property="og:image" content="https://paranoid-g.github.io/dcf-web-tool/香港雲杉財富logo.png">
+    <meta property="og:url" content="https://paranoid-g.github.io/dcf-web-tool/fcn.html">
+    <meta property="og:type" content="website">
+    <meta name="description" content="云杉财富FCN产品介绍 - 固定票息票据投资方案">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); min-height: 100vh; color: #fff; overflow-x: hidden; }
+        .container { max-width: 480px; margin: 0 auto; }
+        .logo { width: 180px; height: auto; margin-bottom: 30px; filter: brightness(1.2); }
+        .cover { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 40px 24px; background: linear-gradient(180deg, rgba(0, 123, 255, 0.3) 0%, transparent 50%); }
+        .cover h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: 16px; background: linear-gradient(135deg, #fff 0%, #007bff 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .cover .subtitle { font-size: 1.3rem; color: #007bff; font-weight: 500; margin-bottom: 40px; }
+        .cover .dept { font-size: 0.9rem; color: rgba(255,255,255,0.6); }
+        .scroll-hint { position: absolute; bottom: 30px; animation: bounce 2s infinite; color: rgba(255,255,255,0.5); font-size: 0.8rem; }
+        @keyframes bounce { 0%, 20%, 50%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-10px); } 60% { transform: translateY(-5px); } }
+        .toc { padding: 60px 24px; background: rgba(0,0,0,0.2); }
+        .section-title { font-size: 1.5rem; font-weight: 600; margin-bottom: 24px; padding-left: 16px; border-left: 4px solid #007bff; }
+        .toc-list { list-style: none; }
+        .toc-list li { padding: 16px; margin-bottom: 12px; background: rgba(255,255,255,0.05); border-radius: 12px; display: flex; align-items: center; gap: 16px; }
+        .toc-num { width: 36px; height: 36px; background: linear-gradient(135deg, #007bff, #4da6ff); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.9rem; flex-shrink: 0; }
+        .section { padding: 48px 24px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .section:nth-child(even) { background: rgba(0,0,0,0.15); }
+        .fcn-intro { text-align: center; }
+        .fcn-name { font-size: 1.1rem; color: #007bff; margin-bottom: 8px; }
+        .fcn-fullname { font-size: 0.9rem; color: rgba(255,255,255,0.6); margin-bottom: 32px; }
+        .core-values { display: flex; flex-direction: column; gap: 16px; }
+        .value-card { background: linear-gradient(135deg, rgba(0, 123, 255, 0.2), rgba(77, 166, 255, 0.1)); border: 1px solid rgba(0, 123, 255, 0.3); border-radius: 16px; padding: 24px; text-align: left; }
+        .value-card h3 { color: #007bff; font-size: 1.1rem; margin-bottom: 8px; }
+        .value-card p { color: rgba(255,255,255,0.8); font-size: 0.95rem; line-height: 1.6; }
+        .elements-grid { display: flex; flex-direction: column; gap: 20px; }
+        .element-card { background: rgba(255,255,255,0.05); border-radius: 16px; padding: 20px; }
+        .element-card h3 { font-size: 1rem; color: #ffd700; margin-bottom: 12px; }
+        .element-card ul { list-style: none; }
+        .element-card li { padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; color: rgba(255,255,255,0.85); line-height: 1.5; }
+        .element-card li:last-child { border-bottom: none; }
+        .highlight-box { background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 215, 0, 0.05)); border: 1px solid rgba(255, 215, 0, 0.3); border-radius: 12px; padding: 16px; margin-top: 12px; }
+        .highlight-box .label { font-size: 0.8rem; color: #ffd700; margin-bottom: 4px; }
+        .highlight-box .value { font-size: 1.3rem; font-weight: 600; color: #ffd700; }
+        .specs-table { display: flex; flex-direction: column; gap: 12px; }
+        .spec-row { display: flex; justify-content: space-between; align-items: center; padding: 16px; background: rgba(255,255,255,0.05); border-radius: 12px; }
+        .spec-label { font-size: 0.9rem; color: rgba(255,255,255,0.6); }
+        .spec-value { font-size: 1rem; font-weight: 500; color: #fff; text-align: right; }
+        .spec-value.highlight { color: #007bff; font-weight: 600; }
+        .compare-table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.75rem; }
+        .compare-table th, .compare-table td { padding: 8px 4px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .compare-table th { background: rgba(0, 123, 255, 0.2); color: #007bff; font-weight: 600; }
+        .compare-table td { color: rgba(255,255,255,0.85); line-height: 1.4; }
+        .scenario-card { background: rgba(255,255,255,0.05); border-radius: 16px; padding: 24px; margin-bottom: 16px; border-left: 4px solid; }
+        .scenario-card.best { border-color: #28a745; }
+        .scenario-card.good { border-color: #007bff; }
+        .scenario-card.bad { border-color: #dc3545; }
+        .scenario-card h4 { font-size: 1.1rem; margin-bottom: 12px; }
+        .scenario-card.best h4 { color: #28a745; }
+        .scenario-card.good h4 { color: #007bff; }
+        .scenario-card.bad h4 { color: #dc3545; }
+        .scenario-card p { font-size: 0.9rem; color: rgba(255,255,255,0.8); line-height: 1.6; }
+        .ending { min-height: 60vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 40px 24px; background: linear-gradient(180deg, transparent 0%, rgba(0, 123, 255, 0.2) 100%); }
+        .ending h2 { font-size: 2rem; margin-bottom: 16px; }
+        .ending p { color: rgba(255,255,255,0.6); font-size: 1rem; }
+        .date { margin-top: 40px; font-size: 0.8rem; color: rgba(255,255,255,0.4); }
+        .stock-up { color: #28a745; font-weight: 600; }
+        .stock-down { color: #dc3545; }
+        .text-white { color: #fff; }
+        .disclaimer { background: rgba(0,0,0,0.3); border-radius: 16px; padding: 24px; }
+        .disclaimer-item { display: flex; gap: 12px; margin-bottom: 16px; align-items: flex-start; }
+        .disclaimer-item:last-child { margin-bottom: 0; }
+        .disclaimer-icon { width: 24px; height: 24px; background: #007bff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; flex-shrink: 0; }
+        .disclaimer-item p { font-size: 0.9rem; color: rgba(255,255,255,0.8); line-height: 1.5; }
+        .disclaimer-item strong { color: #007bff; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <section class="cover">
+            <img src="香港雲杉財富logo.png" alt="香港雲杉財富" class="logo">
+            <h1>FCN产品介绍</h1>
+            <p class="subtitle">固定收益 + 股票期权</p>
+            <p class="dept">全球金融市场分析与投资策略部</p>
+            <div class="scroll-hint">↓ 向下滑动浏览</div>
+        </section>
+        
+        <section class="toc">
+            <h2 class="section-title">目录</h2>
+            <ul class="toc-list">
+                <li><span class="toc-num">01</span><span>什么是FCN？</span></li>
+                <li><span class="toc-num">02</span><span>FCN的特点</span></li>
+                <li><span class="toc-num">03</span><span>核心机制</span></li>
+                <li><span class="toc-num">04</span><span>投资情境分析</span></li>
+                <li><span class="toc-num">05</span><span>优缺点对比</span></li>
+                <li><span class="toc-num">06</span><span>适合人群</span></li>
+                <li><span class="toc-num">07</span><span>总结与须知</span></li>
+            </ul>
+        </section>
+        
+        <section class="section">
+            <h2 class="section-title">什么是FCN？</h2>
+            <div class="fcn-intro">
+                <p class="fcn-name">FCN = Fixed Coupon Note</p>
+                <p class="fcn-fullname">固定票息票据</p>
+                <div class="core-values">
+                    <div class="value-card">
+                        <h3>💰 高固定收益</h3>
+                        <p>提供高于定存的年化票息（通常10-20%）<br>保证持有期收益（无论是否行权或敲出）</p>
+                    </div>
+                    <div class="value-card">
+                        <h3>📈 股票期权</h3>
+                        <p>挂钩2-3只股票（客户自由选择标的）<br>到期日观察标的价格决定是否行权<br>不行权拿回本金，行权拿走股票</p>
+                    </div>
+                    <div class="value-card">
+                        <h3>🎯 核心价值</h3>
+                        <p>让你在享受高固定收益的同时<br>有机会以折扣价买入优质股票</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="section">
+            <h2 class="section-title">FCN的特点</h2>
+            <div class="elements-grid">
+                <div class="element-card">
+                    <h3>📊 两种类型</h3>
+                    <ul>
+                        <li><strong>标准型</strong>：本身含有期权，到期自动行权或不行权，简单直接</li>
+                        <li><strong>安全垫型</strong>：需触发敲入条件才激活期权，提供更多保护</li>
+                    </ul>
+                </div>
+                <div class="element-card">
+                    <h3>⚙️ 可定制化参数</h3>
+                    <ul>
+                        <li><strong>挂钩标的</strong>：客户自选2-3只股票（称之为标的）</li>
+                        <li><strong>期限</strong>：3/6/9/12/24个月灵活选择</li>
+                        <li><strong>行权价</strong>：客户自由设定（通常为初始价格的70%-85%）</li>
+                        <li><strong>敲出价</strong>：90%/100%/105%可选（带记忆功能）</li>
+                        <li><strong>敲入价</strong>：40%或50%（仅安全垫型，每日观察）</li>
+                    </ul>
+                </div>
+                <div class="element-card">
+                    <h3>💵 报价示例</h3>
+                    <div class="highlight-box">
+                        <div class="label">年化票息</div>
+                        <div class="value">13% - 20%</div>
+                    </div>
+                    <p style="font-size: 0.8rem; color: rgba(255,255,255,0.5); margin-top: 8px;">不同发行商（BNP/MS/UBS等）报价不同，可货比三家选择最优<br>建议权衡风险收益，综合考虑年化票息与各项关键参数</p>
+                </div>
+            </div>
+        </section>
+        
+        <section class="section">
+            <h2 class="section-title">核心机制</h2>
+            
+            <div class="element-card" style="margin-bottom: 20px;">
+                <h3>1️⃣ 关键术语一：行权价</h3>
+                <div style="background: rgba(0,0,0,0.2); border-radius: 12px; padding: 16px; margin: 12px 0;">
+                    <p style="color: rgba(255,255,255,0.9); margin-bottom: 12px;">
+                        <strong style="color: #ffd700;">定义</strong>：期权的执行价格，由客户自行设定<br>
+                        <strong style="color: #ffd700;">常见设定</strong>：70-85%（初始价格的百分比）
+                    </p>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0;">
+                        <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px;">
+                            <p style="color: #28a745; font-weight: 600; font-size: 0.85rem;">触发条件</p>
+                            <p style="color: rgba(255,255,255,0.8); font-size: 0.8rem;">任一挂钩股票<br>跌破行权价</p>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px;">
+                            <p style="color: #007bff; font-weight: 600; font-size: 0.85rem;">行权标的</p>
+                            <p style="color: rgba(255,255,255,0.8); font-size: 0.8rem;">多只股票跌破<br>选择跌幅最大一只</p>
+                        </div>
+                    </div>
+                    <div class="highlight-box" style="margin-top: 12px;">
+                        <p style="font-size: 0.85rem; color: rgba(255,255,255,0.9); margin-bottom: 8px;">
+                            <strong>举例说明</strong>
+                        </p>
+                        <p style="font-size: 0.8rem; color: rgba(255,255,255,0.8); line-height: 1.6;">
+                            特斯拉：$100 → $ 60 <span style="color: #dc3545;">-40% ↓</span><br>
+                            英伟达：$100 → $115 <span style="color: #28a745;">+15% ↑</span><br>
+                            美&nbsp;&nbsp;光：$100 → $ 65 <span style="color: #dc3545;">-35% ↓</span><br><br>
+                            <strong style="color: #ffd700;">结果：以 $70 行权价买入特斯拉</strong>
+                        </p>
+                    </div>
+                    <p style="font-size: 0.75rem; color: rgba(255,255,255,0.5); margin-top: 12px;">
+                        💡 提示：行权价通常设定为初始价格的70%-85%，设定越低，保护越强，但票息相应降低
+                    </p>
+                </div>
+            </div>
+            
+            <div class="element-card" style="margin-bottom: 20px;">
+                <h3>2️⃣ 关键术语二：敲入机制</h3>
+                <p style="color: rgba(255,255,255,0.8); margin-bottom: 12px;">
+                    敲入机制 —— <strong style="color: #ffd700;">期权被激活的条件</strong><br>
+                    <span style="font-size: 0.85rem; color: rgba(255,255,255,0.7);">未敲入，则不持有期权，到期还本付息</span>
+                </p>
+                <div style="background: rgba(0,0,0,0.2); border-radius: 12px; padding: 16px;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                        <div>
+                            <p style="color: #ffd700; font-size: 0.85rem; margin-bottom: 8px;">敲入价设定</p>
+                            <p style="color: rgba(255,255,255,0.8); font-size: 0.8rem;">初始股价的40%或50%<br>由客户设定</p>
+                        </div>
+                        <div>
+                            <p style="color: #ffd700; font-size: 0.85rem; margin-bottom: 8px;">观察方式</p>
+                            <p style="color: rgba(255,255,255,0.8); font-size: 0.8rem;"><strong>每日观察</strong><br>存续期内任意一天（美式）</p>
+                        </div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.05); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+                        <p style="color: rgba(255,255,255,0.9); font-size: 0.85rem; margin-bottom: 8px;">
+                            <strong>触发条件</strong>：任意一只股票触及敲入价
+                        </p>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                            <div style="text-align: center; padding: 8px; background: rgba(40,167,69,0.1); border-radius: 6px;">
+                                <p style="color: #28a745; font-weight: 600; font-size: 0.9rem;">40%</p>
+                                <p style="color: rgba(255,255,255,0.7); font-size: 0.75rem;">较难触发<br>提供更多保护<br>票息相对较低</p>
+                            </div>
+                            <div style="text-align: center; padding: 8px; background: rgba(255,193,7,0.1); border-radius: 6px;">
+                                <p style="color: #ffc107; font-weight: 600; font-size: 0.9rem;">50%</p>
+                                <p style="color: rgba(255,255,255,0.7); font-size: 0.75rem;">较易触发<br>票息更高<br>期权更容易被激活</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="highlight-box">
+                        <p style="font-size: 0.85rem; color: rgba(255,255,255,0.9); margin-bottom: 8px;">
+                            <strong>举例</strong>（敲入价50%）<br>
+                            持有期内任一天，任一标的跌至$50<br>
+                            期权激活
+                        </p>
+                        <p style="font-size: 0.85rem; color: rgba(255,255,255,0.9);">
+                            持有期内无任何标的跌至$50<br>
+                            期权未激活，到期还本付息
+                        </p>
+                    </div>
+                    <p style="font-size: 0.75rem; color: rgba(255,255,255,0.5); margin-top: 12px;">
+                        💡 提示：敲入机制相当于多一层保护，产品更加安全，但票息相应降低；安全垫越厚，产品越安全，票息越低
+                    </p>
+                </div>
+            </div>
+            
+            <div class="element-card">
+                <h3>3️⃣ 关键术语三：敲出机制</h3>
+                <p style="color: rgba(255,255,255,0.8); margin-bottom: 12px;">
+                    敲出机制 —— <strong style="color: #ffd700;">产品提前结束的条件</strong>
+                </p>
+                <div style="background: rgba(0,0,0,0.2); border-radius: 12px; padding: 16px;">
+                    <div class="highlight-box" style="margin-bottom: 16px;">
+                        <p style="font-size: 0.85rem; color: rgba(255,255,255,0.9);">
+                            <strong>触发条件</strong><br>
+                            <span style="color: #28a745;">全部标的</span>均超过敲出价 → 提前终止，本金返还+票息
+                        </p>
+                    </div>
+                    <div style="margin-bottom: 16px;">
+                        <p style="color: #ffd700; font-size: 0.85rem; margin-bottom: 12px;">敲出价设定（客户自由设定）</p>
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
+                            <div style="text-align: center; padding: 10px; background: rgba(255,193,7,0.1); border-radius: 6px;">
+                                <p style="color: #ffc107; font-weight: 600; font-size: 0.9rem;">90%</p>
+                                <p style="color: rgba(255,255,255,0.7); font-size: 0.7rem;">较易触发<br>需承担较高收益不确定性</p>
+                            </div>
+                            <div style="text-align: center; padding: 10px; background: rgba(0,123,255,0.1); border-radius: 6px;">
+                                <p style="color: #007bff; font-weight: 600; font-size: 0.9rem;">100%</p>
+                                <p style="color: rgba(255,255,255,0.7); font-size: 0.7rem;">标准设置<br>涨超初始价格</p>
+                            </div>
+                            <div style="text-align: center; padding: 10px; background: rgba(40,167,69,0.1); border-radius: 6px;">
+                                <p style="color: #28a745; font-weight: 600; font-size: 0.9rem;">105%</p>
+                                <p style="color: rgba(255,255,255,0.7); font-size: 0.7rem;">较难触发<br>可锁定高收益</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,215,0,0.05)); border: 1px solid rgba(255,215,0,0.3); border-radius: 8px; padding: 12px;">
+                        <p style="color: #ffd700; font-weight: 600; margin-bottom: 8px;">🧠 带记忆（Memory）功能</p>
+                        <ul style="color: rgba(255,255,255,0.85); font-size: 0.85rem; line-height: 1.6; padding-left: 16px;">
+                            <li><strong>累积记忆</strong>：触达即被记忆，不同观察期累加</li>
+                            <li><strong>无需同时</strong>：股票跌回敲出价，曾触达亦触发敲出</li>
+                            <li><strong>越早敲出实际收益越低</strong>：产品有7天起息日</li>
+                            <li><strong>票息与障碍并不是线性关系</strong>：通常成微笑曲线</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="section">
+            <h2 class="section-title">投资情境分析</h2>
+            
+            <div class="scenario-card best">
+                <h4>🎯 情境一：未到期敲出（最普遍情况）</h4>
+                <p>
+                    <strong>条件</strong>：所有股票同时涨超敲出价（如100%）<br><br>
+                    <strong>示例</strong>：第1个月末观察标的股价变动<br>
+                    特斯拉涨至<span class="stock-up">105%</span> ↑ <span class="text-white">超过敲出价，触发敲出条件</span> ✓<br>
+                    英伟达涨至<span class="stock-up">108%</span> ↑ <span class="text-white">超过敲出价，触发敲出条件</span> ✓<br>
+                    美&nbsp;&nbsp;光涨至<span class="stock-up">102%</span> ↑ <span class="text-white">超过敲出价，触发敲出条件</span> ✓<br><br>
+                    <strong>结果</strong>：<br>
+                    ✅ 所有标的触发敲出条件，产品提前结束（持有1个月）<br>
+                    ✅ 返还100%本金<br>
+                    ✅ 获得1个月票息（年化18% × 1/12 = 1.5%）<br>
+                    💰 期末总资产 = 本金100% + 票息1.5% = 101.5%
+                </p>
+            </div>
+            
+            <div class="scenario-card best">
+                <h4>🧠 情境二：带记忆的敲出</h4>
+                <p>
+                    <strong>条件</strong>：不同标的在不同观察期涨超敲出价（如100%）<br><br>
+                    <strong>时间轴</strong>（6个月产品）：<br><br>
+                    <strong>第1个月末观察</strong><br>
+                    <span class="stock-up">特斯拉：105% ↑（触发敲出条件，记忆✓）</span><br>
+                    <span class="stock-down">英伟达：98% ↓</span><br>
+                    <span class="stock-down">美&nbsp;&nbsp;光：95% ↓</span><br><br>
+                    <strong>第2个月末观察</strong><br>
+                    <span class="stock-down">特斯拉：95% ↓</span><span class="stock-up">（虽下跌，仍记忆✓）</span><br>
+                    <span class="stock-up">英伟达：103% ↑（触发敲出条件，记忆✓）</span><br>
+                    <span class="stock-down">美&nbsp;&nbsp;光：97% ↓</span><br><br>
+                    <strong>第3个月末观察</strong><br>
+                    <span class="stock-down">特斯拉：96% ↓</span><span class="stock-up">（仍记忆✓）</span><br>
+                    <span class="stock-down">英伟达：99% ↓</span><span class="stock-up">（仍记忆✓）</span><br>
+                    <span class="stock-up">美&nbsp;&nbsp;光：102% ↑（触发敲出条件，产品敲出✓）</span><br><br>
+                    <strong>结果</strong>：<br>
+                    ✅ 第3个月敲出（三只股票均曾涨超敲出价）<br>
+                    ✅ 返还100%本金<br>
+                    ✅ 获得3个月票息（年化18% × 3/12 = 4.5%）<br>
+                    💰 期末总资产 = 本金100% + 票息4.5% = 104.5%<br><br>
+                    💡 记忆的含义：即使后期股票跌回初始价格，只要曾触达敲出条件，产品依然敲出，为投资者提供更多保障
+                </p>
+            </div>
+            
+            <div class="scenario-card good">
+                <h4>📊 情境三：到期未行权（最理想情况）</h4>
+                <p>
+                    <strong>条件</strong>：到期日观察，股票下跌但未跌破行权价<br><br>
+                    <strong>示例</strong>（6个月产品，行权价70%）：<br><br>
+                    <strong>期末股价变动</strong><br>
+                    特斯拉：$100 → $75（75%，未跌破70%）<br>
+                    英伟达：$100 → $115（115%，上涨）<br>
+                    美&nbsp;&nbsp;光：$100 → $80（80%，未跌破70%）<br><br>
+                    <strong>结果</strong>：<br>
+                    ✅ 过程中未达到敲出条件，产品未敲出<br>
+                    ✅ 所有标的均未跌破行权价，不行权<br>
+                    ✅ 返还100%本金<br>
+                    ✅ 获得6个月票息（年化18% × 6/12 = 9%）<br>
+                    💰 期末总资产 = 本金100% + 票息9% = 109%
+                </p>
+            </div>
+            
+            <div class="scenario-card bad">
+                <h4>⚠️ 情境四：到期行权（或承担损失）</h4>
+                <p>
+                    <strong>条件</strong>：到期日观察，有股票跌破行权价<br><br>
+                    <strong>示例</strong>（6个月产品，本金$200,000，行权价70%）：<br><br>
+                    <strong>期末股价变动</strong><br>
+                    特斯拉：$100 → $60（60%，跌破70%，跌幅最大）<br>
+                    英伟达：$100 → $115（115%，上涨）<br>
+                    美&nbsp;&nbsp;光：$100 → $65（65%，跌破70%）<br><br>
+                    <strong>收益计算</strong>：<br>
+                    ✅ 获得票息：+$18,000（年化18% × 6/12 × $200,000）<br>
+                    📦 以$70行权价买入特斯拉：$200,000 ÷ $70 = 2,857股<br>
+                    📦 实际市值：2,857股 × $60 = $171,429<br>
+                    ❌ 期权亏损：$171,429 - $200,000 = -$28,571<br><br>
+                    📉 实际投资收益：<strong>+$18,000 - $28,571 = -$10,571</strong><br>
+                    💰 期末总资产 = 股票市值 + 票息 = $171,429 + $18,000 = $189,429（亏损5.28%）<br><br>
+                    ⚠️ 虽然获得了票息收益，但期权亏损超过了票息收入，导致整体亏损。这体现了FCN的风险所在。
+                </p>
+            </div>
+        </section>
+        
+        <section class="section">
+            <h2 class="section-title">回测分析</h2>
+            <div class="element-card">
+                <h3>📊 双标的FCN历史表现</h3>
+                <p style="color: rgba(255,255,255,0.8); font-size: 0.9rem; margin-bottom: 16px;">
+                    TSLA（特斯拉）+ NVDA（英伟达）<br>
+                    行权价70%、年化利率20%、无敲入<br>
+                    回溯2024/01/02-2025/09/12 共413个交易日
+                </p>
+                <div class="specs-table">
+                    <div class="spec-row">
+                        <span class="spec-label">总样本数</span>
+                        <span class="spec-value">413</span>
+                    </div>
+                    <div class="spec-row">
+                        <span class="spec-label">敲出总数</span>
+                        <span class="spec-value highlight">339</span>
+                    </div>
+                    <div class="spec-row">
+                        <span class="spec-label">平均收益（含10%票息）</span>
+                        <span class="spec-value highlight">+7.05%</span>
+                    </div>
+                    <div class="spec-row">
+                        <span class="spec-label">最差收益</span>
+                        <span class="spec-value">+3.58%</span>
+                    </div>
+                    <div class="spec-row">
+                        <span class="spec-label">最好收益</span>
+                        <span class="spec-value">+8.94%</span>
+                    </div>
+                </div>
+                <p style="font-size: 0.75rem; color: rgba(255,255,255,0.5); margin-top: 12px;">
+                    注：数据基于历史样本统计，过去表现不代表未来结果
+                </p>
+            </div>
+        </section>
+        
+        <section class="section">
+            <h2 class="section-title">优缺点对比</h2>
+            <div class="elements-grid">
+                <div class="element-card">
+                    <h3 style="color: #28a745;">✅ 优点</h3>
+                    <ul>
+                        <li><strong>高固定收益</strong>：年化10-20%，远高于其它固定收益类产品</li>
+                        <li><strong>下行保护</strong>：股票需跌破行权价才会行权</li>
+                        <li><strong>额外保护</strong>：可选择安全垫型结构，多一层保护</li>
+                        <li><strong>标的自选</strong>：客户自行选择2-3只股票</li>
+                        <li><strong>灵活设定</strong>：行权价、敲入价、敲出价均可客制化</li>
+                        <li><strong>敲出机会</strong>：市场好时可能提前结束，锁定收益</li>
+                    </ul>
+                </div>
+                <div class="element-card">
+                    <h3 style="color: #dc3545;">⚠️ 风险</h3>
+                    <ul>
+                        <li><strong>本金亏损风险</strong>：若行权需承担股票下跌损失</li>
+                        <li><strong>流动性风险</strong>：通常需持有至到期或敲出</li>
+                        <li><strong>机会成本</strong>：若股票大涨，收益仅限于票息</li>
+                        <li><strong>汇率风险</strong>：美元计价，需承担汇率波动</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        
+        <section class="section">
+            <h2 class="section-title">适合什么样的投资者？</h2>
+            <div class="elements-grid">
+                <div class="element-card">
+                    <h3 style="color: #28a745;">✅ 适合</h3>
+                    <ul>
+                        <li>💰 追求高于定存收益的投资者</li>
+                        <li>📈 看好自选标的长期价值的投资者</li>
+                        <li>📉 认为股票不会大跌（不会跌破行权价）的投资者</li>
+                        <li>🏦 有闲置资金可长期持有的投资者</li>
+                        <li>🎯 下跌愿意买入标的股票的投资者</li>
+                    </ul>
+                </div>
+                <div class="element-card">
+                    <h3 style="color: #dc3545;">❌ 不适合</h3>
+                    <ul>
+                        <li>🚨 无法承受任何本金亏损的保守型投资者</li>
+                        <li>💸 短期内需要资金的投资者</li>
+                        <li>📉 看空挂钩标的的投资者</li>
+                        <li>⏰ 预期短期股票大幅上涨的投资者（FCN无法分享股票上涨收益）</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        
+        <section class="section">
+            <h2 class="section-title">FCN vs 国内雪球</h2>
+            <table class="compare-table">
+                <tr>
+                    <th>对比项</th>
+                    <th>国内雪球</th>
+                    <th>FCN</th>
+                </tr>
+                <tr>
+                    <td style="font-weight: 600; color: #ffd700;">标的</td>
+                    <td>指数</td>
+                    <td>个股（自选2-3只）</td>
+                </tr>
+                <tr>
+                    <td style="font-weight: 600; color: #ffd700;">敲入</td>
+                    <td>敲入指数收益，直接亏损</td>
+                    <td>敲入期权≠亏损，期末观察</td>
+                </tr>
+                <tr>
+                    <td style="font-weight: 600; color: #ffd700;">潜在损失</td>
+                    <td>80%敲入，跌78%亏22%</td>
+                    <td>70%行权，跌至68%，仅亏2.9%</td>
+                </tr>
+                <tr>
+                    <td style="font-weight: 600; color: #ffd700;">利息</td>
+                    <td>敲入后无利息</td>
+                    <td>持有期均有利息</td>
+                </tr>
+                <tr>
+                    <td style="font-weight: 600; color: #ffd700;">安全垫</td>
+                    <td>无</td>
+                    <td>可设50%-60%缓冲</td>
+                </tr>
+                <tr>
+                    <td style="font-weight: 600; color: #ffd700;">敲出价</td>
+                    <td>固定100-103%</td>
+                    <td>90%/100%/105%灵活自选</td>
+                </tr>
+                <tr>
+                    <td style="font-weight: 600; color: #ffd700;">期限</td>
+                    <td>12-24个月</td>
+                    <td>3/6/9/12/24个月</td>
+                </tr>
+                <tr>
+                    <td style="font-weight: 600; color: #ffd700;">门槛</td>
+                    <td>1000万人民币</td>
+                    <td>20万美元</td>
+                </tr>
+            </table>
+            <p style="font-size: 0.8rem; color: rgba(255,255,255,0.6); margin-top: 12px; text-align: center;">
+                FCN核心优势：更安全、标的自选、期限灵活、参数可客制化
+            </p>
+        </section>
+        
+        <section class="section">
+            <h2 class="section-title">总结：FCN的三种结果</h2>
+            <div class="elements-grid">
+                <div class="element-card" style="border-left: 4px solid #28a745;">
+                    <h3 style="color: #28a745;">01 到期未行权</h3>
+                    <p style="color: rgba(255,255,255,0.8);">
+                        股票未跌破行权价<br>
+                        ✅ 返还本金 + 票息<br>
+                        <em>最理想情况</em>
+                    </p>
+                </div>
+                <div class="element-card" style="border-left: 4px solid #007bff;">
+                    <h3 style="color: #007bff;">02 未到期敲出</h3>
+                    <p style="color: rgba(255,255,255,0.8);">
+                        所有股票涨超敲出价<br>
+                        ✅ 提前结束，本金+累积票息<br>
+                        <em>市场向好时最常见</em>
+                    </p>
+                </div>
+                <div class="element-card" style="border-left: 4px solid #dc3545;">
+                    <h3 style="color: #dc3545;">03 到期行权</h3>
+                    <p style="color: rgba(255,255,255,0.8);">
+                        股票跌破行权价<br>
+                        📦 票息 + 以行权价买入股票<br>
+                        <em>可能承担期权亏损</em>
+                    </p>
+                </div>
+            </div>
+            <div class="highlight-box" style="margin-top: 24px;">
+                <p style="color: #ffd700; font-size: 1rem; text-align: center; font-weight: 600;">
+                    🔑 关键问题：你愿意以行权价买入你选择的股票吗？
+                </p>
+            </div>
+        </section>
+        
+        <section class="section">
+            <h2 class="section-title">买入条件</h2>
+            <div class="specs-table">
+                <div class="spec-row">
+                    <span class="spec-label">资格认定</span>
+                    <span class="spec-value">香港专业投资者</span>
+                </div>
+                <div class="spec-row">
+                    <span class="spec-label">资产要求</span>
+                    <span class="spec-value highlight">800万港币等值金融资产</span>
+                </div>
+                <div class="spec-row">
+                    <span class="spec-label">最低投资金额</span>
+                    <span class="spec-value highlight">$200,000美元</span>
+                </div>
+                <div class="spec-row">
+                    <span class="spec-label">其他要求</span>
+                    <span class="spec-value">签署产品说明书及风险披露声明</span>
+                </div>
+            </div>
+            <p style="font-size: 0.8rem; color: rgba(255,255,255,0.5); margin-top: 16px; text-align: center;">
+                ⚠️ FCN为复杂结构性产品，投资前请详阅产品条款并咨询专业顾问
+            </p>
+        </section>
+        
+        <section class="section">
+            <h2 class="section-title">重要提醒</h2>
+            <div class="disclaimer">
+                <div class="disclaimer-item"><div class="disclaimer-icon">!</div><p>本介绍仅供参考，<strong>不构成投资建议</strong></p></div>
+                <div class="disclaimer-item"><div class="disclaimer-icon">!</div><p>FCN是复杂的结构性产品，投资前请<strong>详阅产品说明书</strong></p></div>
+                <div class="disclaimer-item"><div class="disclaimer-icon">!</div><p>请咨询<strong>专业理财顾问</strong>，确保产品符合您的风险承受能力</p></div>
+                <div class="disclaimer-item"><div class="disclaimer-icon">!</div><p>过去表现不代表未来结果，<strong>投资有风险，可能损失本金</strong></p></div>
+            </div>
+        </section>
+        
+        <section class="ending">
+            <h2>感谢观看</h2>
+            <p>THANKS FOR WATCHING</p>
+            <div style="margin-top: 20px;"></div>
+            <img src="香港雲杉財富logo.png" alt="香港雲杉財富" class="logo" onerror="this.style.display='none'" style="margin: 5px 0;">
+            <div class="date" style="margin-top: 10px;">版本 v1.0.9</div>
+        </section>
+    </div>
+</body>
+</html>
