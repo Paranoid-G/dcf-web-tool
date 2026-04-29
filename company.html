@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>香港雲杉財富 - 公司介紹</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif; 
+            background: #1a1a2e;
+            overflow: hidden;
+        }
+        
+        .slider-container {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .slider-wrapper {
+            display: flex;
+            width: 600vw;
+            height: 100vh;
+            transition: transform 0.3s ease-out;
+        }
+        
+        .slide {
+            width: 100vw;
+            height: 100vh;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 24px;
+            position: relative;
+        }
+        
+        /* Slide 1 - Cover */
+        .slide-1 {
+            background: linear-gradient(180deg, rgba(0, 123, 255, 0.3) 0%, transparent 50%), 
+                        linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+        }
+        
+        .slide-1 .logo {
+            width: 200px;
+            height: auto;
+            margin-bottom: 40px;
+        }
+        
+        .slide-1 h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #fff;
+            text-align: center;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #fff 0%, #007bff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .slide-1 .subtitle {
+            font-size: 1.1rem;
+            color: #007bff;
+            text-align: center;
+        }
+        
+        /* Slide 2 - Company Intro */
+        .slide-2 {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+        }
+        
+        .slide-2 h2 {
+            font-size: 1.8rem;
+            color: #007bff;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .slide-2 .content {
+            color: rgba(255,255,255,0.9);
+            font-size: 1rem;
+            line-height: 1.8;
+            text-align: center;
+            max-width: 320px;
+        }
+        
+        .slide-2 .highlight {
+            color: #ffd700;
+            font-weight: 600;
+        }
+        
+        /* Slide 3 - Business */
+        .slide-3 {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+        }
+        
+        .slide-3 h2 {
+            font-size: 1.8rem;
+            color: #007bff;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .service-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            width: 100%;
+            max-width: 320px;
+        }
+        
+        .service-item {
+            background: rgba(0, 123, 255, 0.15);
+            border: 1px solid rgba(0, 123, 255, 0.3);
+            border-radius: 16px;
+            padding: 20px 12px;
+            text-align: center;
+        }
+        
+        .service-item .icon {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+        
+        .service-item h3 {
+            color: #007bff;
+            font-size: 0.95rem;
+            margin-bottom: 6px;
+        }
+        
+        .service-item p {
+            color: rgba(255,255,255,0.7);
+            font-size: 0.75rem;
+            line-height: 1.4;
+        }
+        
+        /* Slide 4 - Advantages */
+        .slide-4 {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+        }
+        
+        .slide-4 h2 {
+            font-size: 1.8rem;
+            color: #007bff;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .advantage-list {
+            width: 100%;
+            max-width: 320px;
+        }
+        
+        .advantage-item {
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+        
+        .advantage-item h3 {
+            color: #ffd700;
+            font-size: 1rem;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .advantage-item p {
+            color: rgba(255,255,255,0.8);
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+        
+        /* Slide 5 - Team */
+        .slide-5 {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+        }
+        
+        .slide-5 h2 {
+            font-size: 1.8rem;
+            color: #007bff;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+        
+        .team-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            width: 100%;
+            max-width: 320px;
+        }
+        
+        .team-member {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 16px 12px;
+            text-align: center;
+        }
+        
+        .team-member .avatar {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #007bff, #4da6ff);
+            border-radius: 50%;
+            margin: 0 auto 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #fff;
+        }
+        
+        .team-member h3 {
+            color: #fff;
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+        }
+        
+        .team-member .title {
+            color: #007bff;
+            font-size: 0.75rem;
+            margin-bottom: 8px;
+        }
+        
+        .team-member .desc {
+            color: rgba(255,255,255,0.6);
+            font-size: 0.65rem;
+            line-height: 1.4;
+        }
+        
+        /* Slide 6 - Contact (Last) */
+        .slide-6 {
+            background: linear-gradient(180deg, transparent 0%, rgba(0, 123, 255, 0.2) 100%), 
+                        linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+        }
+        
+        .slide-6 h2 {
+            font-size: 2rem;
+            color: #007bff;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .contact-info {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .contact-item {
+            color: rgba(255,255,255,0.9);
+            font-size: 1rem;
+            margin-bottom: 12px;
+        }
+        
+        .contact-item .label {
+            color: #007bff;
+            font-size: 0.85rem;
+            margin-bottom: 4px;
+        }
+        
+        .slide-6 .tagline {
+            color: #ffd700;
+            font-size: 1.1rem;
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        /* Navigation dots */
+        .nav-dots {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+        
+        .nav-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .nav-dot.active {
+            background: #007bff;
+            width: 24px;
+            border-radius: 5px;
+        }
+        
+        /* Swipe hint */
+        .swipe-hint {
+            position: fixed;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255,255,255,0.5);
+            font-size: 0.8rem;
+            animation: pulse 2s infinite;
+            z-index: 100;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="slider-container">
+        <div class="slider-wrapper" id="slider">
+            <!-- Slide 1: Cover -->
+            <div class="slide slide-1">
+                <img src="公司logo（白字）.png" alt="香港雲杉財富" class="logo">
+                <h1>香港雲杉財富</h1>
+                <p class="subtitle">Spruce Global Wealth Management</p>
+            </div>
+            
+            <!-- Slide 2: Company Intro -->
+            <div class="slide slide-2">
+                <h2>公司簡介</h2>
+                <div class="content">
+                    <p>香港雲杉財富有限公司</p>
+                    <p style="margin-bottom: 20px;">Spruce Global Wealth Management Ltd.</p>
+                    <p>成立於香港，專注於服務<span class="highlight">高淨值人士</span>的獨立財富管理機構</p>
+                    <p style="margin-top: 16px;">提供全方位的財富規劃與全球資產配置服務</p>
+                    <p style="margin-top: 20px; font-style: italic; color: #007bff;">「讓客戶安心」</p>
+                </div>
+            </div>
+            
+            <!-- Slide 3: Business -->
+            <div class="slide slide-3">
+                <h2>業務簡介</h2>
+                <div class="service-grid">
+                    <div class="service-item">
+                        <div class="icon">📊</div>
+                        <h3>財富規劃</h3>
+                        <p>專業財富診斷與規劃，量身定制資產配置方案</p>
+                    </div>
+                    <div class="service-item">
+                        <div class="icon">🌍</div>
+                        <h3>全球配置</h3>
+                        <p>跨市場、跨幣種、跨資產類別的全球資產配置</p>
+                    </div>
+                    <div class="service-item">
+                        <div class="icon">🛡️</div>
+                        <h3>港險規劃</h3>
+                        <p>香港保險產品配置，提供全面的風險保障</p>
+                    </div>
+                    <div class="service-item">
+                        <div class="icon">🏥</div>
+                        <h3>全球醫療</h3>
+                        <p>高端全球醫療保障方案，全球頂尖醫療資源</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 4: Advantages -->
+            <div class="slide slide-4">
+                <h2>公司優勢</h2>
+                <div class="advantage-list">
+                    <div class="advantage-item">
+                        <h3>✓ 科學方法</h3>
+                        <p>採用國際先進財富管理模型，提供從財富積累到傳承的全流程規劃服務</p>
+                    </div>
+                    <div class="advantage-item">
+                        <h3>✓ 專業團隊</h3>
+                        <p>合夥人均為各領域資深人士，擁有全球化的投資視野</p>
+                    </div>
+                    <div class="advantage-item">
+                        <h3>✓ 優質資產</h3>
+                        <p>豐富的優質資產資源，嚴格的篩選標準，具備長期增長潛力</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 5: Team -->
+            <div class="slide slide-5">
+                <h2>核心團隊</h2>
+                <div class="team-grid">
+                    <div class="team-member">
+                        <div class="avatar">高</div>
+                        <h3>高昕煒 CFA</h3>
+                        <div class="title">首席財富官</div>
+                        <div class="desc">中國基金業金牛獎評委<br>招商證券研究所金融產品首席分析師</div>
+                    </div>
+                    <div class="team-member">
+                        <div class="avatar">S</div>
+                        <h3>Ms. Sung CFA</h3>
+                        <div class="title">首席產品分析師</div>
+                        <div class="desc">香港大學金融工程博士<br>深圳市海外高層次人才</div>
+                    </div>
+                    <div class="team-member">
+                        <div class="avatar">D</div>
+                        <h3>David Chiu</h3>
+                        <div class="title">首席資產配置官</div>
+                        <div class="desc">某頭部券商首席資產配置分析師<br>香港浸會大學會計學碩士</div>
+                    </div>
+                    <div class="team-member">
+                        <div class="avatar">A</div>
+                        <h3>Athena Zeng</h3>
+                        <div class="title">首席保險規劃師</div>
+                        <div class="desc">英國壽險百萬圓桌會員<br>英國保誠保險</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 6: Contact (Last) -->
+            <div class="slide slide-6">
+                <h2>聯絡我們</h2>
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <div class="label">香港</div>
+                        +852 4069 4151
+                    </div>
+                    <div class="contact-item">
+                        <div class="label">大陸</div>
+                        +86 186 0300 0300
+                    </div>
+                </div>
+                <p class="tagline">讓您安心的海外資產管家</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="nav-dots">
+        <div class="nav-dot active" data-index="0"></div>
+        <div class="nav-dot" data-index="1"></div>
+        <div class="nav-dot" data-index="2"></div>
+        <div class="nav-dot" data-index="3"></div>
+        <div class="nav-dot" data-index="4"></div>
+        <div class="nav-dot" data-index="5"></div>
+    </div>
+    
+    <div class="swipe-hint">← 左右滑動切換 →</div>
+    
+    <script>
+        const slider = document.getElementById('slider');
+        const dots = document.querySelectorAll('.nav-dot');
+        let currentSlide = 0;
+        const totalSlides = 6;
+        let startX = 0;
+        let currentX = 0;
+        let isDragging = false;
+        
+        function goToSlide(index) {
+            if (index < 0) index = 0;
+            if (index >= totalSlides) index = totalSlides - 1;
+            currentSlide = index;
+            slider.style.transform = `translateX(-${currentSlide * 100}vw)`;
+            
+            dots.forEach((dot, i) => {
+                dot.classList.toggle('active', i === currentSlide);
+            });
+        }
+        
+        // Touch events
+        slider.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+            isDragging = true;
+        });
+        
+        slider.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            currentX = e.touches[0].clientX;
+        });
+        
+        slider.addEventListener('touchend', (e) => {
+            if (!isDragging) return;
+            isDragging = false;
+            
+            const diff = startX - currentX;
+            if (Math.abs(diff) > 50) {
+                if (diff > 0) {
+                    goToSlide(currentSlide + 1);
+                } else {
+                    goToSlide(currentSlide - 1);
+                }
+            }
+        });
+        
+        // Mouse events
+        slider.addEventListener('mousedown', (e) => {
+            startX = e.clientX;
+            isDragging = true;
+        });
+        
+        slider.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            currentX = e.clientX;
+        });
+        
+        slider.addEventListener('mouseup', (e) => {
+            if (!isDragging) return;
+            isDragging = false;
+            
+            const diff = startX - currentX;
+            if (Math.abs(diff) > 50) {
+                if (diff > 0) {
+                    goToSlide(currentSlide + 1);
+                } else {
+                    goToSlide(currentSlide - 1);
+                }
+            }
+        });
+        
+        slider.addEventListener('mouseleave', () => {
+            isDragging = false;
+        });
+        
+        // Dot navigation
+        dots.forEach((dot, index) => {
+            dot.addEventListener('click', () => goToSlide(index));
+        });
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') goToSlide(currentSlide + 1);
+            if (e.key === 'ArrowLeft') goToSlide(currentSlide - 1);
+        });
+    </script>
+</body>
+</html>
