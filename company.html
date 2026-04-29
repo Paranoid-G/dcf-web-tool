@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>香港雲杉財富 - 公司介紹</title>
+    <title>香港雲杉財富 - 公司介紹 v1.1.0</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
@@ -21,7 +21,7 @@
         
         .slider-wrapper {
             display: flex;
-            width: 600vw;
+            width: 1600vw;
             height: 100vh;
             transition: transform 0.3s ease-out;
         }
@@ -36,18 +36,26 @@
             align-items: center;
             padding: 40px 24px;
             position: relative;
+            background: linear-gradient(135deg, #1F1613 0%, #2A1F1A 50%, #1F1613 100%);
         }
         
-        /* Slide 1 - Cover */
         .slide-1 {
             background: linear-gradient(180deg, rgba(205, 154, 70, 0.3) 0%, transparent 50%), 
                         linear-gradient(135deg, #1F1613 0%, #2A1F1A 50%, #1F1613 100%);
         }
         
         .slide-1 .logo {
-            width: 200px;
-            height: auto;
+            width: 180px;
+            height: 180px;
+            background: rgba(205, 154, 70, 0.1);
+            border: 2px solid rgba(205, 154, 70, 0.5);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             margin-bottom: 40px;
+            font-size: 3rem;
+            color: #CD9A46;
         }
         
         .slide-1 h1 {
@@ -65,49 +73,36 @@
             font-size: 1.1rem;
             color: #CD9A46;
             text-align: center;
+            letter-spacing: 2px;
         }
         
-        /* Slide 2 - Company Intro */
-        .slide-2 {
-            background: linear-gradient(135deg, #1F1613 0%, #2A1F1A 50%, #1F1613 100%);
-        }
-        
-        .slide-2 h2 {
+        .slide-2 h2, .slide-3 h2, .slide-4 h2, .slide-5 h2 {
             font-size: 1.8rem;
             color: #CD9A46;
-            margin-bottom: 30px;
+            margin-bottom: 24px;
             text-align: center;
         }
         
         .slide-2 .content {
             color: rgba(255,255,255,0.9);
-            font-size: 1rem;
+            font-size: 0.95rem;
             line-height: 1.8;
             text-align: center;
             max-width: 320px;
         }
         
-        .slide-2 .highlight {
+        .slide-2 .highlight { color: #CD9A46; font-weight: 600; }
+        .slide-2 .quote {
+            margin-top: 24px;
+            font-style: italic;
             color: #CD9A46;
-            font-weight: 600;
-        }
-        
-        /* Slide 3 - Business */
-        .slide-3 {
-            background: linear-gradient(135deg, #1F1613 0%, #2A1F1A 50%, #1F1613 100%);
-        }
-        
-        .slide-3 h2 {
-            font-size: 1.8rem;
-            color: #CD9A46;
-            margin-bottom: 30px;
-            text-align: center;
+            font-size: 1.1rem;
         }
         
         .service-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 16px;
+            gap: 12px;
             width: 100%;
             max-width: 320px;
         }
@@ -116,212 +111,288 @@
             background: rgba(205, 154, 70, 0.15);
             border: 1px solid rgba(205, 154, 70, 0.3);
             border-radius: 16px;
-            padding: 20px 12px;
+            padding: 16px 10px;
             text-align: center;
         }
         
-        .service-item .icon {
-            font-size: 2rem;
-            margin-bottom: 8px;
-        }
-        
-        .service-item h3 {
-            color: #CD9A46;
-            font-size: 0.95rem;
-            margin-bottom: 6px;
-        }
-        
-        .service-item p {
-            color: rgba(255,255,255,0.7);
-            font-size: 0.75rem;
-            line-height: 1.4;
-        }
-        
-        /* Slide 4 - Advantages */
-        .slide-4 {
-            background: linear-gradient(135deg, #1F1613 0%, #2A1F1A 50%, #1F1613 100%);
-        }
-        
-        .slide-4 h2 {
-            font-size: 1.8rem;
-            color: #CD9A46;
-            margin-bottom: 30px;
+        .service-item .icon { font-size: 1.8rem; margin-bottom: 8px; }
+        .service-item h3 { color: #CD9A46; font-size: 0.9rem; margin-bottom: 6px; }
+        .service-item p { color: rgba(255,255,255,0.7); font-size: 0.7rem; line-height: 1.4; }
+        .slide-3 .summary {
+            margin-top: 20px;
+            color: rgba(255,255,255,0.8);
+            font-size: 0.85rem;
             text-align: center;
+            max-width: 300px;
         }
         
-        .advantage-list {
-            width: 100%;
-            max-width: 320px;
-        }
-        
+        .advantage-list { width: 100%; max-width: 320px; }
         .advantage-item {
             background: rgba(205, 154, 70, 0.1);
             border: 1px solid rgba(205, 154, 70, 0.3);
             border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 12px;
+            padding: 14px;
+            margin-bottom: 10px;
         }
-        
-        .advantage-item h3 {
-            color: #CD9A46;
-            font-size: 1rem;
-            margin-bottom: 6px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .advantage-item p {
-            color: rgba(255,255,255,0.8);
-            font-size: 0.85rem;
-            line-height: 1.5;
-        }
-        
-        /* Slide 5 - Team */
-        .slide-5 {
-            background: linear-gradient(135deg, #1F1613 0%, #2A1F1A 50%, #1F1613 100%);
-        }
-        
-        .slide-5 h2 {
-            font-size: 1.8rem;
-            color: #CD9A46;
-            margin-bottom: 24px;
-            text-align: center;
-        }
+        .advantage-item h3 { color: #CD9A46; font-size: 0.95rem; margin-bottom: 6px; }
+        .advantage-item p { color: rgba(255,255,255,0.8); font-size: 0.8rem; line-height: 1.5; }
         
         .team-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 12px;
+            gap: 10px;
             width: 100%;
-            max-width: 320px;
+            max-width: 340px;
         }
-        
         .team-member {
             background: rgba(255,255,255,0.05);
             border-radius: 12px;
-            padding: 16px 12px;
+            padding: 12px 8px;
             text-align: center;
         }
-        
         .team-member .avatar {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, #CD9A46, #4da6ff);
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #CD9A46, #8B6914);
             border-radius: 50%;
-            margin: 0 auto 10px;
+            margin: 0 auto 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: #fff;
+            font-weight: bold;
+        }
+        .team-member h3 { color: #CD9A46; font-size: 0.8rem; margin-bottom: 2px; }
+        .team-member .title { color: rgba(255,255,255,0.7); font-size: 0.7rem; margin-bottom: 6px; }
+        .team-member .desc { color: rgba(255,255,255,0.5); font-size: 0.6rem; line-height: 1.3; }
+        
+        .slide-6 h2 { font-size: 1.6rem; color: #CD9A46; margin-bottom: 30px; text-align: center; }
+        .index-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            max-width: 320px;
+        }
+        .index-item {
+            width: 80px;
+            height: 80px;
+            background: rgba(205, 154, 70, 0.15);
+            border: 1px solid rgba(205, 154, 70, 0.4);
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1.5rem;
             color: #CD9A46;
+            font-weight: bold;
         }
         
-        .team-member h3 {
-            color: #CD9A46;
+        .slide-7 h2, .slide-8 h2 { font-size: 1.6rem; color: #CD9A46; margin-bottom: 20px; text-align: center; }
+        .picture-placeholder {
+            width: 280px;
+            height: 200px;
+            background: rgba(205, 154, 70, 0.1);
+            border: 2px dashed rgba(205, 154, 70, 0.4);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(205, 154, 70, 0.6);
             font-size: 0.9rem;
-            margin-bottom: 4px;
         }
         
-        .team-member .title {
-            color: #CD9A46;
+        .slide-9 h2 { font-size: 1.5rem; color: #CD9A46; margin-bottom: 20px; text-align: center; }
+        .timeline {
+            width: 100%;
+            max-width: 340px;
+            position: relative;
+            padding-left: 30px;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(180deg, #CD9A46 0%, rgba(205, 154, 70, 0.3) 100%);
+        }
+        .timeline-item {
+            position: relative;
+            margin-bottom: 16px;
+            padding-left: 20px;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -26px;
+            top: 4px;
+            width: 12px;
+            height: 12px;
+            background: #CD9A46;
+            border-radius: 50%;
+        }
+        .timeline-item .year { color: #CD9A46; font-size: 1rem; font-weight: bold; margin-bottom: 4px; }
+        .timeline-item .event { color: rgba(255,255,255,0.9); font-size: 0.8rem; line-height: 1.4; }
+        .timeline-item .note { color: rgba(255,255,255,0.6); font-size: 0.7rem; margin-top: 4px; line-height: 1.3; }
+        .slide-9 .summary {
+            margin-top: 16px;
+            color: rgba(255,255,255,0.7);
             font-size: 0.75rem;
+            text-align: center;
+            max-width: 320px;
+            line-height: 1.5;
+        }
+        
+        .slide-10 h2 { font-size: 2rem; color: #CD9A46; margin-bottom: 30px; text-align: center; }
+        .slide-10 .subtitle {
+            color: rgba(255,255,255,0.7);
+            font-size: 1rem;
+            text-align: center;
+            max-width: 300px;
+            line-height: 1.6;
+        }
+        
+        .slide-11 h2 { font-size: 1.8rem; color: #CD9A46; margin-bottom: 20px; text-align: center; line-height: 1.4; }
+        .slide-11 .subtitle { color: rgba(255,255,255,0.7); font-size: 1rem; text-align: center; }
+        
+        .slide-12 h2 { font-size: 1.8rem; color: #CD9A46; margin-bottom: 24px; text-align: center; }
+        .advantage-detail-list { width: 100%; max-width: 340px; }
+        .advantage-detail-item {
+            background: rgba(205, 154, 70, 0.1);
+            border: 1px solid rgba(205, 154, 70, 0.3);
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 10px;
+        }
+        .advantage-detail-item h3 { color: #CD9A46; font-size: 0.9rem; margin-bottom: 8px; }
+        .advantage-detail-item ul {
+            color: rgba(255,255,255,0.8);
+            font-size: 0.75rem;
+            line-height: 1.6;
+            padding-left: 16px;
+        }
+        .advantage-detail-item li { margin-bottom: 4px; }
+        
+        .slide-13 h2 { font-size: 1.6rem; color: #CD9A46; margin-bottom: 20px; text-align: center; }
+        .insurance-content { width: 100%; max-width: 320px; }
+        .insurance-step {
+            background: rgba(205, 154, 70, 0.1);
+            border: 1px solid rgba(205, 154, 70, 0.3);
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+        .insurance-step p { color: rgba(255,255,255,0.9); font-size: 0.85rem; line-height: 1.6; }
+        
+        .slide-14 h2 { font-size: 1.5rem; color: #CD9A46; margin-bottom: 16px; text-align: center; }
+        .process-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            width: 100%;
+            max-width: 340px;
+        }
+        .process-item {
+            background: rgba(205, 154, 70, 0.1);
+            border: 1px solid rgba(205, 154, 70, 0.3);
+            border-radius: 10px;
+            padding: 10px;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+        .process-item .num { color: #CD9A46; font-size: 1rem; font-weight: bold; min-width: 24px; }
+        .process-item .text { color: rgba(255,255,255,0.85); font-size: 0.7rem; line-height: 1.4; }
+        
+        .slide-15 h2 { font-size: 1.4rem; color: #CD9A46; margin-bottom: 16px; text-align: center; }
+        .finance-process { width: 100%; max-width: 340px; }
+        .finance-step {
+            display: flex;
+            align-items: center;
+            gap: 10px;
             margin-bottom: 8px;
+            background: rgba(205, 154, 70, 0.1);
+            border-radius: 8px;
+            padding: 10px 12px;
         }
+        .finance-step .num { color: #CD9A46; font-size: 0.9rem; font-weight: bold; min-width: 28px; }
+        .finance-step .text { color: rgba(255,255,255,0.9); font-size: 0.75rem; line-height: 1.4; }
         
-        .team-member .desc {
-            color: rgba(255,255,255,0.6);
-            font-size: 0.65rem;
-            line-height: 1.4;
-        }
-        
-        /* Slide 6 - Contact (Last) */
-        .slide-6 {
+        .slide-16 {
             background: linear-gradient(180deg, transparent 0%, rgba(205, 154, 70, 0.2) 100%), 
                         linear-gradient(135deg, #1F1613 0%, #2A1F1A 50%, #1F1613 100%);
         }
-        
-        .slide-6 h2 {
-            font-size: 2rem;
-            color: #CD9A46;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-        
-        .contact-info {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        
-        .contact-item {
-            color: rgba(255,255,255,0.9);
-            font-size: 1rem;
-            margin-bottom: 12px;
-        }
-        
-        .contact-item .label {
-            color: #CD9A46;
+        .slide-16 h2 { font-size: 2rem; color: #CD9A46; margin-bottom: 30px; text-align: center; }
+        .contact-info { text-align: center; margin-bottom: 24px; }
+        .contact-item { margin-bottom: 16px; }
+        .contact-item .label { color: #CD9A46; font-size: 0.9rem; margin-bottom: 4px; }
+        .contact-item .value { color: rgba(255,255,255,0.9); font-size: 1.1rem; }
+        .slide-16 .desc {
+            color: rgba(255,255,255,0.7);
             font-size: 0.85rem;
-            margin-bottom: 4px;
-        }
-        
-        .slide-6 .tagline {
-            color: #CD9A46;
-            font-size: 1.1rem;
             text-align: center;
-            margin-top: 20px;
+            max-width: 300px;
+            line-height: 1.6;
+            margin-bottom: 20px;
         }
+        .slide-16 .tagline { color: #CD9A46; font-size: 1.2rem; text-align: center; font-weight: 600; }
         
-        /* Navigation dots */
         .nav-dots {
             position: fixed;
             bottom: 30px;
             left: 50%;
             transform: translateX(-50%);
             display: flex;
-            gap: 10px;
+            gap: 6px;
             z-index: 100;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 90vw;
         }
-        
         .nav-dot {
-            width: 10px;
-            height: 10px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
             background: rgba(255,255,255,0.3);
             cursor: pointer;
             transition: all 0.3s;
         }
+        .nav-dot.active { background: #CD9A46; width: 20px; border-radius: 4px; }
         
-        .nav-dot.active {
-            background: #CD9A46;
-            width: 24px;
-            border-radius: 5px;
-        }
-        
-        /* Swipe hint */
         .swipe-hint {
             position: fixed;
-            bottom: 60px;
+            bottom: 55px;
             left: 50%;
             transform: translateX(-50%);
             color: rgba(255,255,255,0.5);
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             animation: pulse 2s infinite;
             z-index: 100;
         }
+        @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
         
-        @keyframes pulse {
-            0%, 100% { opacity: 0.5; }
-            50% { opacity: 1; }
+        .version-tag {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            color: rgba(205, 154, 70, 0.5);
+            font-size: 0.7rem;
+            z-index: 100;
         }
     </style>
 </head>
 <body>
+    <div class="version-tag">v1.1.0</div>
+    
     <div class="slider-container">
         <div class="slider-wrapper" id="slider">
             <!-- Slide 1: Cover -->
             <div class="slide slide-1">
-                <img src="公司logo（白字）.png" alt="香港雲杉財富" class="logo">
+                <div class="logo">雲杉</div>
                 <h1>香港雲杉財富</h1>
                 <p class="subtitle">Spruce Global Wealth Management</p>
             </div>
@@ -330,11 +401,12 @@
             <div class="slide slide-2">
                 <h2>公司簡介</h2>
                 <div class="content">
-                    <p>香港雲杉財富有限公司</p>
-                    <p style="margin-bottom: 20px;">Spruce Global Wealth Management Ltd.</p>
-                    <p>成立於香港，專注於服務<span class="highlight">高淨值人士</span>的獨立財富管理機構</p>
-                    <p style="margin-top: 16px;">提供全方位的財富規劃與全球資產配置服務</p>
-                    <p style="margin-top: 20px; font-style: italic; color: #CD9A46;">「讓客戶安心」</p>
+                    <p style="margin-bottom: 8px;">香港雲杉財富有限公司</p>
+                    <p style="margin-bottom: 20px; color: #CD9A46;">Spruce Global Wealth Management Ltd.</p>
+                    <p>雲杉財富成立於香港，專注於服務<span class="highlight">高淨值人士</span>的獨立財富管理機構</p>
+                    <p style="margin-top: 12px;">提供全方位的財富規劃與全球資產配置服務</p>
+                    <p class="quote">「讓客戶安心」</p>
+                    <p style="margin-top: 12px; font-size: 0.85rem;">通過科學專業的方法實現全方位、全生命周期的一站式財富規劃，讓客戶省心、放心，為客戶海外資產保駕護航</p>
                 </div>
             </div>
             
@@ -345,12 +417,12 @@
                     <div class="service-item">
                         <div class="icon">📊</div>
                         <h3>財富規劃</h3>
-                        <p>專業財富診斷與規劃，量身定制資產配置方案</p>
+                        <p>專業財富診斷與規劃，量身定制資產配置方案，實現財富穩健增長與傳承目標</p>
                     </div>
                     <div class="service-item">
                         <div class="icon">🌍</div>
                         <h3>全球配置</h3>
-                        <p>跨市場、跨幣種、跨資產類別的全球資產配置</p>
+                        <p>跨市場、跨幣種、跨資產類別的全球資產配置，分散風險，捕捉全球投資機會</p>
                     </div>
                     <div class="service-item">
                         <div class="icon">🛡️</div>
@@ -360,9 +432,10 @@
                     <div class="service-item">
                         <div class="icon">🏥</div>
                         <h3>全球醫療</h3>
-                        <p>高端全球醫療保障方案，全球頂尖醫療資源</p>
+                        <p>高端全球醫療保障方案，提供全球頂尖醫療資源與健康管理服務</p>
                     </div>
                 </div>
+                <p class="summary">我們提供一站式、全方位的財富管理服務，滿足客戶多元化需求</p>
             </div>
             
             <!-- Slide 4: Advantages -->
@@ -371,15 +444,15 @@
                 <div class="advantage-list">
                     <div class="advantage-item">
                         <h3>✓ 科學方法</h3>
-                        <p>採用國際先進財富管理模型，提供從財富積累到傳承的全流程規劃服務</p>
+                        <p>採用國際先進財富管理模型，結合客戶具體情況，提供從財富積累到財富傳承的全流程規劃服務</p>
                     </div>
                     <div class="advantage-item">
                         <h3>✓ 專業團隊</h3>
-                        <p>合夥人均為各領域資深人士，擁有全球化的投資視野</p>
+                        <p>合夥人均為各領域資深人士，擁有全球化的投資視野，為客戶出海資產長期保駕護航</p>
                     </div>
                     <div class="advantage-item">
                         <h3>✓ 優質資產</h3>
-                        <p>豐富的優質資產資源，嚴格的篩選標準，具備長期增長潛力</p>
+                        <p>長期的從業經歷讓我們擁有豐富的優質資產資源，嚴格的篩選標準為客戶挖掘具備長期增長潛力的優質資產</p>
                     </div>
                 </div>
             </div>
@@ -392,42 +465,244 @@
                         <div class="avatar">高</div>
                         <h3>高昕煒 CFA</h3>
                         <div class="title">首席財富官</div>
-                        <div class="desc">中國基金業金牛獎評委<br>招商證券研究所金融產品首席分析師</div>
+                        <div class="desc">中國基金業金牛獎評委<br>招商證券研究所金融產品首席分析師<br>浙江大學工程學士</div>
                     </div>
                     <div class="team-member">
                         <div class="avatar">S</div>
                         <h3>Ms. Sung CFA</h3>
                         <div class="title">首席產品分析師</div>
-                        <div class="desc">香港大學金融工程博士<br>深圳市海外高層次人才</div>
+                        <div class="desc">香港大學金融工程博士<br>深圳市海外高層次人才<br>前海金融局宏觀研究員</div>
                     </div>
                     <div class="team-member">
                         <div class="avatar">D</div>
                         <h3>David Chiu</h3>
                         <div class="title">首席資產配置官</div>
-                        <div class="desc">某頭部券商首席資產配置分析師<br>香港浸會大學會計學碩士</div>
+                        <div class="desc">某頭部券商首席資產配置分析師<br>香港浸會大學會計學碩士<br>財經媒體特邀宏觀評論員</div>
                     </div>
                     <div class="team-member">
                         <div class="avatar">A</div>
                         <h3>Athena Zeng</h3>
                         <div class="title">首席保險規劃師</div>
-                        <div class="desc">英國壽險百萬圓桌會員<br>英國保誠保險</div>
+                        <div class="desc">英國壽險百萬圓桌會員<br>英國保誠保險<br>深圳證券時報</div>
                     </div>
                 </div>
             </div>
             
-            <!-- Slide 6: Contact (Last) -->
+            <!-- Slide 6: Financial Plan Index -->
             <div class="slide slide-6">
+                <h2>金融資產配置方案</h2>
+                <div class="index-grid">
+                    <div class="index-item">01</div>
+                    <div class="index-item">02</div>
+                    <div class="index-item">03</div>
+                    <div class="index-item">04</div>
+                    <div class="index-item">05</div>
+                    <div class="index-item">06</div>
+                </div>
+            </div>
+            
+            <!-- Slide 7: Picture 8 -->
+            <div class="slide slide-7">
+                <h2>專業服務</h2>
+                <div class="picture-placeholder">[圖片區域]</div>
+            </div>
+            
+            <!-- Slide 8: Picture 8 -->
+            <div class="slide slide-8">
+                <h2>全球視野</h2>
+                <div class="picture-placeholder">[圖片區域]</div>
+            </div>
+            
+            <!-- Slide 9: Wealth Lifecycle -->
+            <div class="slide slide-9">
+                <h2>財富生命周期</h2>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="year">2025</div>
+                        <div class="event">初始資產積累</div>
+                        <div class="note">資產池需要考慮定期的資產流入與流出</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="year">2035</div>
+                        <div class="event">孩子上大學</div>
+                        <div class="note">教育支出，重要時點的大額支出需納入考慮</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="year">2045</div>
+                        <div class="event">孩子結婚</div>
+                        <div class="note">買房買車，資金大額支出，資產與現金流發生重大變化</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="year">2055</div>
+                        <div class="event">光榮退休</div>
+                        <div class="note">恭喜您退休了！退休金進賬，現金流發生重大變化</div>
+                    </div>
+                </div>
+                <p class="summary">根據客戶初始資產、現金流情況，通過現金流匹配模型測算出客戶真實要求回報率</p>
+            </div>
+            
+            <!-- Slide 10: Asset Allocation Model -->
+            <div class="slide slide-10">
+                <h2>資產配置模型</h2>
+                <p class="subtitle">完善的資產配置模型<br>科學的產品評價體系<br>專業的投資決策流程</p>
+            </div>
+            
+            <!-- Slide 11: Product Selection -->
+            <div class="slide slide-11">
+                <h2>產品篩選<br>與組合實現</h2>
+                <p class="subtitle">科學的產品評價體系、篩選方法及標準<br>為客戶構建最優投資組合</p>
+            </div>
+            
+            <!-- Slide 12: Our Advantages -->
+            <div class="slide slide-12">
+                <h2>我們的優勢</h2>
+                <div class="advantage-detail-list">
+                    <div class="advantage-detail-item">
+                        <h3>先進的方法體系</h3>
+                        <ul>
+                            <li>完善的資產配置模型</li>
+                            <li>及時的宏觀檢測模型</li>
+                            <li>科學的產品評價體系、篩選方法及標準</li>
+                        </ul>
+                    </div>
+                    <div class="advantage-detail-item">
+                        <h3>豐富的產品資源</h3>
+                        <ul>
+                            <li>全球主流公募基金配置</li>
+                            <li>全球知名對衝基金份額</li>
+                            <li>國內知名私募基金份額及實地考察機會</li>
+                        </ul>
+                    </div>
+                    <div class="advantage-detail-item">
+                        <h3>優質的服務態度</h3>
+                        <ul>
+                            <li>及時的業績與投資溝通</li>
+                            <li>複雜產品的深度剖析及講解</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 13: Insurance Plan -->
+            <div class="slide slide-13">
+                <h2>保險配置方案</h2>
+                <div class="insurance-content">
+                    <div class="insurance-step">
+                        <p>一併結合金融配置方案，確定客戶保險配置方案</p>
+                    </div>
+                    <div class="insurance-step">
+                        <p>確定保障型保險及投資型保險的配置比例</p>
+                    </div>
+                    <div class="insurance-step">
+                        <p>優選優質保單實現客戶保障需求</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 14: Service Process -->
+            <div class="slide slide-14">
+                <h2>服務流程</h2>
+                <div class="process-grid">
+                    <div class="process-item">
+                        <div class="num">01</div>
+                        <div class="text">初步溝通客戶需求及基本情況</div>
+                    </div>
+                    <div class="process-item">
+                        <div class="num">02</div>
+                        <div class="text">簽署初步服務協議及保密協議</div>
+                    </div>
+                    <div class="process-item">
+                        <div class="num">03</div>
+                        <div class="text">了解客戶情況，明確客戶需求</div>
+                    </div>
+                    <div class="process-item">
+                        <div class="num">04</div>
+                        <div class="text">制定財富規劃書</div>
+                    </div>
+                    <div class="process-item">
+                        <div class="num">05</div>
+                        <div class="text">簽署服務協議</div>
+                    </div>
+                    <div class="process-item">
+                        <div class="num">06</div>
+                        <div class="text">香港銀行、保險、券商開戶（客戶須前來香港）</div>
+                    </div>
+                    <div class="process-item">
+                        <div class="num">07</div>
+                        <div class="text">客戶資金轉入並按規劃書購買保險、券商財富專戶</div>
+                    </div>
+                    <div class="process-item">
+                        <div class="num">08</div>
+                        <div class="text">定期跟蹤客戶資產情況，出具相關財富跟蹤報告</div>
+                    </div>
+                    <div class="process-item">
+                        <div class="num">09</div>
+                        <div class="text">據市場變化給出資產調整建議</div>
+                    </div>
+                    <div class="process-item">
+                        <div class="num">10</div>
+                        <div class="text">賬戶疑惑、投資疑惑、申請保險理賠</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 15: Financial Asset Process -->
+            <div class="slide slide-15">
+                <h2>金融資產配置流程</h2>
+                <div class="finance-process">
+                    <div class="finance-step">
+                        <div class="num">01</div>
+                        <div class="text">券商開戶：客戶於指定香港券商開戶</div>
+                    </div>
+                    <div class="finance-step">
+                        <div class="num">02</div>
+                        <div class="text">成立專戶：雲杉財富向券商發起專戶成立要約</div>
+                    </div>
+                    <div class="finance-step">
+                        <div class="num">03</div>
+                        <div class="text">客戶買入：客戶購買專屬財富專戶</div>
+                    </div>
+                    <div class="finance-step">
+                        <div class="num">04</div>
+                        <div class="text">開倉建議：雲杉財富根據資產規劃書向客戶及券商提出產品購買建議</div>
+                    </div>
+                    <div class="finance-step">
+                        <div class="num">05</div>
+                        <div class="text">客戶開倉指令：客戶確認後向券商發出操作指令</div>
+                    </div>
+                    <div class="finance-step">
+                        <div class="num">06</div>
+                        <div class="text">券商開倉：券商接客戶開倉指令後執行客戶指令</div>
+                    </div>
+                    <div class="finance-step">
+                        <div class="num">07</div>
+                        <div class="text">調倉建議：雲杉財富向客戶和券商提出組合調整建議</div>
+                    </div>
+                    <div class="finance-step">
+                        <div class="num">08</div>
+                        <div class="text">客戶調倉指令：客戶確認後向券商發出操作指令</div>
+                    </div>
+                    <div class="finance-step">
+                        <div class="num">09</div>
+                        <div class="text">券商調倉：券商接客戶調倉指令後執行客戶指令</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 16: Contact -->
+            <div class="slide slide-16">
                 <h2>聯絡我們</h2>
                 <div class="contact-info">
                     <div class="contact-item">
                         <div class="label">香港</div>
-                        +852 4069 4151
+                        <div class="value">+852 4069 4151</div>
                     </div>
                     <div class="contact-item">
                         <div class="label">大陸</div>
-                        +86 186 0300 0300
+                        <div class="value">+86 186 0300 0300</div>
                     </div>
                 </div>
+                <p class="desc">歡迎預約專業諮詢，我們的專家團隊將為您提供個性化解決方案</p>
                 <p class="tagline">讓您安心的海外資產管家</p>
             </div>
         </div>
@@ -440,6 +715,16 @@
         <div class="nav-dot" data-index="3"></div>
         <div class="nav-dot" data-index="4"></div>
         <div class="nav-dot" data-index="5"></div>
+        <div class="nav-dot" data-index="6"></div>
+        <div class="nav-dot" data-index="7"></div>
+        <div class="nav-dot" data-index="8"></div>
+        <div class="nav-dot" data-index="9"></div>
+        <div class="nav-dot" data-index="10"></div>
+        <div class="nav-dot" data-index="11"></div>
+        <div class="nav-dot" data-index="12"></div>
+        <div class="nav-dot" data-index="13"></div>
+        <div class="nav-dot" data-index="14"></div>
+        <div class="nav-dot" data-index="15"></div>
     </div>
     
     <div class="swipe-hint">← 左右滑動切換 →</div>
@@ -448,7 +733,7 @@
         const slider = document.getElementById('slider');
         const dots = document.querySelectorAll('.nav-dot');
         let currentSlide = 0;
-        const totalSlides = 6;
+        const totalSlides = 16;
         let startX = 0;
         let currentX = 0;
         let isDragging = false;
