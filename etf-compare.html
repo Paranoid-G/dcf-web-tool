@@ -131,11 +131,22 @@
     border-radius: 0 6px 6px 0; line-height: 1.75;
   }
 
-  .section-title {
-    font-size: 12px; font-weight: 600; text-transform: uppercase;
-    letter-spacing: 2px; color: var(--gold); margin-bottom: 10px;
+
+
+  /* ===== Table Container ===== */
+  .table-container {
+    background: rgba(0,0,0,0.18);
+    border-radius: 8px;
+    padding: 12px 14px 4px;
+    margin-bottom: 18px;
+    border: 1px solid rgba(255,255,255,0.05);
   }
 
+  .holdings-table thead th {
+    font-size: 12px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 2px; color: var(--gold);
+    padding-bottom: 10px; border-bottom: 1px solid rgba(186,169,131,0.3);
+  }
   .holdings-table {
     width: 100%; border-collapse: collapse; font-size: 14px; margin-bottom: 18px;
   }
@@ -183,7 +194,21 @@
     .tab-header { padding: 14px 16px; gap: 10px; }
     .tab-header .ticker { font-size: 17px; }
     .panel-inner { padding: 0 16px 16px; }
-    .holdings-table { font-size: 13px; }
+    /* ===== Table Container ===== */
+  .table-container {
+    background: rgba(0,0,0,0.18);
+    border-radius: 8px;
+    padding: 12px 14px 4px;
+    margin-bottom: 18px;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .holdings-table thead th {
+    font-size: 12px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 2px; color: var(--gold);
+    padding-bottom: 10px; border-bottom: 1px solid rgba(186,169,131,0.3);
+  }
+  .holdings-table { font-size: 13px; }
     .holdings-table .favicon { width: 18px; height: 18px; }
   }
 </style>
@@ -219,8 +244,9 @@
             <li>有機會分享未來獨角獸企業的成長紅利</li>
           </ul>
         </div>
-        <div class="section-title">前 6 大企業（截至 2026 年 3 月 31 日）</div>
+        <div class="table-container">
         <table class="holdings-table">
+          <thead><tr><th colspan="2">前 6 大企業（截至 2026 年 3 月 31 日）</th></tr></thead>
           <tbody>
             <tr><td><span class="company-cell"><img class="favicon" loading="lazy" decoding="async" src="logos/anthropic.com.png">Anthropic</span></td><td>18.1%</td></tr>
             <tr><td><span class="company-cell"><img class="favicon" loading="lazy" decoding="async" src="logos/spacex.com.png">SpaceX</span></td><td>14.5%</td></tr>
@@ -230,7 +256,8 @@
             <tr><td><span class="company-cell"><img class="favicon" loading="lazy" decoding="async" src="logos/databricks.com.png">Databricks</span></td><td>2.5%</td></tr>
           </tbody>
         </table>
-        <div class="target"><span class="label">🎯 適合投資人：</span>想提前參與 IPO 前市場的投資人</div>
+        </div>
+        <div class="target"><span class="label">🎯 適合：</span>想提前參與 IPO 前市場的投資人</div>
       </div>
     </div>
   </div>
@@ -256,18 +283,20 @@
             <li>長期看好太空產業發展的投資首選</li>
           </ul>
         </div>
-        <div class="section-title">前 6 大持股（截至 2026 年 5 月 18 日）</div>
+        <div class="table-container">
         <table class="holdings-table">
+          <thead><tr><th colspan="2">前 6 大持股（截至 2026 年 5 月 18 日）</th></tr></thead>
           <tbody>
-            <tr><td><span class="company-cell"><img class="favicon" loading="lazy" decoding="async" src="logos/rocketlabusa.com.png">RKLB（Rocket Lab USA Inc.）</span></td><td>11.20%</td></tr>
-            <tr><td><span class="company-cell"><img class="favicon" loading="lazy" decoding="async" src="logos/spacex.com.png">SPACEX SPV EXPOSURE</span></td><td>6.72%</td></tr>
-            <tr><td><span class="company-cell"><img class="favicon" loading="lazy" decoding="async" src="logos/filtronic.com.png">FILTRONIC PLC</span></td><td>6.19%</td></tr>
-            <tr><td><span class="company-cell"><img class="favicon" loading="lazy" decoding="async" src="logos/planet.com.png">PLANET LABS PBC</span></td><td>6.14%</td></tr>
-            <tr><td><span class="company-cell"><img class="favicon" loading="lazy" decoding="async" src="logos/intuitivemachines.com.png">INTUITIVE MACHINES INC</span></td><td>5.67%</td></tr>
-            <tr><td><span class="company-cell"><img class="favicon" loading="lazy" decoding="async" src="logos/fireflyspace.com.png">FIREFLY AEROSPACE INC</span></td><td>5.29%</td></tr>
+            <tr><td><span class="company-cell"><img class="favicon" loading="lazy" decoding="async" src="logos/rocketlabusa.com.png">RKLB（Rocket Lab USA Inc.）</span></td><td>11.2%</td></tr>
+            <tr><td><span class="company-cell"><img class="favicon" loading="lazy" decoding="async" src="logos/spacex.com.png">SPACEX SPV EXPOSURE</span></td><td>6.7%</td></tr>
+            <tr><td><span class="company-cell"><img class="favicon" loading="lazy" decoding="async" src="logos/filtronic.com.png">FILTRONIC PLC</span></td><td>6.2%</td></tr>
+            <tr><td><span class="company-cell"><img class="favicon" loading="lazy" decoding="async" src="logos/planet.com.png">PLANET LABS PBC</span></td><td>6.1%</td></tr>
+            <tr><td><span class="company-cell"><img class="favicon" loading="lazy" decoding="async" src="logos/intuitivemachines.com.png">INTUITIVE MACHINES INC</span></td><td>5.7%</td></tr>
+            <tr><td><span class="company-cell"><img class="favicon" loading="lazy" decoding="async" src="logos/fireflyspace.com.png">FIREFLY AEROSPACE INC</span></td><td>5.3%</td></tr>
           </tbody>
         </table>
-        <div class="target"><span class="label">🎯 適合投資人：</span>想參與太空產業成長機會的投資人</div>
+        </div>
+        <div class="target"><span class="label">🎯 適合：</span>想參與太空產業成長機會的投資人</div>
       </div>
     </div>
   </div>
@@ -293,18 +322,20 @@
             <li>掌握記憶體產業長期成長循環</li>
           </ul>
         </div>
-        <div class="section-title">前 6 大持倉（截至 2026 年 5 月 19 日）</div>
+        <div class="table-container">
         <table class="holdings-table">
+          <thead><tr><th colspan="2">前 6 大持倉（截至 2026 年 5 月 19 日）</th></tr></thead>
           <tbody>
-            <tr><td><span class="company-cell"><img class="favicon" loading="lazy" decoding="async" src="logos/skhynix.com.png">SK hynix</span></td><td>27.18%</td></tr>
-            <tr><td><span class="company-cell"><img class="favicon" loading="lazy" decoding="async" src="logos/micron.com.png">Micron Technology Inc</span></td><td>26.12%</td></tr>
-            <tr><td><span class="company-cell"><img class="favicon" loading="lazy" decoding="async" src="logos/samsung.com.png">三星電子（Samsung Electronics）</span></td><td>20.86%</td></tr>
-            <tr><td><span class="company-cell"><img class="favicon" loading="lazy" decoding="async" src="logos/kioxia.com.png">Kioxia Holdings</span></td><td>6.39%</td></tr>
-            <tr><td><span class="company-cell"><img class="favicon" loading="lazy" decoding="async" src="logos/sandisk.com.png">Sandisk</span></td><td>5.37%</td></tr>
-            <tr><td><span class="company-cell"><img class="favicon" loading="lazy" decoding="async" src="logos/seagate.com.png">Seagate Technology Holdings</span></td><td>4.49%</td></tr>
+            <tr><td><span class="company-cell"><img class="favicon" loading="lazy" decoding="async" src="logos/skhynix.com.png">SK hynix</span></td><td>27.2%</td></tr>
+            <tr><td><span class="company-cell"><img class="favicon" loading="lazy" decoding="async" src="logos/micron.com.png">Micron Technology Inc</span></td><td>26.1%</td></tr>
+            <tr><td><span class="company-cell"><img class="favicon" loading="lazy" decoding="async" src="logos/samsung.com.png">Samsung Electronics</span></td><td>20.9%</td></tr>
+            <tr><td><span class="company-cell"><img class="favicon" loading="lazy" decoding="async" src="logos/kioxia.com.png">Kioxia Holdings</span></td><td>6.4%</td></tr>
+            <tr><td><span class="company-cell"><img class="favicon" loading="lazy" decoding="async" src="logos/sandisk.com.png">Sandisk</span></td><td>5.4%</td></tr>
+            <tr><td><span class="company-cell"><img class="favicon" loading="lazy" decoding="async" src="logos/seagate.com.png">Seagate Technology Holdings</span></td><td>4.5%</td></tr>
           </tbody>
         </table>
-        <div class="target"><span class="label">🎯 適合投資人：</span>想布局記憶體產業的投資人</div>
+        </div>
+        <div class="target"><span class="label">🎯 適合：</span>想布局記憶體產業的投資人</div>
       </div>
     </div>
   </div>
@@ -330,18 +361,20 @@
             <li>分散投資，降低單一公司風險</li>
           </ul>
         </div>
-        <div class="section-title">前 6 大持股（截至 2026 年 5 月 18 日）</div>
+        <div class="table-container">
         <table class="holdings-table">
+          <thead><tr><th colspan="2">前 6 大持股（截至 2026 年 5 月 18 日）</th></tr></thead>
           <tbody>
-            <tr><td><span class="company-cell"><img class="favicon" loading="lazy" decoding="async" src="logos/micron.com.png">MICRON TECHNOLOGY INC</span></td><td>9.35%</td></tr>
-            <tr><td><span class="company-cell"><img class="favicon" loading="lazy" decoding="async" src="logos/amd.com.png">ADVANCED MICRO DEVICES INC</span></td><td>8.80%</td></tr>
-            <tr><td><span class="company-cell"><img class="favicon" loading="lazy" decoding="async" src="logos/broadcom.com.png">BROADCOM INC</span></td><td>7.45%</td></tr>
-            <tr><td><span class="company-cell"><img class="favicon" loading="lazy" decoding="async" src="logos/nvidia.com.png">NVIDIA CORP</span></td><td>6.71%</td></tr>
-            <tr><td><span class="company-cell"><img class="favicon" loading="lazy" decoding="async" src="logos/intel.com.png">INTEL CORPORATION CORP</span></td><td>6.71%</td></tr>
-            <tr><td><span class="company-cell"><img class="favicon" loading="lazy" decoding="async" src="logos/marvell.com.png">MARVELL TECHNOLOGY INC</span></td><td>5.85%</td></tr>
+            <tr><td><span class="company-cell"><img class="favicon" loading="lazy" decoding="async" src="logos/micron.com.png">MICRON TECHNOLOGY INC</span></td><td>9.3%</td></tr>
+            <tr><td><span class="company-cell"><img class="favicon" loading="lazy" decoding="async" src="logos/amd.com.png">ADVANCED MICRO DEVICES INC</span></td><td>8.8%</td></tr>
+            <tr><td><span class="company-cell"><img class="favicon" loading="lazy" decoding="async" src="logos/broadcom.com.png">BROADCOM INC</span></td><td>7.5%</td></tr>
+            <tr><td><span class="company-cell"><img class="favicon" loading="lazy" decoding="async" src="logos/nvidia.com.png">NVIDIA CORP</span></td><td>6.7%</td></tr>
+            <tr><td><span class="company-cell"><img class="favicon" loading="lazy" decoding="async" src="logos/intel.com.png">INTEL CORPORATION CORP</span></td><td>6.7%</td></tr>
+            <tr><td><span class="company-cell"><img class="favicon" loading="lazy" decoding="async" src="logos/marvell.com.png">MARVELL TECHNOLOGY INC</span></td><td>5.8%</td></tr>
           </tbody>
         </table>
-        <div class="target"><span class="label">🎯 適合投資人：</span>想分散布局全球半導體龍頭的投資人</div>
+        </div>
+        <div class="target"><span class="label">🎯 適合：</span>想分散布局全球半導體龍頭的投資人</div>
       </div>
     </div>
   </div>
