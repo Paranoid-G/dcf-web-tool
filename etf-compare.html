@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>四檔主題型 ETF | 雲杉財富</title>
+<style>
+  :root {
+    --bg-primary: #012A3A;
+    --text-body: #c8c4bb;
+    --text-muted: #9a9588;
+    --gold: #BAA983;
+    --card-dxyz: #3B5542;
+    --card-nasa: #914124;
+    --card-dram: #29565B;
+    --card-soxx: #007681;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang TC', 'Microsoft JhengHei', 'Noto Sans TC', sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-body);
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  .header {
+    text-align: center;
+    padding: 48px 24px 16px;
+  }
+  .header .logo {
+    height: 52px;
+    margin-bottom: 28px;
+  }
+  .header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: 2px;
+  }
+  .header .subtitle {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-top: 8px;
+  }
+  .header::after {
+    content: '';
+    display: block;
+    width: 50px;
+    height: 2px;
+    background: var(--gold);
+    margin: 18px auto 0;
+    opacity: 0.5;
+  }
+
+  .container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 20px 24px 60px;
+  }
+
+  .etf-card {
+    border-radius: 14px;
+    margin-bottom: 14px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .card-dxyz { background: var(--card-dxyz); }
+  .card-nasa { background: var(--card-nasa); }
+  .card-dram { background: var(--card-dram); }
+  .card-soxx { background: var(--card-soxx); }
+  .etf-card:hover { box-shadow: 0 4px 24px rgba(0,0,0,0.35); }
+  .etf-card.active { box-shadow: 0 4px 24px rgba(0,0,0,0.4); }
+
+  .tab-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 22px;
+    user-select: none;
+  }
+  .tab-header .info { flex: 1; min-width: 0; }
+  .tab-header .ticker {
+    font-size: 20px; font-weight: 700; letter-spacing: 1px;
+    color: var(--gold); line-height: 1.2;
+  }
+  .tab-header .sub {
+    font-size: 13px; color: rgba(255,255,255,0.55);
+    margin-top: 2px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .tab-header .badge {
+    font-size: 11px; padding: 3px 10px; border-radius: 20px;
+    letter-spacing: 0.5px; flex-shrink: 0; font-weight: 600;
+    color: var(--text-body); background: rgba(0,0,0,0.2);
+  }
+  .tab-header .arrow {
+    font-size: 12px; color: rgba(255,255,255,0.4);
+    transition: transform 0.3s; flex-shrink: 0;
+  }
+  .etf-card.active .tab-header .arrow {
+    transform: rotate(180deg); color: var(--gold);
+  }
+
+  .panel {
+    max-height: 0; overflow: hidden;
+    transition: max-height 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .etf-card.active .panel { max-height: 1000px; }
+  .panel-inner { padding: 0 22px 22px; }
+
+  .theme-tag {
+    display: inline-block; font-size: 13px; padding: 4px 14px;
+    background: rgba(0,0,0,0.2); border-radius: 6px;
+    color: var(--gold); margin-bottom: 14px;
+  }
+
+  .desc {
+    font-size: 14px; color: var(--text-body); margin-bottom: 18px;
+    padding: 12px 16px; background: rgba(0,0,0,0.18);
+    border-left: 3px solid var(--gold);
+    border-radius: 0 6px 6px 0; line-height: 1.75;
+  }
+
+  .section-title {
+    font-size: 12px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 2px; color: var(--gold); margin-bottom: 10px;
+  }
+
+  .holdings-table {
+    width: 100%; border-collapse: collapse; font-size: 14px; margin-bottom: 18px;
+  }
+  .holdings-table tbody td {
+    padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.08);
+    color: var(--text-body); vertical-align: middle;
+  }
+  .holdings-table tbody td:last-child {
+    text-align: right; font-weight: 600;
+    color: var(--text-body); font-variant-numeric: tabular-nums;
+  }
+
+  .holdings-table .company-cell {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .holdings-table .favicon {
+    width: 20px; height: 20px; border-radius: 4px; flex-shrink: 0;
+  }
+
+  .strengths { list-style: none; margin-bottom: 16px; }
+  .strengths li {
+    font-size: 13px; color: var(--text-body); padding: 5px 0;
+    display: flex; align-items: flex-start; gap: 8px;
+  }
+  .strengths li::before {
+    content: '✓'; color: var(--gold); font-weight: 700; flex-shrink: 0;
+  }
+
+  .target {
+    font-size: 13px; color: rgba(255,255,255,0.55);
+    padding: 10px 14px; background: rgba(0,0,0,0.18);
+    border-radius: 8px; border: 1px solid rgba(255,255,255,0.08);
+  }
+  .target .label { color: var(--gold); font-weight: 600; }
+
+  .footer {
+    text-align: center; padding: 20px; font-size: 12px;
+    color: var(--text-muted); border-top: 1px solid rgba(255,255,255,0.05);
+    line-height: 1.8;
+  }
+
+  @media (max-width: 480px) {
+    .header h1 { font-size: 22px; }
+    .header .logo { height: 40px; }
+    .tab-header { padding: 14px 16px; gap: 10px; }
+    .tab-header .ticker { font-size: 17px; }
+    .panel-inner { padding: 0 16px 16px; }
+    .holdings-table { font-size: 13px; }
+    .holdings-table .favicon { width: 18px; height: 18px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <img class="logo" src="etf-logo.png" alt="雲杉財富">
+  <h1>四檔主題型 ETF</h1>
+  <div class="subtitle">私募科技 · 太空經濟 · AI 記憶體 · 半導體大盤</div>
+</header>
+
+<div class="container">
+
+  <!-- DXYZ -->
+  <div class="etf-card card-dxyz" onclick="toggleCard(this)">
+    <div class="tab-header">
+      <div class="info">
+        <div class="ticker">DXYZ</div>
+        <div class="sub">Destiny Tech100 Inc.</div>
+      </div>
+      <div class="badge">上市股票</div>
+      <div class="arrow">▼</div>
+    </div>
+    <div class="panel">
+      <div class="panel-inner">
+        <div class="theme-tag">Private Tech / IPO 前世界</div>
+        <div class="desc">
+          <ul class="strengths">
+            <li>投資 100 家頂尖風投支持的私營科技公司</li>
+            <li>同時布局 AI、國防、大數據、太空科技</li>
+            <li>首次讓普通投資者接觸私募市場領頭羊</li>
+            <li>有機會分享未來獨角獸企業的成長紅利</li>
+          </ul>
+        </div>
+        <div class="section-title">前 6 大企業（截至 2026 年 3 月 31 日）</div>
+        <table class="holdings-table">
+          <tbody>
+            <tr><td><span class="company-cell"><img class="favicon" src="https://www.google.com/s2/favicons?domain=anthropic.com&sz=32">Anthropic</span></td><td>18.1%</td></tr>
+            <tr><td><span class="company-cell"><img class="favicon" src="https://www.google.com/s2/favicons?domain=spacex.com&sz=32">SpaceX</span></td><td>14.5%</td></tr>
+            <tr><td><span class="company-cell"><img class="favicon" src="https://www.google.com/s2/favicons?domain=openai.com&sz=32">OpenAI</span></td><td>5.8%</td></tr>
+            <tr><td><span class="company-cell"><img class="favicon" src="https://www.google.com/s2/favicons?domain=openevidence.com&sz=32">OpenEvidence</span></td><td>4.6%</td></tr>
+            <tr><td><span class="company-cell"><img class="favicon" src="https://www.google.com/s2/favicons?domain=shield.ai&sz=32">Shield AI</span></td><td>4.2%</td></tr>
+            <tr><td><span class="company-cell"><img class="favicon" src="https://www.google.com/s2/favicons?domain=databricks.com&sz=32">Databricks</span></td><td>2.5%</td></tr>
+          </tbody>
+        </table>
+        <div class="target"><span class="label">🎯 適合投資人：</span>想提前參與 IPO 前市場的投資人</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NASA -->
+  <div class="etf-card card-nasa" onclick="toggleCard(this)">
+    <div class="tab-header">
+      <div class="info">
+        <div class="ticker">NASA</div>
+        <div class="sub">Tema Space Innovators ETF</div>
+      </div>
+      <div class="badge">上市 ETF</div>
+      <div class="arrow">▼</div>
+    </div>
+    <div class="panel">
+      <div class="panel-inner">
+        <div class="theme-tag">Space Economy / 太空經濟</div>
+        <div class="desc">
+          <ul class="strengths">
+            <li>專注投資太空經濟完整產業鏈</li>
+            <li>間接投資 SpaceX、把握龍頭企業成長</li>
+            <li>涵蓋衛星、火箭、太空基礎建設、國防</li>
+            <li>長期看好太空產業發展的投資首選</li>
+          </ul>
+        </div>
+        <div class="section-title">前 6 大持股（截至 2026 年 5 月 18 日）</div>
+        <table class="holdings-table">
+          <tbody>
+            <tr><td><span class="company-cell"><img class="favicon" src="https://www.google.com/s2/favicons?domain=rocketlabusa.com&sz=32">RKLB（Rocket Lab USA Inc.）</span></td><td>11.20%</td></tr>
+            <tr><td><span class="company-cell"><img class="favicon" src="https://www.google.com/s2/favicons?domain=spacex.com&sz=32">SPACEX SPV EXPOSURE</span></td><td>6.72%</td></tr>
+            <tr><td><span class="company-cell"><img class="favicon" src="https://www.google.com/s2/favicons?domain=filtronic.com&sz=32">FILTRONIC PLC</span></td><td>6.19%</td></tr>
+            <tr><td><span class="company-cell"><img class="favicon" src="https://www.google.com/s2/favicons?domain=planet.com&sz=32">PLANET LABS PBC</span></td><td>6.14%</td></tr>
+            <tr><td><span class="company-cell"><img class="favicon" src="https://www.google.com/s2/favicons?domain=intuitivemachines.com&sz=32">INTUITIVE MACHINES INC</span></td><td>5.67%</td></tr>
+            <tr><td><span class="company-cell"><img class="favicon" src="https://www.google.com/s2/favicons?domain=fireflyspace.com&sz=32">FIREFLY AEROSPACE INC</span></td><td>5.29%</td></tr>
+          </tbody>
+        </table>
+        <div class="target"><span class="label">🎯 適合投資人：</span>想參與太空產業成長機會的投資人</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DRAM -->
+  <div class="etf-card card-dram" onclick="toggleCard(this)">
+    <div class="tab-header">
+      <div class="info">
+        <div class="ticker">DRAM</div>
+        <div class="sub">Roundhill DRAM ETF</div>
+      </div>
+      <div class="badge">上市 ETF</div>
+      <div class="arrow">▼</div>
+    </div>
+    <div class="panel">
+      <div class="panel-inner">
+        <div class="theme-tag">AI 記憶體 / Memory Cycle</div>
+        <div class="desc">
+          <ul class="strengths">
+            <li>聚焦全球記憶體龍頭，受惠 AI 趨勢</li>
+            <li>布局 HBM / DRAM / NAND 完整供應鏈</li>
+            <li>高度受惠 AI 與資料中心需求爆發</li>
+            <li>掌握記憶體產業長期成長循環</li>
+          </ul>
+        </div>
+        <div class="section-title">前 6 大持倉（截至 2026 年 5 月 19 日）</div>
+        <table class="holdings-table">
+          <tbody>
+            <tr><td><span class="company-cell"><img class="favicon" src="https://www.google.com/s2/favicons?domain=skhynix.com&sz=32">SK hynix</span></td><td>27.18%</td></tr>
+            <tr><td><span class="company-cell"><img class="favicon" src="https://www.google.com/s2/favicons?domain=micron.com&sz=32">Micron Technology Inc</span></td><td>26.12%</td></tr>
+            <tr><td><span class="company-cell"><img class="favicon" src="https://www.google.com/s2/favicons?domain=samsung.com&sz=32">三星電子（Samsung Electronics）</span></td><td>20.86%</td></tr>
+            <tr><td><span class="company-cell"><img class="favicon" src="https://www.google.com/s2/favicons?domain=kioxia.com&sz=32">Kioxia Holdings</span></td><td>6.39%</td></tr>
+            <tr><td><span class="company-cell"><img class="favicon" src="https://www.google.com/s2/favicons?domain=sandisk.com&sz=32">Sandisk</span></td><td>5.37%</td></tr>
+            <tr><td><span class="company-cell"><img class="favicon" src="https://www.google.com/s2/favicons?domain=seagate.com&sz=32">Seagate Technology Holdings</span></td><td>4.49%</td></tr>
+          </tbody>
+        </table>
+        <div class="target"><span class="label">🎯 適合投資人：</span>想布局記憶體產業的投資人</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SOXX -->
+  <div class="etf-card card-soxx" onclick="toggleCard(this)">
+    <div class="tab-header">
+      <div class="info">
+        <div class="ticker">SOXX</div>
+        <div class="sub">iShares Semiconductor ETF</div>
+      </div>
+      <div class="badge">上市 ETF</div>
+      <div class="arrow">▼</div>
+    </div>
+    <div class="panel">
+      <div class="panel-inner">
+        <div class="theme-tag">半導體大盤 / Semiconductor</div>
+        <div class="desc">
+          <ul class="strengths">
+            <li>投資全球領先半導體公司</li>
+            <li>涵蓋 IC 設計、製造、設備等完整鏈結</li>
+            <li>受惠 AI、5G、車用、物聯網長期趨勢</li>
+            <li>分散投資，降低單一公司風險</li>
+          </ul>
+        </div>
+        <div class="section-title">前 6 大持股（截至 2026 年 5 月 18 日）</div>
+        <table class="holdings-table">
+          <tbody>
+            <tr><td><span class="company-cell"><img class="favicon" src="https://www.google.com/s2/favicons?domain=micron.com&sz=32">MICRON TECHNOLOGY INC</span></td><td>9.35%</td></tr>
+            <tr><td><span class="company-cell"><img class="favicon" src="https://www.google.com/s2/favicons?domain=amd.com&sz=32">ADVANCED MICRO DEVICES INC</span></td><td>8.80%</td></tr>
+            <tr><td><span class="company-cell"><img class="favicon" src="https://www.google.com/s2/favicons?domain=broadcom.com&sz=32">BROADCOM INC</span></td><td>7.45%</td></tr>
+            <tr><td><span class="company-cell"><img class="favicon" src="https://www.google.com/s2/favicons?domain=nvidia.com&sz=32">NVIDIA CORP</span></td><td>6.71%</td></tr>
+            <tr><td><span class="company-cell"><img class="favicon" src="https://www.google.com/s2/favicons?domain=intel.com&sz=32">INTEL CORPORATION CORP</span></td><td>6.71%</td></tr>
+            <tr><td><span class="company-cell"><img class="favicon" src="https://www.google.com/s2/favicons?domain=marvell.com&sz=32">MARVELL TECHNOLOGY INC</span></td><td>5.85%</td></tr>
+          </tbody>
+        </table>
+        <div class="target"><span class="label">🎯 適合投資人：</span>想分散布局全球半導體龍頭的投資人</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer class="footer">
+  雲杉財富 · 數據截至 2026 年 3–5 月 · 僅供參考，不構成投資建議
+</footer>
+
+<script>
+function toggleCard(card) {
+  document.querySelectorAll('.etf-card').forEach(c => {
+    if (c !== card) c.classList.remove('active');
+  });
+  card.classList.toggle('active');
+}
+</script>
+
+</body>
+</html>
