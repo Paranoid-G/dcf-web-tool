@@ -3,11 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>四檔主題投資標的 | 雲杉財富</title>
-<meta property="og:title" content="四檔主題投資標的">
-<meta property="og:description" content="私募科技 · 太空經濟 · AI 記憶體 · 半導體大盤 — 「香港雲杉財富」">
+<title>五檔主題投資標的 | 雲杉財富</title>
+<meta property="og:title" content="五檔主題投資標的">
+<meta property="og:description" content="私募科技 · 太空經濟 · AI 記憶體 · 半導體大盤 · 生成式 AI — 「香港雲杉財富」">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://paranoid-g.github.io/dcf-web-tool/etf-icon.png">
+<!-- 投資品種介紹 v1.3.0 -->
 <meta property="og:image:width" content="200">
 <meta property="og:image:height" content="200">
 <style>
@@ -20,6 +21,7 @@
     --card-nasa: #914124;
     --card-dram: #29565B;
     --card-soxx: #007681;
+    --card-chat: #5B3A6B;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -78,6 +80,7 @@
   .card-nasa { background: var(--card-nasa); }
   .card-dram { background: var(--card-dram); }
   .card-soxx { background: var(--card-soxx); }
+  .card-chat { background: var(--card-chat); }
   .etf-card:hover { box-shadow: 0 4px 24px rgba(0,0,0,0.35); }
   .etf-card.active { box-shadow: 0 4px 24px rgba(0,0,0,0.4); }
 
@@ -216,9 +219,9 @@
 <body>
 
 <header class="header">
-  <img class="logo" src="etf-logo.png" alt="雲杉財富">
-  <h1>四檔主題投資標的</h1>
-  <div class="subtitle">私募科技 · 太空經濟 · AI 記憶體 · 半導體大盤</div>
+  <img class="logo" src="logo.png" alt="雲杉財富">
+  <h1>五檔主題投資標的</h1>
+  <div class="subtitle">私募科技 · 太空經濟 · AI 記憶體 · 半導體大盤 · 生成式 AI</div>
 </header>
 
 <div class="container">
@@ -375,6 +378,45 @@
         </table>
         </div>
         <div class="target"><span class="label">🎯 適合：</span>想分散布局全球半導體龍頭的投資人</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHAT -->
+  <div class="etf-card card-chat" onclick="toggleCard(this)">
+    <div class="tab-header">
+      <div class="info">
+        <div class="ticker">CHAT</div>
+        <div class="sub">Roundhill Generative AI & Technology ETF</div>
+      </div>
+      <div class="badge">上市 ETF</div>
+      <div class="arrow">▼</div>
+    </div>
+    <div class="panel">
+      <div class="panel-inner">
+        <div class="theme-tag">Generative AI / 生成式 AI</div>
+        <div class="desc">
+          <ul class="strengths">
+            <li>全球首隻專注生成式 AI 的主動管理 ETF，2023 年 5 月成立</li>
+            <li>覆蓋 AI 平台、基礎設施（GPU/記憶體）、企業及消費級軟體全鏈條</li>
+            <li>橫跨美國、韓國、中國、台灣、日本、歐洲全球布局</li>
+            <li>2025 年度回報 49.8%，波動率 34.7%，夏普比率 1.60</li>
+          </ul>
+        </div>
+        <div class="table-container">
+        <table class="holdings-table">
+          <thead><tr><th colspan="2">前 6 大持倉（截至 2026 年 5 月 28 日）</th></tr></thead>
+          <tbody>
+            <tr><td><span class="company-cell"><img class="favicon" loading="lazy" decoding="async" src="logos/skhynix.com.png">SK hynix（000660 KS）</span></td><td>6.2%</td></tr>
+            <tr><td><span class="company-cell"><img class="favicon" loading="lazy" decoding="async" src="logos/nvidia.com.png">NVIDIA（NVDA）</span></td><td>6.0%</td></tr>
+            <tr><td><span class="company-cell"><img class="favicon" loading="lazy" decoding="async" src="logos/micron.com.png">Micron Technology（MU）</span></td><td>5.9%</td></tr>
+            <tr><td><span class="company-cell"><img class="favicon" loading="lazy" decoding="async" src="logos/amd.com.png">AMD</span></td><td>5.9%</td></tr>
+            <tr><td><span class="company-cell"><img class="favicon" loading="lazy" decoding="async" src="logos/google.com.png">Alphabet（GOOGL）</span></td><td>5.9%</td></tr>
+            <tr><td><span class="company-cell"><img class="favicon" loading="lazy" decoding="async" src="logos/zhipuai.cn.png">知識圖譜（2513 HK）</span></td><td>4.6%</td></tr>
+          </tbody>
+        </table>
+        </div>
+        <div class="target"><span class="label">🎯 適合：</span>看好生成式 AI 長期趨勢、接受較高波動的投資人</div>
       </div>
     </div>
   </div>
